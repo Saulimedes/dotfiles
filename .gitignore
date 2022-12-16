@@ -1,0 +1,13 @@
+fish/.config/fish/fish_variables
+fish/.config/fish/conf.d
+fish/.config/fish/functions/_*
+fish/config/fish//completions/*
+
+transmission/.config/transmission/*
+mpv/.config/mpv/watch_later/*
+local/.local/share/*
+ssh/.ssh/s_*
+*/*/logs
+*.log
+/tmp
+__*

@@ -1,0 +1,4 @@
+#!/bin/sh
+VIDEO="$1"
+[ -z $VIDEO ] && VIDEO="$(paste)"
+yt-dlp --extract-audio --audio-format "mp3" --audio-quality 0 "$VIDEO"

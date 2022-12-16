@@ -1,0 +1,18 @@
+ControlMaster auto
+ControlPath ~/.ssh/%h_%p_%r
+AddKeysToAgent yes
+ControlPersist 10m
+Compression yes
+VerifyHostKeyDNS yes
+StrictHostKeyChecking no
+
+# Keep Alive
+TCPKeepAlive yes
+ForwardAgent yes
+ServerAliveCountMax 10
+ServerAliveInterval 300
+UseRoaming No
+
+# hardening
+MACs hmac-sha2-512,hmac-sha2-256
+Ciphers aes128-ctr,aes192-ctr,aes256-ctr

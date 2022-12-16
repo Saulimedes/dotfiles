@@ -1,0 +1,13 @@
+#!/bin/sh
+[ -z ${2} ] && "Error: Pass and Key as an Argument, Moron."
+local certmd5=$(openssl x509 -noout -modulus -in "$1" | openssl md5)
+local keymd5=$(openssl rsa -noout -modulus -in "$2" | openssl md5)
+
+echo "md5sum Certficiate: $certmd5"
+echo "md5sum Key: $keymd5"
+
+if [[ "$certmd5" == "$keymd5" ]]; then
+  echo "==> md5sum of Key and Certificate are matching."
+elif [[ "$certmd5" != "$keymd5" ]]; then
+  echo "==> md5sum of Key and Certficiate are NOT matching."
+fi

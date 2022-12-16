@@ -1,0 +1,131 @@
+[user]
+  name = Paul Becker
+  email = p@becker.kiwi
+  useConfigOnly = true
+[core]
+  whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
+  sshCommand = ssh
+  quotepath = false
+  autocrlf = input
+  fileMode = false
+  editor = $EDITOR
+  ignorecase = false
+  excludesfile = ~/.gitignore
+  excludesfile = ~/.config/git/ignore
+  attributesfile = ~/.gitattributes
+  precomposeUnicode = true
+  preloadIndex = true
+  safecrlf = false
+[status]
+ submoduleSummary = true
+[push]
+  default = current
+  followTags = true
+[submodule]
+  recurse = true
+[color]
+  ui = auto
+  pager = false
+[color "branch"]
+  current = yellow bold
+  local = green bold
+  remote = cyan bold
+[gc]
+  auto = 256
+[clean]
+  requireForce = false
+[branch]
+  autosetupmerge = true
+  autosetuprebase = always
+[tag]
+  sort = version:refname
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[color "diff-highlight"]
+  oldNormal = red bold
+  oldHighlight = red bold
+  newNormal = green bold
+  newHighlight = green bold
+  whitespace = red reverse
+[color "status"]
+  added = green bold
+  changed = yellow bold
+  untracked = red bold
+[pull]
+  rebase = true
+[fetch]
+  prune = true
+[rebase]
+  autosquash = true
+  instructionFormat = [%cn <%ce> %G?] %s
+  autoStash = true
+[help]
+  autocorrect = 20
+[log]
+  decorate = auto
+[alias]
+  A = "add -A ."
+  aa = "add --all"
+  amend = "commit --amend --no-edit"
+  br = "branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate"
+  branch-name = "!git for-each-ref --format='%(refname:short)' 'git symbolic-ref HEAD'"
+  bx = "branch -D"
+  brancher = "!git-brancher"
+  c = "clone"
+  ck = "checkout"
+  clean = "clean -fdx"
+  done = "!git push origin HEAD"
+  force = "push --force"
+  last = "log -1 HEAD --stat"
+  lg1 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
+  lg2 = "log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
+  lg3 = "!git --no-pager log -15 --reverse --oneline --decorate --all --pretty=tformat:'%C(bold blue)%h%C(reset) %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold yellow)- %cn%C(reset)'"
+  lg4 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%cD%C(reset) %C(bold green)(%cr)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)' --abbrev-commit"
+  m = "merge"
+  me = "config user.name"
+  mail = "config user.email"
+  origin-url = "url"
+  original = "!git fetch origin && git reset --hard origin/master"
+  panic = "!tar cvf ../git_panic.tar *"
+  publish = "push -u origin HEAD"
+  repo = "!git remote -v | grep fetch | awk '{print $2}'"
+  root = "rev-parse --show-toplevel"
+  rev = "log --format='%H' -n 1"
+  s = "status -sb ."
+  se = "!git rev-list --all | xargs git grep -F"
+  save = "save = !git add -A && git commit -m 'chore: commit save point"
+  unpush = "revert HEAD-1"
+  tags = "tag -l"
+  undo = "reset --soft HEAD"
+  yoda = "push --force-with-lease"
+  zip = "git archive --format=zip -o latest.zip HEAD";
+  permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
+[gpg]
+  program = /usr/bin/gpg2
+[diff]
+  prompt = false
+  mnemonicprefix = true
+  indentHeuristic = true
+[difftool]
+  tool = vimdiff
+[merge]
+  tool = vimdiff
+[mergetool]
+  keepBackup = false
+  keepTemporaries = false
+  writeToTemp = true
+  prompt = false
+[includeIf "gitdir:~/Projects/**"]
+  path = ~/Projects/current/.gitconfig
+[include]
+  path = ~/.gitconfig_private
+[fetch]
+  recurseSubmodules = on-demand
+[status]
+  relativePaths = true
+[init]
+  defaultBranch = main

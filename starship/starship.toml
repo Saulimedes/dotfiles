@@ -1,0 +1,25 @@
+add_newline = false
+format = """$directory$git_branch$git_status$character"""
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❭](bold red)"
+vimcmd_symbol = "[❰](bold yellow)"
+
+[directory]
+truncation_length = 3
+truncation_symbol = '…/'
+truncate_to_repo	= true
+
+[directory.substitutions]
+"Documents" = ""
+"Downloads" = ""
+"Music" = ""
+"Videos" = "ﳜ"
+"Pictures" = " "
+"Projects" = ""
+".dotfiles" = ""
+
+[git_branch]
+format = '[$symbol$branch(:$remote_branch)]($style)'
+ignore_branches = ['master', 'main']

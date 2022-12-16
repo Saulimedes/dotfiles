@@ -1,0 +1,41 @@
+---
+- defaults:
+    link:
+      relink: true
+      force: true
+      create: true
+
+- clean: ['~']
+
+- link:
+    ~/.ansible.cfg: ansible/ansible.cfg
+    ~/.config/bat/config: bat/config
+    ~/.fdignore: fd/fdignore
+    ~/.bashrc: fish/bashrc
+    ~/.config/fish/config.fish: fish/config.fish
+    ~/.config/fish/fish_plugins: fish/fish_plugins
+    ~/.config/fish/functions/:
+      glob: true
+      path: fish/functions/*
+    ~/.config/fish/completions/git-brancher.fish: fish/completions/git-brancher.fish
+    ~/.local/share/fonts: fonts
+    ~/.gitconfig: git/gitconfig
+    ~/.gitignore: git/gitignore
+    ~/.config/htop/htoprc: htop/htoprc
+    ~/.config/mpv: mpv
+    ~/.config/nvim: nvim
+    ~/.config/ripgrep: ripgrep
+    ~/.local/bin:
+      glob: true
+      path: scripts/*
+    ~/.ssh/config: ssh/config
+    ~/.config/starship.toml: starship/starship.toml
+    ~/.tmux.conf: tmux/tmux.conf
+    ~/.config/yt-dlp/config: yt-dlp/config
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
+  - [fish -c "fisher update", Update Fish Plugins]
+  - [fish -c "fish_update_completions", Update Fish Completions]
+  - [tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all, Update Tmux Plugins]
+  - [nvim +vnew +PlugUpdate +qall || true, Update Neovim Plugins]

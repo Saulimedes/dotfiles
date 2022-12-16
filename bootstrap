@@ -1,0 +1,37 @@
+#!/bin/bash
+set -eu
+
+confirm() {
+  read -r choice
+  if echo "${choice}" | grep -Eq '^[Yy]?$'; then
+    "$1"
+  fi
+}
+
+shell_base() {
+  printf 'Install Fish Plugin Manager? [Y/n] '
+  confirm ./installation/fish_plugin_manager.sh
+  printf 'Install Tmux Plugin Manager? [Y/n] '
+  confirm ./installation/tmux_plugin_manager.sh
+  printf 'Install Dotfiles? [Y/n] '
+  confirm ./install
+}
+
+if [ "$(uname)" == "Darwin" ]; then
+  echo 'Bootstrap MacOS'
+  printf 'Install Brew for and Bootstrap? [Y/n] '
+  confirm ./installation/macos_brew_install.sh
+  printf 'Install Dotfiles? [Y/n] '
+  confirm ./install
+  shell_base
+else
+  echo 'Bootstrap Ubuntu'
+  printf 'Install Base Packages? [Y/n] '
+  confirm ./installation/ubuntu_base_install.sh
+  printf 'Install Docker? [Y/n] '
+  confirm ./installation/ubuntu_docker_install.sh
+  printf 'Install Brave? [Y/n] '
+  confirm ./installation/ubuntu_brave_install.sh
+  shell_base
+fi
+
