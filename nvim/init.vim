@@ -2,7 +2,7 @@
 set rtp^=~/.vim,~/.vim/after
 set completeopt=menu,menuone,preview,noinsert,noselect
 set cpoptions-=m
-set grepprg=rg\ --vimgrep\ --no-heading
+set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 set grepformat=%f:%l:%c:%m,%f:%l:%m
 set nopaste
 set signcolumn=yes
@@ -45,7 +45,7 @@ set showcmd
 set showmatch
 set noshowmode
 set shell=/bin/fish
-set updatetime=100
+set updatetime=300
 set title
 set virtualedit=all
 set wildmode=full
@@ -55,7 +55,7 @@ set splitright
 set splitbelow
 set exrc
 set laststatus=2
-
+set clipboard+=unnamedplus
 let mapleader=","
 let g:mapleader = ','
 
@@ -69,13 +69,15 @@ endif
 
 call plug#begin('~/.vim/plugged')
 Plug 'godlygeek/tabular'
-Plug 'tpope/vim-commentary'
+Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
-Plug 'voldikss/vim-floaterm'
-Plug 'ctrlpvim/ctrlp.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'mhinz/vim-startify'
@@ -86,19 +88,19 @@ Plug 'roxma/vim-tmux-clipboard'
 Plug 'wellle/tmux-complete.vim'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'dylanaraps/wal.vim'
-
 Plug 'honza/vim-snippets'
 Plug 'w0rp/ale'
 call plug#end()
 filetype plugin indent on
 
+"" colors
 colorscheme wal
 let &t_ut=''
 if exists("syntax_on")
   syntax reset
 endif
 
-""" Manually Adjustments
+""" Manual color adjustments
 set cursorline
 hi Cursorline ctermbg=3 cterm=NONE ctermfg=black
 hi Search cterm=bold ctermfg=black ctermbg=4
@@ -162,31 +164,7 @@ set fillchars=vert:┃
 set fillchars+=fold:·
 
 "" Clipboard
-vmap <leader>y "+y
-vmap <leader>d "+d
-nmap <leader>p "+p
-nmap <leader>P "+P
-vmap <leader>p "+P
-vmap <leader>P "+P
-noremap <leader>y "yy
-noremap <leader>p "yp
-noremap <leader>P "yP
-noremap <leader>x "_x
-noremap <leader>d "_d
 
-""" Prevent x from overriding what's in the clipboard.
-noremap x "_x
-noremap X "_x
-
-set clipboard=unnamed
-if has('clipboard')
-	set clipboard+=unnamedplus
-  vnoremap <C-C> "+yi
-  vnoremap <C-x> "+c
-  vnoremap <C-V> c<ESC>"+p
-  inoremap <C-V> <ESC>"+pa
-	inoremap <C-V> <ESC>pa
-endif
 
 "" Backspace over anything in insert mode
 set backspace=eol,start
@@ -285,14 +263,9 @@ nnoremap <leader>9 9gt
 nnoremap <leader>w gt
 nnoremap <leader>W gT
 
-
 "" Helper
 """ Execute as sudo idiot
 cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
-""" Close Buffer before File
-autocmd BufDelete * if len(filter(range(1, bufnr('$')),'empty(bufname(v:val)) && buflisted(v:val)')) == 1 | quit | endif
-""" Toggle Number
-noremap <leader>nu :set number!<cr> :set relativenumber!<cr>
 """ Clean Highlight with Esc
 nnoremap <esc> :let @/=''<CR>:<backspace>
 nnoremap \ :let @/=''<CR>:<backspace>
@@ -330,11 +303,12 @@ iab fucntion function
 iab funciton function
 iab publci public
 
-" settings
+" plugin settings
 "" coc
 let g:coc_global_extensions = [
   \ 'coc-snippets',
   \ 'coc-pairs',
+  \ 'coc-tabnine',
   \ 'coc-git',
   \ 'coc-tsserver',
   \ 'coc-snippets',
@@ -378,10 +352,6 @@ let g:tmuxcomplete#asyncomplete_source_options = {
             \ }
 let g:tmuxcomplete#trigger = ''
 
-"" floatterm
-let g:floaterm_width = 0.93
-let g:floaterm_height = 0.93
-
 "" vim fugitive
 noremap <leader>gb :Gblame<CR>
 noremap <leader>gs :Gstatus<CR>
@@ -389,6 +359,10 @@ noremap <leader>gc :Gcommit<CR>
 noremap <leader>gl :Gpull<CR>
 noremap <leader>gh :Gpush<CR>
 
+"" vim airline
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#tab_min_count = 2
@@ -407,15 +381,25 @@ let g:airline_symbols.dirty=''
 let g:airline#extensions#fugitiveline#enabled = 1
 let g:airline#extensions#branch#enabled = 1
 
-"" nerdtree
-nnoremap <leader>n :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
+"" fzf
+nnoremap <C-p> :Files<Cr>
+nnoremap <Leader>f :Rg<Cr>
 
+"" nerdtree
+function! NerdTreeToggleFind()
+    if exists("g:NERDTree") && g:NERDTree.IsOpen()
+        NERDTreeClose
+    elseif filereadable(expand('%'))
+        NERDTreeFind
+    else
+        NERDTree
+    endif
+endfunction
+nnoremap <leader>n :call NerdTreeToggleFind()<CR>
 
 "" Remove trailing Spaces
 autocmd BufWritePre * %s/\s\+$//e
 autocmd BufWritePre *.* %s/\s\+$//e
-
 
 " Show cursorline only in active Window
 augroup CursorLineOnlyInActive

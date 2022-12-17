@@ -14,16 +14,9 @@ export EDITOR=nvim MANPAGER='nvim +Man!' PAGER=nvimpager USE_CCACHE=1
 # hybrid keybindings
 set -g fish_key_bindings fish_hybrid_key_bindings
 
-# tmux
-if status is-interactive
-	if ! set -q TMUX
-		exec tmux
-	end
-end
-
 # configure classic prompt
-set fish_color_user --bold blue
-set fish_color_cwd --bold white
+set fish_color_user --bold  blue
+set fish_color_cwd --bold   white
 set fish_cursor_default     block      blink
 set fish_cursor_insert      line       blink
 set fish_cursor_replace_one underscore blink
@@ -40,10 +33,8 @@ if type direnv &> /dev/null
 end
 
 # fzf
-setenv FZF_DEFAULT_COMMAND 'fd --type file --follow'
-setenv FZF_ALT_C_COMMAND "$FZF_CTRL_T_COMMAND"
-setenv FZF_CTRL_T_COMMAND "fd -t d --hidden --follow --exclude \".git\" . $HOME"
-setenv FZF_DEFAULT_OPTS '--height 20%'
+set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
+
 
 # zoxide
 set --universal zoxide_cmd cd
@@ -131,7 +122,7 @@ if type -q git
   abbr gp "git pull"
   abbr gpx "git push"
   abbr glog "git lg1"
-  abbr go "git open"
+  abbr gox "git open"
   abbr gr "git restore"
   abbr grx "git rm -r"
   abbr grb "git rebase"

@@ -1,9 +1,8 @@
 #!/bin/sh
 
-export DEBIAN_FRONTEND=noninteractive
 sudo apt update -y
 sudo apt upgrade -y
-sudo apt install -y \
+sudo DEBIAN_FRONTEND=noninteractive  apt install -y \
   fish \
   nala \
   fd-find \
@@ -44,6 +43,7 @@ sudo apt install -y \
   bat  \
   traceroute \
   nodejs \
+  npm \
   rsync
 
 sudo apt-get autoremove -y

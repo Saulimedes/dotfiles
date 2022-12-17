@@ -3,5 +3,5 @@
 ```
 git clone https://gitlab.com/paulbecker/dotfiles .dotfiles
 cd .dotfiles
-./boostrap
+./bootstrap
  ```
