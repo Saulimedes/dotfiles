@@ -14,7 +14,7 @@
     ~/.bashrc: fish/bashrc
     ~/.config/fish/config.fish: fish/config.fish
     ~/.config/fish/fish_plugins: fish/fish_plugins
-    ~/.config/fish/functions/:
+    ~/.config/fish/functions:
       glob: true
       path: fish/functions/*
     ~/.config/fish/completions/git-brancher.fish: fish/completions/git-brancher.fish
@@ -31,6 +31,9 @@
     ~/.ssh/config: ssh/config
     ~/.config/starship.toml: starship/starship.toml
     ~/.tmux.conf: tmux/tmux.conf
+    ~/.tmux/scripts:
+      glob: true
+      path: tmux/scripts/*
     ~/.config/yt-dlp/config: yt-dlp/config
 
 - shell:

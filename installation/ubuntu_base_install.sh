@@ -2,6 +2,8 @@
 
 sudo apt update -y
 sudo apt upgrade -y
+sudo pro config set apt_news=false
+
 sudo DEBIAN_FRONTEND=noninteractive  apt install -y \
   fish \
   nala \
@@ -37,10 +39,15 @@ sudo DEBIAN_FRONTEND=noninteractive  apt install -y \
   netcat-openbsd \
   jq \
   telnet \
+  net-tools \
   tshark \
+  tree \
+  speedtest-cli \
+  python-is-python3 \
   wireguard  \
   fonts-firacode  \
-  bat  \
+  poppler-utils \
+  bat \
   traceroute \
   nodejs \
   npm \

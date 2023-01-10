@@ -14,18 +14,8 @@ export EDITOR=nvim MANPAGER='nvim +Man!' PAGER=nvimpager USE_CCACHE=1
 # hybrid keybindings
 set -g fish_key_bindings fish_hybrid_key_bindings
 
-# configure classic prompt
-set fish_color_user --bold  blue
-set fish_color_cwd --bold   white
-set fish_cursor_default     block      blink
-set fish_cursor_insert      line       blink
-set fish_cursor_replace_one underscore blink
-set fish_cursor_visual      block
-
-# enable colour hints in vcs prompt
-set __fish_git_prompt_showcolorhints yes
-set __fish_git_prompt_color_prefix purple
-set __fish_git_prompt_color_suffix purple
+# configure colors
+set -U theme_color_scheme base16
 
 # enable direnv hook
 if type direnv &> /dev/null
@@ -33,7 +23,13 @@ if type direnv &> /dev/null
 end
 
 # fzf
+set -U FZF_DISABLE_KEYBINDINGS 1
+set -U FZF_PREVIEW_DIR_CMD "exa"
+set -U FZF_TMUX 1
 set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
+set -x FZF_DEFAULT_OPTS "--color=16"
+set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
+set -x FZF_ALT_C_OPTS "--preview 'exa --tree --level 1 {} | head -200'"
 
 
 # zoxide
@@ -84,7 +80,6 @@ alias "......"=".5"
 ## kubectl
 if type -q kubectl
   alias k="kubectl"
-  alias kubectx="kctx"
   alias kgd="kubectl get deployments -o wide"
   alias kg="kubectl get"
   alias kgh="kubectl get hr -o wide"
@@ -95,12 +90,11 @@ if type -q kubectl
   alias kgy="kubectl get -o yaml"
   alias kaf="kubectl apply -f"
   alias krm="kubectl delete"
-  alias kt="stern"
   alias kwatch="kubectl get po --all-namespaces"
   abbr kg "kubectl get"
   abbr kd "kubectl describe"
   abbr kgs "kubectl get service"
-  abbr kgp "kubectl get pods -l"
+  abbr kgp "kubectl get pods"
   abbr kex "kubectl exec -it"
   abbr kl "kubectl logs -f -p"
   abbr kdel "kubectl del"

@@ -68,37 +68,41 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+"" text manipulation
 Plug 'godlygeek/tabular'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+
+"" helper
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lualine/lualine.nvim'
+
 Plug 'mhinz/vim-startify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'tmux-plugins/vim-tmux-focus-events'
-Plug 'roxma/vim-tmux-clipboard'
-Plug 'wellle/tmux-complete.vim'
+Plug 'plasticboy/vim-markdown'
+Plug 'honza/vim-snippets'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'dylanaraps/wal.vim'
-Plug 'honza/vim-snippets'
 Plug 'w0rp/ale'
+
+"" tmux
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'roxma/vim-tmux-clipboard'
+Plug 'wellle/tmux-complete.vim'
 call plug#end()
 filetype plugin indent on
 
 "" colors
+filetype plugin indent on
+syntax enable
+set encoding=utf-8
 colorscheme wal
-let &t_ut=''
-if exists("syntax_on")
-  syntax reset
-endif
 
 """ Manual color adjustments
 set cursorline
@@ -164,7 +168,7 @@ set fillchars=vert:┃
 set fillchars+=fold:·
 
 "" Clipboard
-
+nnoremap Y y$
 
 "" Backspace over anything in insert mode
 set backspace=eol,start
@@ -360,42 +364,21 @@ noremap <leader>gl :Gpull<CR>
 noremap <leader>gh :Gpush<CR>
 
 "" vim airline
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#tab_min_count = 2
-let g:airline#extensions#tabline#buffer_min_count = 2
-let g:airline#extensions#tabline#left_sep = ' '
-let g:airline#extensions#tabline#left_alt_sep = '|'
-let g:airline#extensions#ale#enabled = 1
-let g:airline_left_sep = ''
-let g:airline_left_alt_sep = ''
-let g:airline_right_sep = ''
-let g:airline_right_alt_sep = ''
-let g:airline_symbols.branch = ''
-let g:airline_symbols.readonly = ''
-let g:airline_symbols.linenr = ''
-let g:airline_symbols.dirty=''
-let g:airline#extensions#fugitiveline#enabled = 1
-let g:airline#extensions#branch#enabled = 1
+lua << END
+require('lualine').setup()
+END
 
 "" fzf
 nnoremap <C-p> :Files<Cr>
 nnoremap <Leader>f :Rg<Cr>
 
 "" nerdtree
-function! NerdTreeToggleFind()
-    if exists("g:NERDTree") && g:NERDTree.IsOpen()
-        NERDTreeClose
-    elseif filereadable(expand('%'))
-        NERDTreeFind
-    else
-        NERDTree
-    endif
-endfunction
-nnoremap <leader>n :call NerdTreeToggleFind()<CR>
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+let g:NERDTreeDirArrowExpandable = ''
+let g:NERDTreeDirArrowCollapsible = ''
+
+nnoremap <leader>n :call NerdTreeToggle()<CR>
 
 "" Remove trailing Spaces
 autocmd BufWritePre * %s/\s\+$//e

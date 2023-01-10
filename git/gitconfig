@@ -80,6 +80,7 @@
   clean = "clean -fdx"
   done = "!git push origin HEAD"
   force = "push --force"
+  harder = "reset --hard"
   last = "log -1 HEAD --stat"
   lg1 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
   lg2 = "log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
@@ -88,9 +89,11 @@
   m = "merge"
   me = "config user.name"
   mail = "config user.email"
+  open = "!git-open"
   origin-url = "url"
   original = "!git fetch origin && git reset --hard origin/master"
   panic = "!tar cvf ../git_panic.tar *"
+  permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
   publish = "push -u origin HEAD"
   repo = "!git remote -v | grep fetch | awk '{print $2}'"
   root = "rev-parse --show-toplevel"
@@ -103,7 +106,6 @@
   undo = "reset --soft HEAD"
   yoda = "push --force-with-lease"
   zip = "git archive --format=zip -o latest.zip HEAD";
-  permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
 [gpg]
   program = /usr/bin/gpg2
 [diff]
