@@ -17,9 +17,25 @@ set -g fish_key_bindings fish_hybrid_key_bindings
 # configure colors
 set -U theme_color_scheme base16
 
-# enable direnv hook
-if type direnv &> /dev/null
-    eval (direnv hook fish)
+
+if status --is-interactive
+  # enable direnv hook
+  if command -q direnv
+    set -g direnv_fish_mode eval_after_arrow
+    direnv-hook
+    # direnv hook fish | source
+  end
+
+  # zoxide
+  set --universal zoxide_cmd cd
+
+  # ssh
+  if test -z (pgrep ssh-agent | string collect)
+    eval (ssh-agent -c)
+    set -Ux SSH_AUTH_SOCK $SSH_AUTH_SOCK
+    set -Ux SSH_AGENT_PID $SSH_AGENT_PID
+  end
+
 end
 
 # fzf
@@ -30,17 +46,6 @@ set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
 set -x FZF_DEFAULT_OPTS "--color=16"
 set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
 set -x FZF_ALT_C_OPTS "--preview 'exa --tree --level 1 {} | head -200'"
-
-
-# zoxide
-set --universal zoxide_cmd cd
-
-# ssh
-if test -z (pgrep ssh-agent | string collect)
-  eval (ssh-agent -c)
-  set -Ux SSH_AUTH_SOCK $SSH_AUTH_SOCK
-  set -Ux SSH_AGENT_PID $SSH_AGENT_PID
-end
 
 # helper
 alias e="$EDITOR"

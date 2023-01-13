@@ -121,10 +121,6 @@
   keepTemporaries = false
   writeToTemp = true
   prompt = false
-[includeIf "gitdir:~/Projects/**"]
-  path = ~/Projects/current/.gitconfig
-[include]
-  path = ~/.gitconfig_private
 [fetch]
   recurseSubmodules = on-demand
 [status]
