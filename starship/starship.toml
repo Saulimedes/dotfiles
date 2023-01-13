@@ -1,5 +1,5 @@
 add_newline = false
-format = """$hostname$directory$git_branch$git_status$character"""
+format = """$directory$git_branch$git_status$hostname$character"""
 
 [character]
 success_symbol = "[❯](bold green)"

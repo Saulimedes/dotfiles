@@ -10,6 +10,7 @@
 - link:
     ~/.ansible.cfg: ansible/ansible.cfg
     ~/.config/bat/config: bat/config
+    ~/.config/direnv/direnvrc: direnv/direnvrc
     ~/.fdignore: fd/fdignore
     ~/.bashrc: fish/bashrc
     ~/.config/fish/config.fish: fish/config.fish
