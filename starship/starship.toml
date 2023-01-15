@@ -33,6 +33,7 @@ stashed = ''
 [hostname]
 ssh_only = true
 trim_at = "."
-format = '[$ssh_symbol]'
-ssh_symbol = "[❯](bold green)"
+format = '[$ssh_symbol]($style)'
+ssh_symbol = "[❯]"
+style = '(bold green)'
 
