@@ -32,9 +32,6 @@
     ~/.ssh/config: ssh/config
     ~/.config/starship.toml: starship/starship.toml
     ~/.tmux.conf: tmux/tmux.conf
-    ~/.tmux/scripts:
-      glob: true
-      path: tmux/scripts/*
     ~/.config/yt-dlp/config: yt-dlp/config
 
 - shell:

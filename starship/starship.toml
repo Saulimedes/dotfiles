@@ -34,6 +34,6 @@ stashed = ''
 ssh_only = true
 trim_at = "."
 format = '[$ssh_symbol]($style)'
-ssh_symbol = "[❯]"
-style = '(bold green)'
+ssh_symbol = "❯"
+style = 'bold green'
 
