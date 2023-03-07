@@ -1,0 +1,31 @@
+local lsp = require('lsp-zero')
+lsp.preset('recommended')
+
+lsp.ensure_installed({
+  'ansiblels',
+  'bashls',
+  'lua_ls',
+  'ltex',
+  'rust_analyzer',
+  'jsonls',
+  'pylsp',
+  'marksman',
+  'yamlls'
+})
+
+lsp.automatic_installation = true,
+
+lsp.setup_nvim_cmp({
+  sources = {
+    {name = 'path'},
+    {name = 'tmux'},
+    {name = 'nvim_lsp'},
+    {name = 'buffer', keyword_length = 3},
+    {name = 'luasnip', keyword_length = 2},
+  }
+})
+
+-- (Optional) Configure lua language server for neovim
+lsp.nvim_workspace()
+
+lsp.setup()

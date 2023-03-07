@@ -1,6 +1,7 @@
 [user]
   name = Paul Becker
   useConfigOnly = true
+	email = p@becker.kiwi
 [core]
   whitespace = fix,-indent-with-non-tab,trailing-space,cr-at-eol
   sshCommand = ssh
@@ -15,6 +16,7 @@
   precomposeUnicode = true
   preloadIndex = true
   safecrlf = false
+	pager = bat --style=plain
 [status]
  submoduleSummary = true
 [push]

@@ -1,8 +1,8 @@
 #!/bin/sh
 if [ -f "${1}" ] ; then
     case "${1}" in
-      *.tar.bz2)   tar -xvf "${$1}"     ;;
-      *.tar.gz)    tar -xvzf "${$1}"    ;;
+      *.tar.bz2)   tar -xvf "${1}"     ;;
+      *.tar.gz)    tar -xvzf "${1}"    ;;
       *.tar.xz|*.txz) tar -xvJf "${1}"  ;;
       *.lzma)      unlzma "${1}"        ;;
       *.bz2)       bunzip2 "${1}"       ;;

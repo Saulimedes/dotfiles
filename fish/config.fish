@@ -9,7 +9,7 @@ fish_add_path -aP ~/.bin
 fish_add_path bin/
 
 # export
-export EDITOR=nvim MANPAGER='nvim +Man!' PAGER=nvimpager USE_CCACHE=1
+export EDITOR=nvim MANPAGER='nvim +Man!' PAGER='nvim -R' USE_CCACHE=1
 
 # hybrid keybindings
 set -g fish_key_bindings fish_hybrid_key_bindings
@@ -37,6 +37,9 @@ if status --is-interactive
   end
 
 end
+
+# flatpak
+
 
 # fzf
 set -U FZF_DISABLE_KEYBINDINGS 1
