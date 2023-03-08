@@ -20,6 +20,8 @@ lsp.setup_nvim_cmp({
     {name = 'path'},
     {name = 'tmux'},
     {name = 'nvim_lsp'},
+    {name = 'cmp_git'},
+    {name = 'cmdline'},
     {name = 'buffer', keyword_length = 3},
     {name = 'luasnip', keyword_length = 2},
   }

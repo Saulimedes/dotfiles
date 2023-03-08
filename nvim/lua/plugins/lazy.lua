@@ -124,7 +124,8 @@ return {
             {'hrsh7th/cmp-path'},         -- Optional
             {'saadparwaiz1/cmp_luasnip'}, -- Optional
             {'hrsh7th/cmp-nvim-lua'},     -- Optional
-            {'andersevenrud/cmp-tmux'}, -- Added 
+            {'andersevenrud/cmp-tmux'}, -- Added Essential
+            {'hrsh7th/cmp-cmdline'},
 
             -- Snippets
             {'L3MON4D3/LuaSnip'},             -- Required

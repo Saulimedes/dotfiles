@@ -135,6 +135,7 @@ local mappings = {
         c = { "<cmd>Telescope colorscheme<cr>", "Colorscheme" },
         f = { "<cmd>lua require('telescope.builtin').find_files()<cr>", "Find files" },
         g = { "<cmd>lua require('telescope.builtin').git_files()<cr>", "Find Git files" },
+        b = { "<cmd>lua require('telescope.builtin').buffers()<cr>", "Find Buffer" },
         t = { "<cmd>Telescope live_grep <cr>", "Find Text Pattern" },
         r = { "<cmd>Telescope oldfiles<cr>", "Recent Files" },
     },
@@ -163,4 +164,3 @@ local mappings = {
 
 which_key.setup(setup)
 which_key.register(mappings, opts)
-
