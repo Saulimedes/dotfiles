@@ -8,16 +8,18 @@ fish_add_path -m ~/.local/bin
 fish_add_path -aP ~/.bin
 fish_add_path bin/
 
-# export
-export EDITOR=nvim MANPAGER='nvim +Man!' PAGER='nvim -R' USE_CCACHE=1
+# exports
+set -gx EDITOR "emacsclient -t -a ''"
+set -gx VISUAL "emacsclient -c -a emacs" 
+set -gx PAGER "bat --pager='less -FR'"
+set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 
-# hybrid keybindings
-set -g fish_key_bindings fish_hybrid_key_bindings
+# bindings
+fish_default_key_bindings
+bind \b backward-kill-word
+bind \e\[3\;5~ kill-word
 
 # configure colors
-set -U theme_color_scheme base16
-
-
 if status --is-interactive
   # enable direnv hook
   if command -q direnv
@@ -38,15 +40,12 @@ if status --is-interactive
 
 end
 
-# flatpak
-
-
 # fzf
 set -U FZF_DISABLE_KEYBINDINGS 1
 set -U FZF_PREVIEW_DIR_CMD "exa"
 set -U FZF_TMUX 1
 set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
-set -x FZF_DEFAULT_OPTS "--color=16"
+set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
 set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
 set -x FZF_ALT_C_OPTS "--preview 'exa --tree --level 1 {} | head -200'"
 
@@ -54,7 +53,7 @@ set -x FZF_ALT_C_OPTS "--preview 'exa --tree --level 1 {} | head -200'"
 alias e="$EDITOR"
 alias cp="cp -airv"
 alias scp="scp -r"
-alias cat="bat"
+alias cat="bat --theme='base16-256'"
 alias cls="clear; printf '\033[3J'"
 alias dd="dd status=progress"
 alias mkdir="mkdir -p"
@@ -85,6 +84,7 @@ alias ".4"="cd ../../../.."
 alias "....."=".4"
 alias ".5"="cd ../../../../.."
 alias "......"=".5"
+
 ## kubectl
 if type -q kubectl
   alias k="kubectl"

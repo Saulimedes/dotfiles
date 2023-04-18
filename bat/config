@@ -1,4 +1,25 @@
---theme=base16
---style=plain
---pager=never
---decorations=always
+# General settings
+--paging=auto
+--pager="less -FR"
+
+# Sane defaults as cat replacement
+--plain
+--wrap=never
+
+# Custom color scheme
+--theme="base16-256"
+
+# Syntax mapping
+--map-syntax "*.html:HTML"
+--map-syntax "*.js:JavaScript"
+--map-syntax "*.json:JSON"
+--map-syntax "*.md:Markdown"
+--map-syntax "*.py:Python"
+--map-syntax "*.sh:Bash"
+--map-syntax "*.txt:Text"
+--map-syntax "*.xml:XML"
+--map-syntax "*.yml:YAML"
+
+# File decorations
+--style="header,numbers,changes,snip"
+--italic-text=always

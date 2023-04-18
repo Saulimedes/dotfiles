@@ -1,0 +1,42 @@
+#+TITLE: Emacs Configuration
+#+AUTHOR: Paul Becker
+#+EMAIL: p@becker.kiwi
+#+STARTUP: showall
+
+* Introduction
+  This is an example Emacs configuration in Org mode.
+
+* Cache Directories
+  Define separate cache directories for packages and backups. If they don't exist, create them.
+
+  #+BEGIN_SRC emacs-lisp 
+    (defconst emacs-cache-dir (expand-file-name "~/.cache/emacs/"))
+  #+END_SRC
+
+** ELPA packages directory
+   #+BEGIN_SRC emacs-lisp
+     (defconst elpa-dir (expand-file-name "elpa" emacs-cache-dir))
+     (unless (file-directory-p elpa-dir)
+       (make-directory elpa-dir t))
+     (setq package-user-dir elpa-dir)
+   #+END_SRC
+
+* Packages
+** Org mode
+   #+BEGIN_SRC emacs-lisp
+     (use-package org
+       :config
+       (setq org-startup-indented t)
+       (setq org-log-done 'time)
+       (setq org-hide-emphasis-markers t)
+       (setq org-src-tab-acts-natively t))
+   #+END_SRC
+
+* Custom File
+  Create a separate custom.el file and load it.
+  #+BEGIN_SRC emacs-lisp
+    (setq custom-file (expand-file-name "custom.el" emacs-cache-dir))
+    (when (file-exists-p custom-file)
+      (load custom-file))
+  #+END_SRC
+

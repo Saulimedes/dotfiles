@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 BRANCH="${1}"
-ROOT="${2-master}"
+ROOT="${2-main}"
 
 if [ -z "$BRANCH" ] || [ "${BRANCH}" == "$(git branch --show-current)" ]; then
   git branch -a
 elif [ $(git branch --list "${BRANCH}" --format='%(refname:short)') ]; then
-  git checkout "${BRANCH}"
+  git switch "${BRANCH}"
 else
  git checkout -b "${BRANCH}" "${ROOT}"
  git config branch."${BRANCH}".localmerge "${ROOT}"
