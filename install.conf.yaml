@@ -30,7 +30,6 @@
     ~/.local/share/fonts: fonts
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore
-    ~/.config/htop/htoprc: htop/htoprc
     ~/.config/mpv: mpv
     ~/.config/nvim: nvim
     ~/.config/ripgrep: ripgrep
