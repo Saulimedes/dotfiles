@@ -11,6 +11,14 @@
     ~/.ansible.cfg: ansible/ansible.cfg
     ~/.config/bat/config: bat/config
     ~/.config/direnv/direnvrc: direnv/direnvrc
+    ~/.emacs.d/init.el: emacs/init.el
+    ~/.emacs.d/early-init.el: emacs/early-init.el
+    ~/.emacs.d/lisp:
+      glob: true
+      path: emacs/lisp/*
+    ~/.emacs.d/dashboard:
+      glob: true
+      path: emacs/dashboard/*
     ~/.fdignore: fd/fdignore
     ~/.bashrc: fish/bashrc
     ~/.config/fish/config.fish: fish/config.fish
