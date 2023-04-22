@@ -2,13 +2,16 @@
 set -eu
 
 confirm() {
+  cmd=("$@")
   read -r choice
   if echo "${choice}" | grep -Eq '^[Yy]?$'; then
-    "$1"
+    "${cmd[@]}"
   fi
 }
 
 shell_base() {
+  printf 'Checkout private Fonts? [Y/n] '
+  confirm git submodule update --init --recursive fonts
   printf 'Install Fish Plugin Manager? [Y/n] '
   confirm ./installation/fish_plugin_manager.sh
   printf 'Install Tmux Plugin Manager? [Y/n] '
@@ -17,21 +20,13 @@ shell_base() {
   confirm ./install
 }
 
-if [ "$(uname)" == "Darwin" ]; then
-  echo 'Bootstrap MacOS'
-  printf 'Install Brew for and Bootstrap? [Y/n] '
-  confirm ./installation/macos_brew_install.sh
-  printf 'Install Dotfiles? [Y/n] '
-  confirm ./install
-  shell_base
-else
-  echo 'Bootstrap Ubuntu'
-  printf 'Install Base Packages? [Y/n] '
-  confirm ./installation/ubuntu_base_install.sh
-  printf 'Install Docker? [Y/n] '
-  confirm ./installation/ubuntu_docker_install.sh
-  printf 'Install Brave? [Y/n] '
-  confirm ./installation/ubuntu_brave_install.sh
-  shell_base
-fi
+printf 'Install Base Packages? [Y/n] '
+confirm ./installation/base_install.sh
 
+shell_base
+
+printf 'Install Brave? [Y/n] '
+confirm ./installation/brave_install.sh
+
+printf 'Install Chrome? [Y/n] '
+confirm ./installation/chrome_install.sh
