@@ -16,7 +16,7 @@ return {
           require("bufferline").setup{
             options = {
               mode = "buffers",
-              left_mouse_command = "buffer %d", 
+              left_mouse_command = "buffer %d",
               close_command = "bdelete! %d",
               always_show_bufferline =  false,
               offsets = {
@@ -37,10 +37,10 @@ return {
         end
     },
     -- Colorscheme
-    {  'jeffkreeftmeijer/vim-dim',
+    {  'EdenEast/nightfox.nvim',
         priority = 1000,
         config = function()
-          vim.cmd([[colorscheme dim]])
+          vim.cmd([[colorscheme carbonfox]])
           vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
           vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
         end
@@ -58,7 +58,7 @@ return {
                 -- Configuration here, or leave empty to use defaults
             })
         end
-    }, 
+    },
     -- Telescoppe
     {
         'nvim-telescope/telescope.nvim',
@@ -90,7 +90,7 @@ return {
         config = function()
           require('lualine').setup {
             options = {
-              theme = 'auto',
+              theme = 'carbonfox',
               disabled_filetypes = { 'lazy', 'NVimTree' },
               component_separators = '',
               section_separators = '',

@@ -36,5 +36,11 @@ sudo zypper -n install curl \
   hyperfine \
   dust \
   tokei \
-  wl-clipboard 
+  wl-clipboard \
+  neovim \
+  tmux \
+  nodejs \
+  fzf \
+  telegram-desktop 
 
+sudo zypper -n install -t pattern devel_basis

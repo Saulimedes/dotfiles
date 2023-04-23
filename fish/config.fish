@@ -19,6 +19,10 @@ fish_default_key_bindings
 bind \b backward-kill-word
 bind \e\[3\;5~ kill-word
 
+function fish_user_key_bindings
+	fzf_key_bindings
+end
+
 # configure colors
 if status --is-interactive
   # enable direnv hook

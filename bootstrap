@@ -16,6 +16,8 @@ shell_base() {
   confirm ./installation/fish_plugin_manager.sh
   printf 'Install Tmux Plugin Manager? [Y/n] '
   confirm ./installation/tmux_plugin_manager.sh
+  printf 'Update Tmux Plugins?'
+  confirm tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
   printf 'Install Dotfiles? [Y/n] '
   confirm ./install
 }

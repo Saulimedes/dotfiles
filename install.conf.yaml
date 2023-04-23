@@ -45,4 +45,3 @@
   - [git submodule update --recursive, Installing submodules]
   - [fish -c "fisher update", Update Fish Plugins]
   - [fish -c "fish_update_completions", Update Fish Completions]
-  - [tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all, Update Tmux Plugins]
