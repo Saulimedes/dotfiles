@@ -41,6 +41,7 @@ sudo zypper -n install curl \
   tmux \
   nodejs \
   fzf \
-  telegram-desktop 
+  telegram-desktop \
+  pandoc
 
 sudo zypper -n install -t pattern devel_basis

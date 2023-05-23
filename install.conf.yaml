@@ -7,8 +7,13 @@
 
 - clean: ['~']
 
+- firefox:
+    user.js: firefox/user.js
+    userChrome.css: firefox/userChrome.css
+
 - link:
     ~/.ansible.cfg: ansible/ansible.cfg
+    ~/.config/BraveSoftware/Brave-Browser/Default/Preferences: brave/Preferences
     ~/.config/bat/config: bat/config
     ~/.config/direnv/direnvrc: direnv/direnvrc
     ~/.emacs.d/init.el: emacs/init.el
@@ -39,6 +44,7 @@
     ~/.ssh/config: ssh/config
     ~/.config/starship.toml: starship/starship.toml
     ~/.tmux.conf: tmux/tmux.conf
+    ~/.config/wezterm/wezterm.lua: wezterm/wezterm.lua
     ~/.config/yt-dlp/config: yt-dlp/config
 
 - shell:
