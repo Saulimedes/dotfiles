@@ -13,22 +13,16 @@ shell_base() {
   printf 'Checkout private Fonts? [Y/n] '
   confirm git submodule update --init --recursive fonts
   printf 'Install Fish Plugin Manager? [Y/n] '
-  confirm ./installation/fish_plugin_manager.sh
+  confirm if command -v fish &> /dev/null; then fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"; exit; fi
   printf 'Install Tmux Plugin Manager? [Y/n] '
-  confirm ./installation/tmux_plugin_manager.sh
+  confirm if command -v tmux &> /dev/null; then if [ ! -d ~/.tmux/plugins/tpm ]; then git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm; else cd ~/.tmux/plugins/tpm && git pull; fi; exit; fi
   printf 'Update Tmux Plugins?'
   confirm tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
   printf 'Install Dotfiles? [Y/n] '
   confirm ./install
-}
+  }
 
 printf 'Install Base Packages? [Y/n] '
-confirm ./installation/base_install.sh
+confirm ./install bootstrap
 
 shell_base
-
-printf 'Install Brave? [Y/n] '
-confirm ./installation/brave_install.sh
-
-printf 'Install Chrome? [Y/n] '
-confirm ./installation/chrome_install.sh

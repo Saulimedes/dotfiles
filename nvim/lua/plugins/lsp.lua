@@ -8,7 +8,8 @@ lsp.ensure_installed({
   'ltex',
   'rust_analyzer',
   'jsonls',
-  'pylsp',
+  'dockerls',
+  'pyright',
   'marksman',
   'yamlls'
 })

@@ -4,3 +4,12 @@
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
+[submodule "dotbot_plugins/dotbot_flatpak"]
+	path = dotbot_plugins/dotbot_flatpak
+	url = https://github.com/DrDynamic/dotbot-flatpak.git
+[submodule "dotbot_plugins/dotbot_firefox"]
+	path = dotbot_plugins/dotbot_firefox
+	url = https://github.com/kurtmckee/dotbot-firefox
+[submodule "dotbot_plugins/dotbot_zypper"]
+	path = dotbot_plugins/dotbot_zypper
+	url = git@gitlab.com:paulbecker/dotbot_plugin_zypper.git
