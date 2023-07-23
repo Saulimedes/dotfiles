@@ -57,6 +57,7 @@ Map("n", "<a-k>", "<esc>:m .-2<cr>==gi") -- Alt-k
 -- press jk fast to exit insert mode 
 Map("i", "jk", "<esc>") -- Insert mode -> jk -> Normal mode
 Map("i", "kj", "<esc>") -- Insert mode -> kj -> Normal mode
+Map("i", "<S-Tab>","<C-V><Tab>")
 
 -- visual --
 -- Old habbits

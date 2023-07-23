@@ -34,7 +34,7 @@ opt.splitbelow = true -- Put new windows below current
 opt.splitright = true -- Put new windows right of current
 opt.tabstop = 2 -- Number of spaces tabs count for
 opt.termguicolors = true -- True color support
-opt.timeoutlen = 500 -- speed must be under 500ms inorder for keys to work, increase if you are not able to.
+opt.timeoutlen = 100 -- speed must be under 500ms inorder for keys to work, increase if you are not able to.
 opt.swapfile = false -- No swap file
 opt.backup = false -- no backup file
 opt.undofile = true
@@ -45,10 +45,6 @@ opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
 opt.wrap = true -- Enable line wrap
 opt.shell = "/bin/fish" -- Set shell
-opt.mouse = a -- Enable Mouse
 opt.title = true -- Set title
 opt.ff = "unix" -- Fileformat
 opt.fileencoding = "utf8" -- Set utf8
-
--- Fix markdown indentation settings
-vim.g.markdown_recommended_style = 0
