@@ -16,6 +16,7 @@
     ~/.config/BraveSoftware/Brave-Browser/Default/Preferences: brave/Preferences
     ~/.config/bat/config: bat/config
     ~/.config/direnv/direnvrc: direnv/direnvrc
+    ~/.config/code/settings.json: code/settings.json
     ~/.emacs.d/init.el: emacs/init.el
     ~/.emacs.d/early-init.el: emacs/early-init.el
     ~/.emacs.d/lisp:
