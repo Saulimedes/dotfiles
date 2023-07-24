@@ -1,6 +1,7 @@
 local git_blame = require('gitblame')
 vim.g.gitblame_display_virtual_text = 0
 vim.g.gitblame_message_when_not_committed = ''
+vim.g.gitblame_date_format = '%m/%d %H:%M'
 
 require('lualine').setup {
   options = {
