@@ -55,5 +55,17 @@
   (which-key-mode)
   (setq which-key-idle-delay 1))
 
+;; evil
+(use-package evil
+  :init
+  (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+  (setq evil-want-keybinding nil)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
 
 (provide 'init.keybindings)

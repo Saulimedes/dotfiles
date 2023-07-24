@@ -64,6 +64,15 @@
 (use-package doom-modeline
     :config
       (doom-modeline-mode 1)
+      (setq doom-modeline-modal t)
+      (setq doom-modeline-lsp t)
+      (setq doom-modeline-modal-icon t)
+      (setq doom-modeline-buffer-encoding t)
+      (setq doom-modeline-support-imenu t)
+      (setq doom-modeline-icon t)
+      (setq doom-modeline-major-mode-icon t)
+      (setq doom-modeline-major-mode-color-icon t)
+      (setq doom-modeline-buffer-state-icon t)
     :hook
       (after-init . doom-modeline-mode))
 

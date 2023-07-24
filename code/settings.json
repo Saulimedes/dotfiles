@@ -1,0 +1,4 @@
+{
+    "vscode-neovim.neovimExecutablePaths.linux" : "/usr/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.linux" : "$HOME/.config/nvim/init.lua",
+}
