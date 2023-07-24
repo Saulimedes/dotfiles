@@ -4,12 +4,11 @@ set fish_greeting ""
 set -x DIRENV_LOG_FORMAT ""
 
 # paths
-fish_add_path -m ~/.local/bin
-fish_add_path -aP ~/.bin
-fish_add_path bin/
+set -e fish_user_paths
+set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ 
 
 # exports
-set -gx EDITOR "emacsclient -t -a ''"
+set -gx EDITOR "nvim"
 set -gx VISUAL "emacsclient -c -a emacs" 
 set -gx PAGER "bat --pager='less -FR'"
 set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
@@ -55,6 +54,7 @@ set -x FZF_ALT_C_OPTS "--preview 'exa --tree --level 1 {} | head -200'"
 
 # helper
 alias e="$EDITOR"
+alias em="emacsclient -t -a ''"
 alias cp="cp -airv"
 alias scp="scp -r"
 alias cat="bat --theme='base16-256'"
@@ -118,7 +118,6 @@ if type -q git
   abbr ga "git add"
   abbr gb "git brancher"
   abbr gc "git commit -m"
-  abbr gln "git clone"
   abbr gdf "git diff --name-only"
   abbr gdc "git diff --cached"
   abbr gd "git diff"
@@ -127,12 +126,13 @@ if type -q git
   abbr gm "git merge"
   abbr gp "git pull"
   abbr gpx "git push"
-  abbr glog "git lg1"
+  abbr gl "git lg1"
   abbr gox "git open"
   abbr gr "git restore"
   abbr grx "git rm -r"
   abbr grb "git rebase"
   abbr gs "git s"
+  alias newtag='git tag -a'
 end
 
 # starship prompt
