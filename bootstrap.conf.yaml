@@ -17,14 +17,24 @@
       - bat
       - flatpak
       - tealdeer
+      - android-tools
       - strace 
       - zip
+      - ShellCheck
       - unrar
       - pwgen
+      - ruby-devel
+      - terraform
+      - terragrunt
       - gcc
       - opi
       - exa 
       - openssl 
+      - kubernetes-client
+      - kail
+      - k9s
+      - kubectx
+      - kubens
       - yt-dlp
       - tcpdump
       - nmap
