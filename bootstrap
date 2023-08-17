@@ -2,36 +2,34 @@
 set -eu
 
 confirm() {
+  local message="$1"
+  shift
+  printf "%s [Y/n] " "$message"
   read -r choice
-  if echo "${choice}" | grep -Eq '^[Yy]?$'; then
-    "$1"
+  if echo "$choice" | grep -Eq '^[Yy]?$'; then
+    "$@"
   fi
 }
 
 shell_base() {
-  printf 'Install Fish Plugin Manager? [Y/n] '
-  confirm ./installation/fish_plugin_manager.sh
-  printf 'Install Tmux Plugin Manager? [Y/n] '
-  confirm ./installation/tmux_plugin_manager.sh
-  printf 'Install Dotfiles? [Y/n] '
-  confirm ./install
+  confirm "Checkout private Fonts?" git submodule update --init --recursive fonts
+
+  if command -v fish &> /dev/null; then
+    confirm "Install Fish Plugin Manager?" fish -c "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+  fi
+
+  if command -v tmux &> /dev/null; then
+    if [ ! -d ~/.tmux/plugins/tpm ]; then
+      confirm "Install Tmux Plugin Manager?" git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+    else
+      confirm "Update Tmux Plugin Manager?" sh -c "cd ~/.tmux/plugins/tpm && git pull"
+    fi
+  fi
+
+  confirm "Update Tmux Plugins?" tmux new-session -d "sleep 1" && sleep 0.1 && ~/.tmux/plugins/tpm/bin/update_plugins all
+  confirm "Install Dotfiles?" ./install
 }
 
-if [ "$(uname)" == "Darwin" ]; then
-  echo 'Bootstrap MacOS'
-  printf 'Install Brew for and Bootstrap? [Y/n] '
-  confirm ./installation/macos_brew_install.sh
-  printf 'Install Dotfiles? [Y/n] '
-  confirm ./install
-  shell_base
-else
-  echo 'Bootstrap Ubuntu'
-  printf 'Install Base Packages? [Y/n] '
-  confirm ./installation/ubuntu_base_install.sh
-  printf 'Install Docker? [Y/n] '
-  confirm ./installation/ubuntu_docker_install.sh
-  printf 'Install Brave? [Y/n] '
-  confirm ./installation/ubuntu_brave_install.sh
-  shell_base
-fi
+confirm "Install Base Packages?" ./install bootstrap
 
+shell_base

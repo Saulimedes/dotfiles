@@ -16,7 +16,7 @@ return {
           require("bufferline").setup{
             options = {
               mode = "buffers",
-              left_mouse_command = "buffer %d", 
+              left_mouse_command = "buffer %d",
               close_command = "bdelete! %d",
               always_show_bufferline =  false,
               offsets = {
@@ -36,15 +36,6 @@ return {
           }
         end
     },
-    -- Colorscheme
-    {  'jeffkreeftmeijer/vim-dim',
-        priority = 1000,
-        config = function()
-          vim.cmd([[colorscheme dim]])
-          vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-          vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-        end
-    },
     -- Hop (Better Navigation)
     {
         "phaazon/hop.nvim",
@@ -58,7 +49,7 @@ return {
                 -- Configuration here, or leave empty to use defaults
             })
         end
-    }, 
+    },
     -- Telescoppe
     {
         'nvim-telescope/telescope.nvim',
@@ -67,36 +58,9 @@ return {
             {'nvim-lua/plenary.nvim'},
         }
     },
-    -- nvimtree
-    {
-        'nvim-tree/nvim-tree.lua',
-        lazy = true,
-        dependencies = {
-            'nvim-tree/nvim-web-devicons',
-        },
-    },
     -- Indentation Highlighting
     {
         "lukas-reineke/indent-blankline.nvim",
-    },
-    -- Rainbow Highlighting
-    {
-        "HiPhish/nvim-ts-rainbow2",
-    },
-    -- lualine
-    {
-        'nvim-lualine/lualine.nvim',
-        dependencies = 'nvim-tree/nvim-web-devicons',
-        config = function()
-          require('lualine').setup {
-            options = {
-              theme = 'auto',
-              disabled_filetypes = { 'lazy', 'NVimTree' },
-              component_separators = '',
-              section_separators = '',
-            }
-          }
-        end
     },
     -- DAP
     {
@@ -110,11 +74,16 @@ return {
     {
         'VonHeikemen/lsp-zero.nvim',
         lazy = true,
-        branch = 'v1.x',
+        branch = 'v2.x',
+
         dependencies = {
             -- LSP Support
             {'neovim/nvim-lspconfig'},             -- Required
-            {'williamboman/mason.nvim'},           -- Optional
+            {'williamboman/mason.nvim',
+              build = function()
+                pcall(vim.api.nvim_command, 'MasonUpdate')
+              end,
+            },           -- Optional
             {'williamboman/mason-lspconfig.nvim'}, -- Optional
 
             -- Autocompletion
@@ -132,10 +101,26 @@ return {
             {'rafamadriz/friendly-snippets'}, -- Optional
         }
     },
+    {  'nvim-lualine/lualine.nvim',
+       dependencies = {"nvim-tree/nvim-web-devicons", "f-person/git-blame.nvim"},
+    },
+    -- Colorscheme
+    {  'RRethy/nvim-base16',
+        opts = {
+          hot_reload = {
+          enabled = true,
+          },
+        },
+        config = function()
+          vim.cmd([[colorscheme base16-spacemacs]])
+          vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+          vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+        end
+    },
     -- terminal
     {
         'akinsho/toggleterm.nvim',
-        tag = "*",
+        version = "*",
         config = true
     },
     -- treesitter

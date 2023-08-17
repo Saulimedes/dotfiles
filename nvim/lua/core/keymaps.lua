@@ -17,6 +17,8 @@ Map('n', 'k', "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent
 Map('n', 'j', "v:count == 0 ? 'gj' : 'j'", { noremap = true, expr = true, silent = true })
 Map('n', '<Up>', "v:count == 0 ? 'gk' : 'k'", { noremap = true, expr = true, silent = true })
 Map('n', '<Down>', "v:count == 0 ? 'gj' : 'j'", { noremap = true, expr = true, silent = true })
+Map('n', '<C-a>', "0", { noremap = true, expr = true, silent = true })
+Map('n', '<C-e>', "$", { noremap = true, expr = false, silent = true })
 
 -- Yank until the end of line
 Map('n', 'Y', 'y$', { noremap = true })
@@ -55,8 +57,13 @@ Map("n", "<a-k>", "<esc>:m .-2<cr>==gi") -- Alt-k
 -- press jk fast to exit insert mode 
 Map("i", "jk", "<esc>") -- Insert mode -> jk -> Normal mode
 Map("i", "kj", "<esc>") -- Insert mode -> kj -> Normal mode
+Map("i", "<S-Tab>","<C-V><Tab>")
 
 -- visual --
+-- Old habbits
+Map('v', '<C-a>', "0", { noremap = true, expr = true, silent = true })
+Map('v', '<C-e>', "$", { noremap = true, expr = false, silent = true })
+
 --- moving text in visual
 Map("v", "J", ":m '>+1<CR>gv=gv")
 Map("v", "K", ":m '<-2<CR>gv=gv")
