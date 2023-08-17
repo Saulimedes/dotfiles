@@ -1,35 +1,38 @@
 #!/bin/sh
-if [ -f "${1}" ] ; then
-    case "${1}" in
-      *.tar.bz2)   tar -xvf "${1}"     ;;
-      *.tar.gz)    tar -xvzf "${1}"    ;;
-      *.tar.xz|*.txz) tar -xvJf "${1}"  ;;
-      *.lzma)      unlzma "${1}"        ;;
-      *.bz2)       bunzip2 "${1}"       ;;
-      *.rar)       unrar x -ad "${1}"   ;;
-      *.gz)        gunzip "${1}"        ;;
-      *.tar)       tar -xvf "${1}"      ;;
-      *.tbz2)      tar -xvjf "${1}"     ;;
-      *.tgz)       tar -xvzf "${1}"     ;;
-      *.zip)       unzip "${1}"         ;;
-      *.Z)         uncompress "${1}"    ;;
-      *.7z)        7z x "${1}"          ;;
-      *.xz)        unxz "${1}"          ;;
-      *.exe)       cabextract "${1}"    ;;
-      *.deb)        mkdir -p "$extract_dir/control"
-                    mkdir -p "$extract_dir/data"
-                    cd "$extract_dir"
-                    ar vx "../${1}" > /dev/null
-                    cd control
-                    tar xzvf ../control.tar.gz
-                    cd ../data
-                    extract ../data.tar.*
-                    cd ..
-                    rm *.tar.* debian-binary
-                    cd .. ;;
-      *)           echo "extract: '${$1}' - unknown archive method" ;;
-    esac
-else
-    echo "Error: "${1}" - file does not exist"
-    exit 1
-fi
+for arg in "$@"; do
+  if [ -f "${arg}" ] ; then
+      case "${arg}" in
+        *.tar.bz2)   tar -xvf "${arg}"     ;;
+        *.tar.gz)    tar -xvzf "${arg}"    ;;
+        *.tar.xz|*.txz) tar -xvJf "${arg}"  ;;
+        *.lzma)      unlzma "${arg}"        ;;
+        *.bz2)       bunzip2 "${arg}"       ;;
+        *.rar)       unrar x -ad "${arg}"   ;;
+        *.gz)        gunzip "${arg}"        ;;
+        *.tar)       tar -xvf "${arg}"      ;;
+        *.tbz2)      tar -xvjf "${arg}"     ;;
+        *.tgz)       tar -xvzf "${arg}"     ;;
+        *.zip)       unzip "${arg}"         ;;
+        *.Z)         uncompress "${arg}"    ;;
+        *.7z)        7z x "${arg}"          ;;
+        *.xz)        unxz "${arg}"          ;;
+        *.exe)       cabextract "${arg}"    ;;
+        *.deb)       mkdir -p "$extract_dir/control"
+                      mkdir -p "$extract_dir/data"
+                      cd "$extract_dir"
+                      ar vx "../${arg}" > /dev/null
+                      cd control
+                      tar xzvf ../control.tar.gz
+                      cd ../data
+                      extract ../data.tar.*
+                      cd ..
+                      rm *.tar.* debian-binary
+                      cd .. ;;
+        *)           echo "extract: '${arg}' - unknown archive method" ;;
+      esac
+  else
+      echo "Error: "${arg}" - file does not exist"
+      exit 1
+  fi
+done
+

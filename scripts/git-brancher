@@ -1,12 +1,16 @@
-#!/bin/sh
-BRANCH="${1}"
-ROOT="${2-master}"
+#!/bin/bash
 
-if [ -z "$BRANCH" ] || [ "${BRANCH}" == "$(git branch --show-current)" ]; then
-  git branch -a
-elif [ $(git branch --list "${BRANCH}" --format='%(refname:short)') ]; then
-  git checkout "${BRANCH}"
+BRANCH=$1
+ROOT=${2:-$(git rev-parse --abbrev-ref HEAD)}
+
+if [[ -z "$BRANCH" || "$BRANCH" == $(git rev-parse --abbrev-ref HEAD) ]]; then
+    git branch -a
+elif [[ $(git show-ref --verify --quiet "refs/heads/$BRANCH") ]]; then
+    git switch "$BRANCH"
 else
- git checkout -b "${BRANCH}" "${ROOT}"
- git config branch."${BRANCH}".localmerge "${ROOT}"
+    git fetch origin "$BRANCH":"$BRANCH"
+    git switch "$BRANCH"
+    git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH"
+    git config "branch.$BRANCH.localmerge" "$ROOT"
 fi
+

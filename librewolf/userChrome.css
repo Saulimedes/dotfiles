@@ -1,0 +1,6 @@
+#content browser, .browserStack>browser {
+	margin-right:-17px!important;
+	margin-bottom:-17px!important;
+	overflow-y:scroll;
+	overflow-x:hidden;
+}
