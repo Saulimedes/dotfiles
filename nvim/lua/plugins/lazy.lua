@@ -78,41 +78,41 @@ return {
 
         dependencies = {
             -- LSP Support
-            {'neovim/nvim-lspconfig'},             -- Required
+            {'neovim/nvim-lspconfig'},
             {'williamboman/mason.nvim',
               build = function()
                 pcall(vim.api.nvim_command, 'MasonUpdate')
               end,
-            },           -- Optional
-            {'williamboman/mason-lspconfig.nvim'}, -- Optional
+            },         
+            {'williamboman/mason-lspconfig.nvim'}, 
 
             -- Autocompletion
-            {'hrsh7th/nvim-cmp'},         -- Required
-            {'hrsh7th/cmp-nvim-lsp'},     -- Required
-            {'hrsh7th/cmp-buffer'},       -- Optional
-            {'hrsh7th/cmp-path'},         -- Optional
-            {'saadparwaiz1/cmp_luasnip'}, -- Optional
-            {'hrsh7th/cmp-nvim-lua'},     -- Optional
-            {'andersevenrud/cmp-tmux'}, -- Added Essential
+            {'hrsh7th/nvim-cmp'},
+            {'hrsh7th/cmp-nvim-lsp'},
+            {'hrsh7th/cmp-buffer'},
+            {'hrsh7th/cmp-path'},
+            {'saadparwaiz1/cmp_luasnip'},
+            {'hrsh7th/cmp-nvim-lua'},
+            {'andersevenrud/cmp-tmux'},
             {'hrsh7th/cmp-cmdline'},
 
             -- Snippets
-            {'L3MON4D3/LuaSnip'},             -- Required
-            {'rafamadriz/friendly-snippets'}, -- Optional
+            {'L3MON4D3/LuaSnip'},
+            {'rafamadriz/friendly-snippets'},
         }
     },
     {  'nvim-lualine/lualine.nvim',
        dependencies = {"nvim-tree/nvim-web-devicons", "f-person/git-blame.nvim"},
     },
     -- Colorscheme
-    {  'RRethy/nvim-base16',
+    {   'shaunsingh/nord.nvim',
         opts = {
           hot_reload = {
           enabled = true,
           },
         },
         config = function()
-          vim.cmd([[colorscheme base16-spacemacs]])
+          vim.cmd([[colorscheme nord]])
           vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
           vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
         end

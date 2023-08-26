@@ -2,13 +2,14 @@ local git_blame = require('gitblame')
 vim.g.gitblame_display_virtual_text = 0
 vim.g.gitblame_message_when_not_committed = ''
 vim.g.gitblame_date_format = '%m/%d %H:%M'
+vim.g.gitblame_message_template = '<date>: <author> ∙ <summary>'
 
 require('lualine').setup {
   options = {
     icons_enabled = true,
     theme = 'auto',
-    component_separators = { left = '', right = ''},
-    section_separators = { left = '', right = ''},
+    component_separators = { left = '∙', right = '∙'},
+    section_separators = { left = '', right = ''},
     disabled_filetypes = {
       statusline = {},
       winbar = {},

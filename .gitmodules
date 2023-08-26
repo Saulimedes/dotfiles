@@ -1,6 +1,6 @@
-[submodule "fonts"]
-	path = fonts
-	url = git@gitlab.com:paulbecker/fonts.git
 [submodule "dotbot"]
 	path = dotbot
 	url = https://github.com/anishathalye/dotbot
+[submodule "fonts"]
+	path = fonts
+	url = git@github.com:Saulimedes/fonts.git
