@@ -1,17 +1,43 @@
 local wezterm = require 'wezterm';
+local act = wezterm.action
+
+function get_appearance()
+  if wezterm.gui then
+    return wezterm.gui.get_appearance()
+  end
+  return 'Dark'
+end
+
+function scheme_for_appearance(appearance)
+  if appearance:find 'Dark' then
+    return 'nord'
+  else
+    return 'nord-light'
+  end
+end
+
 
 return {
-  font = wezterm.font_with_fallback({"PragmataPro", "Regular"}),
+  font = wezterm.font("PragmataProMonoLiga Nerd Font Mono", {style="Normal"}),
   font_size = 12.0,
   hide_tab_bar_if_only_one_tab = true,
-  scrollback_lines = "unlimited",
+  hide_mouse_cursor_when_typing = true,
+  scrollback_lines = 9999999,
+  initial_cols = 140,
+  initial_rows = 65,
   adjust_window_size_when_changing_font_size = false,
-  scrollbar = "never",
-  default_prog = {"fish"},
+  cursor_blink_ease_in = "EaseIn",
+  cursor_blink_ease_out = "EaseOut",
+  force_reverse_video_cursor = true,
   enable_tab_bar = true,
   enable_wayland = true,
-  cursor_shape = "Beam",
-  cursor_blink = "Always",
+  pane_focus_follows_mouse = true,
+  default_cursor_style = 'BlinkingBlock',
+  automatically_reload_config = false,
+  default_prog = { 'fish', '-l' },
+  cursor_blink_rate = 700,
+  text_blink_rate = 600,
+
   window_padding = {
     left = 10,
     right = 10,
@@ -19,6 +45,7 @@ return {
     bottom = 10,
   },
   harfbuzz_features = {"kern", "liga"},
+  freetype_load_target = "HorizontalLcd",
   check_for_updates = false,
   enable_scroll_bar = false,
   exit_behavior = "Close",
@@ -26,25 +53,45 @@ return {
 
   mouse_bindings = {
     {
-      event={Up={streak=1, button="Left", modifiers="CTRL"}},
-      action="OpenLinkAtMouseCursor",
+      event={Up={streak=1, button="Middle"}},
+        action=act.PasteFrom("PrimarySelection")
+    },
+    {
+      event = { Down = { streak = 1, button = { WheelUp = 1 } } },
+        mods = 'CTRL',
+      action = act.IncreaseFontSize,
+    },
+
+    {
+      event = { Down = { streak = 1, button = { WheelDown = 1 } } },
+      mods = 'CTRL',
+      action = act.DecreaseFontSize,
     },
   },
+
+  quick_select_patterns = {
+    '[0-9a-f]{7,40}',
+    'https?://\\S+',
+    'ftp://\\S+',
+    'file://\\S+',
+    'mailto:\\S+',
+    'data:[^,;]+,[^,;]+',
+    'www\\.\\S+',
+  },
+
   keys = {
     {key="+", mods="CTRL", action="IncreaseFontSize"},
     {key="-", mods="CTRL", action="DecreaseFontSize"},
     {key="0", mods="CTRL", action="ResetFontSize"},
+    {key="Backspace", mods="CTRL", action=wezterm.action{SendString="\x17"} },
+	  {key = "V", mods = "CTRL|SHIFT", action = act.PasteFrom("Clipboard") },
+	  {key = "C", mods = "CTRL|SHIFT", action = act.CopyTo("ClipboardAndPrimarySelection") },
+    {key = "f", mods = "CMD", action = act.Search("CurrentSelectionOrEmptyString") },
+	  {key = "PageDown", mods = "", action = act.ScrollByPage(0.8) },
+	  {key = "PageUp", mods = "", action = act.ScrollByPage(-0.8) },
+
+
+    {key="L", mods="CTRL|SHIFT", action="DisableDefaultAssignment" },
   },
-  color_scheme = "Dracula",
-  color_schemes = {
-    ["Dracula"] = {
-      foreground = "#F8F8F2",
-      background = "#282A36",
-      cursor_bg = "#F8F8F2",
-      cursor_fg = "#F8F8F2",
-      cursor_border = "#F8F8F2",
-      ansi = {"#282A36", "#FF5555", "#50FA7B", "#F1FA8C", "#BD93F9", "#FF79C6", "#8BE9FD", "#F8F8F2"},
-      brights = {"#4D4D4D", "#FF6E67", "#5AF78E", "#F4F99D", "#CAA9FA", "#FF92D0", "#9AEDFE", "#E6E6E6"},
-    }
-  },
+  color_scheme = scheme_for_appearance(get_appearance()),
 }
