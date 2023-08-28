@@ -36,7 +36,7 @@ return {
           }
         end
     },
-    -- Hop (Better Navigation)
+    -- Hop (Better Navigation)k
     {
         "phaazon/hop.nvim",
         lazy = true,
@@ -69,6 +69,20 @@ return {
     -- Git Integration
     {
         "lewis6991/gitsigns.nvim",
+    },
+    {
+      "nvim-neo-tree/neo-tree.nvim",
+      branch = "v3.x",
+      dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
+        "MunifTanjim/nui.nvim",
+        },
+        config = function()
+           require("neo-tree").setup({
+             close_if_last_window = true,
+           })
+        end
     },
     -- Language Support
     {
