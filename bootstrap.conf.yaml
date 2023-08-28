@@ -14,11 +14,13 @@
       - procs
       - neofetch
       - brave-browser
+      - ansible-lint
       - bat
       - flatpak
       - tealdeer
       - android-tools
       - strace 
+      - aws-cli
       - zip
       - ShellCheck
       - unrar
@@ -31,9 +33,11 @@
       - exa 
       - openssl 
       - kubernetes-client
+      - stern
       - kail
       - k9s
       - kubectx
+      - popeye
       - kubens
       - yt-dlp
       - tcpdump
