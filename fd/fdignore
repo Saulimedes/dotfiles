@@ -1,2 +1,6 @@
 $HOME/dotfiles/.git
 *.bak
+Icon
+.git
+*INFO*
+*_INFO*
