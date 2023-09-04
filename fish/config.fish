@@ -5,7 +5,7 @@ set -x DIRENV_LOG_FORMAT ""
 
 # paths
 set -e fish_user_paths
-set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ 
+set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin
 
 # exports
 set -gx EDITOR "nvim"
@@ -17,6 +17,7 @@ set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 fish_default_key_bindings
 bind \b backward-kill-word
 bind \e\[3\;5~ kill-word
+
 
 function fish_user_key_bindings
 	fzf_key_bindings
@@ -91,6 +92,7 @@ alias "......"=".5"
 
 ## kubectl
 if type -q kubectl
+  set -x KUBECONFIG (string join ":" (find ~/.kube -type f \( -name "*.yml" -o -name "*.yaml" \)))
   alias k="kubectl"
   alias kgd="kubectl get deployments -o wide"
   alias kg="kubectl get"
