@@ -5,3 +5,4 @@
 #fi
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+export SHELL="/usr/bin/fish"

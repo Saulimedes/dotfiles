@@ -46,12 +46,13 @@ end
 
 # fzf
 set -U FZF_DISABLE_KEYBINDINGS 1
-set -U FZF_PREVIEW_DIR_CMD "exa"
+set -U FZF_PREVIEW_DIR_CMD "lsd"
 set -U FZF_TMUX 1
 set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
 set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
 set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
-set -x FZF_ALT_C_OPTS "--preview 'exa --tree --level 1 {} | head -200'"
+set -x FZF_ALT_C_OPTS "--preview 'lsd -l --depth 1 {} | head -200'"
+
 
 # helper
 alias e="$EDITOR"
@@ -69,12 +70,12 @@ alias vdir="vdir --color=auto"
 alias egrep="egrep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias ls="ls --color=auto"
-alias la="exa -a --color=always --group-directories-first"
-alias ll="exa -la --color=always --group-directories-first --icons"
+alias la="lsd -a --group-dirs first"
+alias ll="lsd -l --group-dirs first --icon always"
 alias l="ll"
-alias lt="exa -aT --color=always --group-directories-first"
-alias "l."='exa -a | grep -E "^."'
-alias lg="exa -l --group-directories-first --git-ignore --group=always"
+alias "l."='lsd -a | grep -E "^."'
+alias lg="lsd -l --group-dirs first --ignore-glob .git --icon"
+alias lt="lsd -t --tree --group-dirs first --depth 4"
 alias mv="mv -iv"
 alias sudoe="sudo -E"
 alias rm="rm -rf"
@@ -113,6 +114,7 @@ if type -q kubectl
   abbr kl "kubectl logs -f -p"
   abbr kdel "kubectl del"
   abbr kgwf "watch kubectl get -f"
+
 end
 
 if type -q git

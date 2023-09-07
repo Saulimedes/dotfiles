@@ -30,7 +30,7 @@
       - terragrunt
       - gcc
       - opi
-      - exa 
+      - lsd
       - openssl 
       - kubernetes-client
       - stern
