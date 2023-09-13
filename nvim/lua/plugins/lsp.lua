@@ -10,6 +10,7 @@ lsp.ensure_installed({
   'ansiblels',
   'lua_ls',
   'dockerls',
+  'terraformls',
   'pyright',
   'marksman'
 })

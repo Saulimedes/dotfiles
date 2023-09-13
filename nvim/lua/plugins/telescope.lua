@@ -88,6 +88,13 @@ require('telescope').setup{
     -- builtin picker
   },
   extensions = {
+    undo = {
+      side_by_side = true,
+      layout_strategy = "vertical",
+      layout_config = {
+        preview_height = 0.8,
+      },
+    },
     -- Your extension configuration goes here:
     -- extension_name = {
     --   extension_config_key = value,

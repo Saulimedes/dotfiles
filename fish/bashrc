@@ -1,8 +1,6 @@
 #!/bin/bash
-#if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
-#then
-#	exec fish
-#fi
+if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} ]]
+then
+	exec fish
+fi
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-export SHELL="/usr/bin/fish"
