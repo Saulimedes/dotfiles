@@ -3,6 +3,7 @@
       - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
     repositories:
       - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+      - https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo
     packages:
       - fish
       - bottom
@@ -23,11 +24,13 @@
       - aws-cli
       - zip
       - ShellCheck
+      - pass-otp
       - unrar
       - pwgen
       - ruby-devel
       - terraform
       - terragrunt
+      - tailscale
       - gcc
       - opi
       - lsd

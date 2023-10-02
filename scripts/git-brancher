@@ -8,8 +8,8 @@ if [[ -z "$BRANCH" || "$BRANCH" == $(git rev-parse --abbrev-ref HEAD) ]]; then
 elif [[ $(git show-ref --verify --quiet "refs/heads/$BRANCH") ]]; then
     git switch "$BRANCH"
 else
-    git fetch origin "$BRANCH":"$BRANCH"
-    git switch "$BRANCH"
+    git fetch origin "$BRANCH"
+    git checkout "$BRANCH"
     git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH"
     git config "branch.$BRANCH.localmerge" "$ROOT"
 fi
