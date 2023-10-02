@@ -6,9 +6,6 @@ end
 local actions = require("telescope.actions")
 require('telescope').setup{
   defaults = {
-    -- Default configuration for telescope goes here:
-    -- config_key = value,
-
     prompt_prefix = " ",
     selection_caret = " ",
     path_display = { "smart" },
@@ -43,6 +40,9 @@ require('telescope').setup{
         ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
         ["<C-l>"] = actions.complete_tag,
         ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
+        ["<cr>"] = require("telescope-undo.actions").yank_additions,
+        ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+        ["<C-cr>"] = require("telescope-undo.actions").restore,
       },
 
       n = {
@@ -75,18 +75,11 @@ require('telescope').setup{
         ["<PageDown>"] = actions.results_scrolling_down,
 
         ["?"] = actions.which_key,
+        ['<Leader>u'] = ':Telescope undo<CR>',
       },
     }
   },
-  pickers = {
-    -- Default configuration for builtin pickers goes here:
-    -- picker_name = {
-    --   picker_config_ key = value,
-    --   ...
-    -- }
-    -- Now the picker_config_key will be applied every time you call this
-    -- builtin picker
-  },
+  pickers = { },
   extensions = {
     undo = {
       side_by_side = true,
@@ -95,10 +88,7 @@ require('telescope').setup{
         preview_height = 0.8,
       },
     },
-    -- Your extension configuration goes here:
-    -- extension_name = {
-    --   extension_config_key = value,
-    -- }
-    -- please take a look at the readme of the extension you want to configure
+    require("telescope").load_extension("undo")
+
   }
 }

@@ -56,9 +56,7 @@ return {
         lazy = true,
         dependencies = {
             'nvim-lua/plenary.nvim',
-            'debugloop/telescope-undo.nvim',
-
-        }
+            'debugloop/telescope-undo.nvim'}
     },
     -- Indentation Highlighting
     {
