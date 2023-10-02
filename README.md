@@ -4,7 +4,7 @@ This repo is a collection of all my dotfiles managed by dotbot.
 
 ## Installation
 ```
-git clone https://gitlab.com/paulbecker/dotfiles .dotfiles
+git clone git@github.com:Saulimedes/dotfiles.git .dotfiles
 cd .dotfiles
 ./bootstrap
 ```
