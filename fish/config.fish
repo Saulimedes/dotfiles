@@ -18,7 +18,6 @@ fish_default_key_bindings
 bind \b backward-kill-word
 bind \e\[3\;5~ kill-word
 
-
 function fish_user_key_bindings
 	fzf_key_bindings
 end
@@ -41,7 +40,6 @@ if status --is-interactive
     set -Ux SSH_AUTH_SOCK $SSH_AUTH_SOCK
     set -Ux SSH_AGENT_PID $SSH_AGENT_PID
   end
-
 end
 
 # fzf
@@ -52,7 +50,6 @@ set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
 set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
 set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
 set -x FZF_ALT_C_OPTS "--preview 'lsd -l --depth 1 {} | head -200'"
-
 
 # helper
 alias e="$EDITOR"
@@ -93,7 +90,7 @@ alias "......"=".5"
 
 ## kubectl
 if type -q kubectl
-  set -x KUBECONFIG (string join ":" (find ~/.kube -type f \( -name "*.yml" -o -name "*.yaml" \)))
+  set -x KUBECONFIG (string join ":" (fd -e yml -e yaml -t f . ~/.kube))
   alias k="kubectl"
   alias kgd="kubectl get deployments -o wide"
   alias kg="kubectl get"
@@ -114,7 +111,6 @@ if type -q kubectl
   abbr kl "kubectl logs -f -p"
   abbr kdel "kubectl del"
   abbr kgwf "watch kubectl get -f"
-
 end
 
 if type -q git
