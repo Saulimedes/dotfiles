@@ -36,7 +36,15 @@ return {
           }
         end
     },
-    -- Hop (Better Navigation)k
+    -- Comment
+    {
+    'numToStr/Comment.nvim',
+      opts = {
+        -- add any options here
+      },
+    lazy = false,
+    },
+    -- Hop (Better Navigation)
     {
         "phaazon/hop.nvim",
         lazy = true,
