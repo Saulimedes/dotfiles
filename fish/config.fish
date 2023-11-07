@@ -4,7 +4,7 @@ set fish_greeting ""
 set -x DIRENV_LOG_FORMAT ""
 
 # paths
-set -e fish_user_paths
+set -gx PATH /usr/sbin /usr/local/sbin $PATH
 set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin
 
 # exports
