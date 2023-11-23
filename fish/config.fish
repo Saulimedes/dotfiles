@@ -15,11 +15,26 @@ set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 
 # bindings
 fish_default_key_bindings
-bind \b backward-kill-word
-bind \e\[3\;5~ kill-word
 
 function fish_user_key_bindings
-	fzf_key_bindings
+  bind \b backward-kill-word
+  bind \e\[3\;5~ kill-word
+ 
+  # fzf bindings
+  fzf_key_bindings
+  if type -q fzf-history-widget
+    # Custom function to merge history before calling fzf-history-widget
+    function __custom_fzf_history
+    # Merge history first
+      history --merge
+
+      # Call fzf-history-widget
+      fzf-history-widget
+    end
+
+    # Bind Ctrl+R to the custom function
+    bind \cr __custom_fzf_history
+  end  
 end
 
 # configure colors
@@ -30,6 +45,11 @@ if status --is-interactive
     direnv-hook
     # direnv hook fish | source
   end
+
+  # atuin
+  #if command -q atuin
+  #  atuin init fish | source
+  #end 
 
   # zoxide
   set --universal zoxide_cmd cd
@@ -48,6 +68,7 @@ set -U FZF_PREVIEW_DIR_CMD "lsd"
 set -U FZF_TMUX 1
 set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
 set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
+
 set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
 set -x FZF_ALT_C_OPTS "--preview 'lsd -l --depth 1 {} | head -200'"
 
