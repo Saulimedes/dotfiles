@@ -1,5 +1,6 @@
 add_newline = false
 format = """$directory$git_branch$git_status$hostname$character"""
+command_timeout = 200
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -36,4 +37,5 @@ trim_at = "."
 format = '[$ssh_symbol]($style)'
 ssh_symbol = "❯"
 style = 'bold green'
+
 
