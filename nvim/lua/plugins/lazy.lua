@@ -8,6 +8,10 @@ return {
     {
         "windwp/nvim-autopairs"
     },
+    -- base64
+    {
+      "taybart/b64.nvim"
+    },
     -- Bufferline 
     {
         'akinsho/bufferline.nvim',

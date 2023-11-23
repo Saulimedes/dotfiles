@@ -87,7 +87,7 @@ local mappings = {
     ["p"] = { "<cmd>Lazy<CR>", "Plugin Manager" }, -- Invoking plugin manager
     ["q"] = { "<cmd>wqall!<CR>", "Quit" }, -- Quit Neovim after saving the file
     ["r"] = { "<cmd>lua vim.lsp.buf.format{async=true}<cr>", "Reformat Code" },
-    ["u"] = { "<cmd>lua require('undotree').toggle()<CR>", "Undo-Tree" }, -- Undo History
+    ["u"] = { "<cmd>Telescope undo<CR>", "Undo Tree" },
     ["w"] = { "<cmd>w!<CR>", "Save" }, -- Save current file
 
     --Git

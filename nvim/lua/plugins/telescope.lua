@@ -12,9 +12,6 @@ require('telescope').setup{
 
     mappings = {
       i = {
-        ["<C-n>"] = actions.cycle_history_next,
-        ["<C-p>"] = actions.cycle_history_prev,
-
         ["<C-j>"] = actions.move_selection_next,
         ["<C-k>"] = actions.move_selection_previous,
 
@@ -40,9 +37,7 @@ require('telescope').setup{
         ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
         ["<C-l>"] = actions.complete_tag,
         ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
-        ["<cr>"] = require("telescope-undo.actions").yank_additions,
-        ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
-        ["<C-cr>"] = require("telescope-undo.actions").restore,
+        ["<esc>"] = actions.close, -- Add this line to close Telescope with Esc in normal mode
       },
 
       n = {
@@ -73,22 +68,47 @@ require('telescope').setup{
 
         ["<PageUp>"] = actions.results_scrolling_up,
         ["<PageDown>"] = actions.results_scrolling_down,
-
-        ["?"] = actions.which_key,
-        ['<Leader>u'] = ':Telescope undo<CR>',
+        ["?"] = actions.which_key
       },
     }
   },
-  pickers = { },
-  extensions = {
+  pickers = {
     undo = {
-      side_by_side = true,
-      layout_strategy = "vertical",
-      layout_config = {
-        preview_height = 0.8,
+      mappings = {
+        i = {
+          ["<C-n>"] = actions.move_selection_next,
+          ["<C-p>"] = actions.move_selection_previous,
+        },
+        n = {
+          ["<C-n>"] = actions.move_selection_next,
+          ["<C-p>"] = actions.move_selection_previous,
+        },
       },
     },
-    require("telescope").load_extension("undo")
+  },
 
+  extensions = {
+    undo = {
+      {
+        side_by_side = true,
+        layout_strategy = "vertical",
+        layout_config = {
+          preview_height = 0.8,
+        },
+      },
+
+      mappings = {
+        i = {
+          ["<cr>"] =   require("telescope-undo.actions").restore,
+          ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+          ["<C-cr>"] = require("telescope-undo.actions").yank_addition,
+        },
+        n = {
+          ["<cr>"] =   require("telescope-undo.actions").restore,
+        },
+      },
+    }
   }
 }
+-- Loading the 'undo' extension outside the setup function
+require("telescope").load_extension("undo")
