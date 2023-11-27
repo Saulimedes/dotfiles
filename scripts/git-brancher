@@ -3,8 +3,22 @@
 BRANCH=$1
 ROOT=${2:-$(git rev-parse --abbrev-ref HEAD)}
 
-if [[ -z "$BRANCH" || "$BRANCH" == $(git rev-parse --abbrev-ref HEAD) ]]; then
-    git branch -a
+if [[ -z "$BRANCH" ]]; then
+    # List all branches (local and remote), normalize view, and use fzf for selection
+    BRANCH=$(git branch -a | sed 's/remotes\///' | sort -u | fzf --height 40% --border)
+    
+    # Exit if no selection is made
+    if [[ -z "$BRANCH" ]]; then
+        echo "No branch selected. Exiting."
+        exit 1
+    fi
+fi
+
+# Remove any leading space and switch to the branch
+BRANCH=$(echo "$BRANCH" | sed 's/^[ *]*//')
+
+if [[ "$BRANCH" == $(git rev-parse --abbrev-ref HEAD) ]]; then
+    echo "Already on branch $BRANCH"
 elif [[ $(git show-ref --verify --quiet "refs/heads/$BRANCH") ]]; then
     git switch "$BRANCH"
 else
@@ -13,4 +27,3 @@ else
     git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH"
     git config "branch.$BRANCH.localmerge" "$ROOT"
 fi
-
