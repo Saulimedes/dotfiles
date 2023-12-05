@@ -78,17 +78,32 @@ local opts = {
     nowait = true, -- use `nowait` when creating keymaps
 }
 
-local mappings = {
+local visual_opts = {
+    mode = "v",  -- VISUAL mode
+    prefix = "<leader>",
+    buffer = nil,
+    silent = true,
+    noremap = true,
+    nowait = true,
+}
 
+local mappings = {
     ["a"] = { "<cmd>Alpha<cr>", "Alpha" },
     ["e"] = { "<cmd>Neotree<cr>", "Explorer" }, -- File Explorer
     ["k"] = { "<cmd>bdelete<CR>", "Kill Buffer" },  -- Close current file
     ["m"] = { "<cmd>Mason<CR>", "Mason" },  -- Mason UI for LSP Management
     ["p"] = { "<cmd>Lazy<CR>", "Plugin Manager" }, -- Invoking plugin manager
     ["q"] = { "<cmd>wqall!<CR>", "Quit" }, -- Quit Neovim after saving the file
-    ["r"] = { "<cmd>lua vim.lsp.buf.format{async=true}<cr>", "Reformat Code" },
     ["u"] = { "<cmd>Telescope undo<CR>", "Undo Tree" },
     ["w"] = { "<cmd>w!<CR>", "Save" }, -- Save current file
+
+  -- Reformat
+  r = {
+    name = "Reformat Code",
+    ["a"] = { "<cmd>lua vim.lsp.buf.format{async=true}<cr>", "Reformat Code" },
+    ["b"] = { '<cmd>lua require("b64").decode()<cr>', "Base64 Decode" },
+    ["B"] = { '<cmd>lua require("b64").encode()<cr>', "Base64 Encode" },
+  },
 
     --Git
     g = {
@@ -158,8 +173,20 @@ local mappings = {
         h = { "<cmd>ToggleTerm size=10 direction=horizontal<cr>", "Horizontal" },
         v = { "<cmd>ToggleTerm size=80 direction=vertical<cr>", "Vertical" },
     },
+}
 
+local visual_mappings = {
+  ["a"] = { "<cmd>lua vim.lsp.buf.format{async=true}<cr>", "Reformat Code" },
+  ["c"] = { ":CommentToggle<CR>", "Toggle Comment" },
+
+b = {
+    name = "Base64",
+    ["d"] = { '<cmd>lua require("b64").decode()<cr>', "Base64 Decode" },
+    ["e"] = { '<cmd>lua require("b64").encode()<cr>', "Base64 Encode" },
+  },
 }
 
 which_key.setup(setup)
 which_key.register(mappings, opts)
+which_key.register(visual_mappings, visual_opts)
+
