@@ -1,29 +1,33 @@
 #!/bin/bash
 
 BRANCH=$1
-ROOT=${2:-$(git rev-parse --abbrev-ref HEAD)}
+BASE_BRANCH=${2:-$(git rev-parse --abbrev-ref HEAD)}
 
 if [[ -z "$BRANCH" ]]; then
-    # List all branches (local and remote), normalize view, and use fzf for selection
-    BRANCH=$(git branch -a | sed 's/remotes\///' | sort -u | fzf --height 40% --border)
+    # List all branches (local and remote), normalize view, exclude specific branches, and use fzf for selection
+    BRANCH=$(git branch -a | sed 's/remotes\///' | grep -v 'origin/HEAD' | grep -v 'origin/main' | grep -v 'origin/master' | sort -u | fzf --height 40% --border)
     
     # Exit if no selection is made
     if [[ -z "$BRANCH" ]]; then
         echo "No branch selected. Exiting."
         exit 1
     fi
-fi
 
-# Remove any leading space and switch to the branch
-BRANCH=$(echo "$BRANCH" | sed 's/^[ *]*//')
+    # Remove any leading space and switch to the branch
+    BRANCH=$(echo "$BRANCH" | sed 's/^[ *]*//')
 
-if [[ "$BRANCH" == $(git rev-parse --abbrev-ref HEAD) ]]; then
-    echo "Already on branch $BRANCH"
-elif [[ $(git show-ref --verify --quiet "refs/heads/$BRANCH") ]]; then
-    git switch "$BRANCH"
+    if [[ "$BRANCH" == $(git rev-parse --abbrev-ref HEAD) ]]; then
+        echo "Already on branch $BRANCH"
+    elif [[ $(git show-ref --verify --quiet "refs/heads/$BRANCH") ]]; then
+        git switch "$BRANCH"
+    else
+        git fetch origin "$BRANCH"
+        git checkout "$BRANCH"
+        git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH"
+        git config "branch.$BRANCH.localmerge" "$BASE_BRANCH"
+    fi
 else
-    git fetch origin "$BRANCH"
-    git checkout "$BRANCH"
-    git branch --set-upstream-to=origin/"$BRANCH" "$BRANCH"
-    git config "branch.$BRANCH.localmerge" "$ROOT"
+    # Create a new branch, optionally using a specified base branch
+    git checkout -b "$BRANCH" "$BASE_BRANCH"
 fi
+
