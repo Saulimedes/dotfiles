@@ -24,7 +24,7 @@
 [submodule]
   recurse = true
 [color]
-  ui = auto
+  ui = always
   pager = false
 [color "branch"]
   current = yellow bold
@@ -85,7 +85,7 @@
   lg1 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
   lg2 = "log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative"
   lg3 = "!git --no-pager log -15 --reverse --oneline --decorate --all --pretty=tformat:'%C(bold blue)%h%C(reset) %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold yellow)- %cn%C(reset)'"
-  lg4 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%cD%C(reset) %C(bold green)(%cr)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)' --abbrev-commit"
+  lg4 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%cD%C(reset) %C(bold green)(%cr)%C(reset)%C(bold yellow)%d%C(reset)%n'' %C(white)%s%C(reset) %C(bold white)— %cn%C(reset)' --abbrev-commit"
   m = "merge"
   me = "config user.name"
   mail = "config user.email"

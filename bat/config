@@ -10,15 +10,7 @@
 --theme="base16-256"
 
 # Syntax mapping
---map-syntax "*.html:HTML"
---map-syntax "*.js:JavaScript"
---map-syntax "*.json:JSON"
---map-syntax "*.md:Markdown"
---map-syntax "*.py:Python"
---map-syntax "*.sh:Bash"
---map-syntax "*.txt:Text"
---map-syntax "*.xml:XML"
---map-syntax "*.yml:YAML"
+--map-syntax auto:*
 
 # File decorations
 --style="header,numbers,changes,snip"
