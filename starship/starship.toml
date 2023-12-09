@@ -1,5 +1,5 @@
 add_newline = false
-format = """$directory$git_branch$git_status$hostname$character"""
+format = """$directory$git_branch$git_status$ruby$hostname$python$character"""
 command_timeout = 200
 
 [character]
@@ -30,6 +30,18 @@ ahead = '⇡${count}'
 diverged = '⇕⇡${ahead_count}⇣${behind_count}'
 behind = '⇣${count}'
 stashed = ''
+
+
+[ruby]
+format = '[$symbol$version(:$gemset )]($style)' 
+symbol = "❖ "
+style = "bold blue"
+
+
+[python]
+format = '[$symbol$version( 🐍 $virtualenv)]($style)' 
+symbol = "🐍 "
+style = "bold yellow"
 
 [hostname]
 ssh_only = true
