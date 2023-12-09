@@ -23,15 +23,16 @@
       - strace 
       - aws-cli
       - zip
+      - opentofu
       - ShellCheck
       - pass-otp
       - unrar
       - pwgen
       - ruby-devel
-      - terraform
-      - terragrunt
+      - pyenv
       - tailscale
       - gcc
+      - make
       - opi
       - lsd
       - openssl 
