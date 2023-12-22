@@ -12,7 +12,7 @@ cd .dotfiles
 ## What gets installed
 * Distro: opensuse
 * Bootstrap Installation
-* Editor: emacs
-* Fonts: PramataPro
+* Editor: neovim
+* Fonts: MonoLisa
 * fish with plugins managed by fisher
 * Git Helper

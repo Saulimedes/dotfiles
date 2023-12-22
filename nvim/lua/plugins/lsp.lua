@@ -8,12 +8,16 @@ end)
 
 lsp.ensure_installed({
   'ansiblels',
+  'docker_compose_language_service',
   'lua_ls',
+  'bashls',
   'dockerls',
   'terraformls',
   'pyright',
-  'marksman'
+  'marksman',
+  'yamlls'
 })
+
 
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}

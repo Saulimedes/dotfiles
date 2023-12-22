@@ -4,8 +4,8 @@ set fish_greeting ""
 set -x DIRENV_LOG_FORMAT ""
 
 # paths
-set -gx PATH /usr/sbin /usr/local/sbin $PATH
-set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin
+set -gx PATH /usr/local/bin /usr/bin /usr/sbin /usr/local/sbin $PATH
+set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin 
 
 # exports
 set -gx EDITOR "nvim"
@@ -37,7 +37,6 @@ function fish_user_key_bindings
   end  
 end
 
-# configure colors
 if status --is-interactive
   # enable direnv hook
   if command -q direnv
@@ -46,10 +45,10 @@ if status --is-interactive
     # direnv hook fish | source
   end
 
-  # atuin
-  #if command -q atuin
-  #  atuin init fish | source
-  #end 
+  # pyenv
+  set -x PYENV_ROOT $HOME/.local/share/pyenv
+  set -x PATH $PYENV_ROOT/bin $PATH
+  source (pyenv init - | psub)
 
   # zoxide
   set --universal zoxide_cmd cd

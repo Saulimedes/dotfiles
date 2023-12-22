@@ -31,23 +31,9 @@ diverged = '⇕⇡${ahead_count}⇣${behind_count}'
 behind = '⇣${count}'
 stashed = ''
 
-
-[ruby]
-format = '[$symbol$version(:$gemset )]($style)' 
-symbol = "❖ "
-style = "bold blue"
-
-
-[python]
-format = '[$symbol$version( 🐍 $virtualenv)]($style)' 
-symbol = "🐍 "
-style = "bold yellow"
-
 [hostname]
 ssh_only = true
 trim_at = "."
 format = '[$ssh_symbol]($style)'
 ssh_symbol = "❯"
 style = 'bold green'
-
-

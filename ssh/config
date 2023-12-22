@@ -13,6 +13,9 @@ ServerAliveCountMax 10
 ServerAliveInterval 300
 UseRoaming No
 
+HostkeyAlgorithms +ssh-rsa
+PubkeyAcceptedKeyTypes +ssh-rsa
+
 # hardening
 MACs hmac-sha2-512,hmac-sha2-256
 Ciphers aes128-ctr,aes192-ctr,aes256-ctr

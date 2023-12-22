@@ -5,6 +5,7 @@
 --no-overwrites
 -o %(title)s.%(ext)s
 --restrict-filenames
+--retries infinite
 --progress
 --embed-thumbnail
 --geo-bypass
