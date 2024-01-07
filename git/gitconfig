@@ -25,7 +25,7 @@
   recurse = true
 [color]
   ui = always
-  pager = false
+  pager = true
 [color "branch"]
   current = yellow bold
   local = green bold
