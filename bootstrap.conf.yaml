@@ -5,10 +5,9 @@
       - https://dl.google.com/linux/linux_signing_key.pub
     repositories:
       - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
-      - https://rpm.librewolf.net/librewolf-repo.repo
+      - url: "https://rpm.librewolf.net"
+        alias: "librewolf"
       - https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo
-      - https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/Essentials/packman-essentials.repo
-      - https://download.opensuse.org/repositories/games/openSUSE_Tumbleweed/games.repo
     packages:
       - fish
       - bottom
