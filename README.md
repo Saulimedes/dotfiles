@@ -1,4 +1,9 @@
 # Dotfiles
+
+<p align="center">
+  <img src="images/dotfiles.png" alt="My Dotfiles Setup">
+</p>
+
 ## About
 This repo is a collection of all my dotfiles managed by dotbot.
 

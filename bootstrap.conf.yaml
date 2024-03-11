@@ -2,6 +2,7 @@
     public_keys:
       - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
       - https://rpm.librewolf.net/pubkey.gpg
+      - https://dl.google.com/linux/linux_signing_key.pub
     repositories:
       - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
       - https://rpm.librewolf.net/librewolf-repo.repo
