@@ -7,13 +7,8 @@
 
 - clean: ['~']
 
-- firefox:
-    user.js: firefox/user.js
-    userChrome.css: firefox/userChrome.css
-
 - link:
     ~/.ansible.cfg: ansible/ansible.cfg
-    ~/.config/BraveSoftware/Brave-Browser/Default/Preferences: brave/Preferences
     ~/.config/bat/config: bat/config
     ~/.config/direnv/direnvrc: direnv/direnvrc
     ~/.config/code/settings.json: code/settings.json
@@ -26,7 +21,8 @@
       glob: true
       path: emacs/dashboard/*
     ~/.fdignore: fd/fdignore
-    ~/.config/htop/htoprc: htop/htoprc
+    ~/.config/btop/btop.conf: btop/btop.conf
+    ~/.config/btop/themes/nord.theme: btop/themes/nord.theme
     ~/.bashrc: fish/bashrc
     ~/.config/lsd/config.yaml: lsd/config.yaml
     ~/.config/fish/config.fish: fish/config.fish
@@ -34,7 +30,6 @@
     ~/.config/fish/functions:
       glob: true
       path: fish/functions/*
-    ~/.config/fish/completions/git-brancher.fish: fish/completions/git-brancher.fish
     ~/.local/share/fonts: fonts
     ~/.gitconfig: git/gitconfig
     ~/.gitignore: git/gitignore

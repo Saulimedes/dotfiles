@@ -5,7 +5,7 @@
 
 ;; Set the font and enable ligatures for the default face
 (set-face-attribute 'default nil
-                    :font "PragmataProLiga Nerd Font" ;; 
+                    :font "VictorMono Nerd Font Propo Medium" ;; 
                     :height 120) 
 
 (setq frame-inhibit-implied-resize t)
@@ -27,12 +27,7 @@
 (pulsar-global-mode 1)
 
 ;; themes
-(use-package spacegray-theme :defer t)
-(use-package vs-dark-theme :defer t)
-(use-package melancholy-theme :defer t)
-
-;; cursor
-(setq-default cursor-type 'bar) 
+;(use-package nord-theme :defer t)
 
 ;; line numbers
 (use-package display-line-numbers
@@ -61,20 +56,30 @@
                                        "\\\\" "://"))
 
 ;; mode-line
-(use-package doom-modeline
-    :config
-      (doom-modeline-mode 1)
-      (setq doom-modeline-modal t)
-      (setq doom-modeline-lsp t)
-      (setq doom-modeline-modal-icon t)
-      (setq doom-modeline-buffer-encoding t)
-      (setq doom-modeline-support-imenu t)
-      (setq doom-modeline-icon t)
-      (setq doom-modeline-major-mode-icon t)
-      (setq doom-modeline-major-mode-color-icon t)
-      (setq doom-modeline-buffer-state-icon t)
+(use-package nord-theme
+  ;; (vertical-bar   (doom-darken base5 0.4))
+  ;; (doom-darken bg 0.4)
+  :config
+  (load-theme 'nord t)
+  (doom-themes-neotree-config)
+  (doom-themes-org-config)
+  ;; Modeline
+  (use-package doom-modeline
+    :custom
+    (doom-modeline-buffer-file-name-style 'truncate-with-project)
+    (doom-modeline-icon t)
+    (doom-modeline-major-mode-icon nil)
+    (doom-modeline-minor-modes nil)
     :hook
-      (after-init . doom-modeline-mode))
+    (after-init . doom-modeline-mode)
+    :config
+    (set-cursor-color "cyan")
+    (line-number-mode 0)
+    (column-number-mode 0)
+    (doom-modeline-def-modeline 'main
+      '(bar workspace-number window-number evil-state god-state ryo-modal xah-fly-keys matches buffer-info remote-host buffer-position parrot selection-info)
+      '(misc-info persp-name lsp github debug minor-modes input-method major-mode process vcs checker))))
+
 
 ;; all the icons
 (use-package all-the-icons
@@ -87,7 +92,6 @@
 ;; Dashboard
 (use-package dashboard
   :after all-the-icons page-break-lines
-  :diminish (dashboard-mode page-break-lines-mode)
   :config
 (setq dashboard-startup-banner
   (if (display-graphic-p)
@@ -98,7 +102,6 @@
 (setq dashboard-banner-logo-title "")
 (setq dashboard-set-init-info nil)
 (setq dashboard-set-file-icons t)
-(setq dashboard-set-navigator t)
 (setq dashboard-footer-icon "")
 
 (setq dashboard-footer-messages '("Don't try to solve serious matters in the middle of the night."))

@@ -13,4 +13,4 @@ ignore-globs:
 size: short
 hyperlink: auto
 header: false
-symlink-arrow: "🡒 "
+symlink-arrow: "➔"

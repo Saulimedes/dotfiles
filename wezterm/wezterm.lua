@@ -1,36 +1,23 @@
 local wezterm = require 'wezterm';
 local act = wezterm.action
 
-function get_appearance()
-  if wezterm.gui then
-    return wezterm.gui.get_appearance()
-  end
-  return 'Dark'
-end
-
-function scheme_for_appearance(appearance)
-  if appearance:find 'Dark' then
-    return 'nord'
-  else
-    return 'nord-light'
-  end
-end
-
 
 return {
-  font = wezterm.font("PragmataProMonoLiga Nerd Font Mono", {style="Normal"}),
+  font = wezterm.font("IosevkaTerm Nerd Font", {weight="Regular"}),
   font_size = 12.0,
   hide_tab_bar_if_only_one_tab = true,
   hide_mouse_cursor_when_typing = true,
   scrollback_lines = 9999999,
+
   initial_cols = 140,
   initial_rows = 65,
   adjust_window_size_when_changing_font_size = false,
   cursor_blink_ease_in = "EaseIn",
   cursor_blink_ease_out = "EaseOut",
   force_reverse_video_cursor = true,
+  color_scheme = 'Nord (Gogh)',
   enable_tab_bar = true,
-  enable_wayland = true,
+  enable_wayland = false,
   pane_focus_follows_mouse = true,
   default_cursor_style = 'BlinkingBlock',
   automatically_reload_config = false,
@@ -54,19 +41,18 @@ return {
   mouse_bindings = {
     {
       event={Up={streak=1, button="Middle"}},
-        action=act.PasteFrom("PrimarySelection")
+      action=act.PasteFrom("PrimarySelection")
     },
     {
       event = { Down = { streak = 1, button = { WheelUp = 1 } } },
-        mods = 'CTRL',
+      mods = 'CTRL',
       action = act.IncreaseFontSize,
     },
 
     {
       event = { Down = { streak = 1, button = { WheelDown = 1 } } },
       mods = 'CTRL',
-      action = act.DecreaseFontSize,
-    },
+      action = act.DecreaseFontSize, },
   },
 
   quick_select_patterns = {
@@ -92,6 +78,5 @@ return {
 
 
     {key="L", mods="CTRL|SHIFT", action="DisableDefaultAssignment" },
-  },
-  color_scheme = scheme_for_appearance(get_appearance()),
+  }
 }

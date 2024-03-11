@@ -1,9 +1,13 @@
 - zypper:
     public_keys:
       - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+      - https://rpm.librewolf.net/pubkey.gpg
     repositories:
       - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+      - https://rpm.librewolf.net/librewolf-repo.repo
       - https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo
+      - https://ftp.gwdg.de/pub/linux/misc/packman/suse/openSUSE_Tumbleweed/Essentials/packman-essentials.repo
+      - https://download.opensuse.org/repositories/games/openSUSE_Tumbleweed/games.repo
     packages:
       - fish
       - bottom

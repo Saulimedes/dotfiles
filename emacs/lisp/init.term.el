@@ -2,6 +2,10 @@
 (use-package exec-path-from-shell
   :config (exec-path-from-shell-initialize))
 
+;; fish
+(use-package fish-mode
+  :mode "\\.fish\\'")
+
 ;; shell-pop
 (use-package shell-pop
   :bind

@@ -10,8 +10,6 @@ set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.c
 # exports
 set -gx EDITOR "nvim"
 set -gx VISUAL "emacsclient -c -a emacs" 
-set -gx PAGER "bat --pager='less -FR'"
-set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 
 # bindings
 fish_default_key_bindings
@@ -23,26 +21,20 @@ function fish_user_key_bindings
   # fzf bindings
   fzf_key_bindings
   if type -q fzf-history-widget
-    # Custom function to merge history before calling fzf-history-widget
     function __custom_fzf_history
-    # Merge history first
       history --merge
-
-      # Call fzf-history-widget
       fzf-history-widget
     end
 
-    # Bind Ctrl+R to the custom function
     bind \cr __custom_fzf_history
   end  
 end
 
 if status --is-interactive
-  # enable direnv hook
+  # direnv hook
   if command -q direnv
     set -g direnv_fish_mode eval_after_arrow
     direnv-hook
-    # direnv hook fish | source
   end
 
   # pyenv
@@ -68,7 +60,7 @@ set -U FZF_TMUX 1
 set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
 set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
 
-set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
+#set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
 set -x FZF_ALT_C_OPTS "--preview 'lsd -l --depth 1 {} | head -200'"
 
 # helper
@@ -76,7 +68,7 @@ alias e="$EDITOR"
 alias em="emacsclient -t -a ''"
 alias cp="cp -airv"
 alias scp="scp -r"
-alias cat="bat --theme='base16-256'"
+alias cat="bat"
 alias cls="clear; printf '\033[3J'"
 alias dd="dd status=progress"
 alias mkdir="mkdir -p"
@@ -110,7 +102,10 @@ alias "......"=".5"
 
 ## kubectl
 if type -q kubectl
-  set -x KUBECONFIG (string join ":" (fd -e yml -e yaml -t f . ~/.kube))
+  if test -d ~/.kube
+    set -x KUBECONFIG (string join ":" (fd --max-depth 1 --type f . ~/.kube | xargs -I {} sh -c 'grep -qm1 "apiVersion:\|kind:\|clusters:\|contexts:\|users:" "{}" && echo "{}"'))
+  end
+
   alias k="kubectl"
   alias kgd="kubectl get deployments -o wide"
   alias kg="kubectl get"

@@ -1,6 +1,5 @@
 # General settings
---paging=auto
---pager="less -FR"
+--paging=never
 
 # Sane defaults as cat replacement
 --plain
@@ -8,9 +7,6 @@
 
 # Custom color scheme
 --theme="base16-256"
-
-# Syntax mapping
---map-syntax auto:*
 
 # File decorations
 --style="header,numbers,changes,snip"

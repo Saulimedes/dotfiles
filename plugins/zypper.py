@@ -27,19 +27,16 @@ class Zypper(Plugin):
         existing_repos = self._get_existing_repositories()
 
         for repo in repositories:
-            repo_alias = self._find_existing_repository(repo, existing_repos)
-            if repo_alias:
-                success &= self._refresh_repository(repo_alias).returncode == 0
+            repo_alias, _ = self._parse_repo_input(repo)
+            if repo_alias not in existing_repos:
+                success &= self._add_repository(repo).returncode in (0, 4)
             else:
-                add_repo_result = self._add_repository(repo)
-                success &= add_repo_result.returncode in (0, 4)
+                self._log.debug(f"Repository '{repo_alias}' already exists, skipping addition.")
 
-        # Execute zypper update
-        command = ['sudo', 'zypper', '--non-interactive', 'update']
+        command = ['sudo', 'zypper', '--non-interactive', '--gpg-auto-import-keys', 'update']
         success &= self._execute(command).returncode == 0
 
-        # Install packages
-        command = ['sudo', 'zypper', '--non-interactive', 'install'] + packages
+        command = ['sudo', 'zypper', '--non-interactive', '--gpg-auto-import-keys', 'install'] + packages
         success &= self._execute(command).returncode == 0
 
         return success
@@ -49,16 +46,7 @@ class Zypper(Plugin):
         return self._execute(command)
 
     def _add_repository(self, repo):
-        command = ['sudo', 'zypper', '--non-interactive', 'ar', repo]
-        result = self._execute(command)
-        if result.returncode == 0:
-            repo_alias = self._find_existing_repository(repo, self._get_existing_repositories())
-            if repo_alias:
-                self._refresh_repository(repo_alias)
-        return result
-
-    def _refresh_repository(self, repo_alias):
-        command = ['sudo', 'zypper', '--non-interactive', 'refresh', repo_alias]
+        command = ['sudo', 'zypper', '--non-interactive', '--gpg-auto-import-keys', 'ar', repo]
         return self._execute(command)
 
     def _execute(self, command):
@@ -66,37 +54,23 @@ class Zypper(Plugin):
         return subprocess.run(command, check=False)
 
     def _get_existing_repositories(self):
-        command = ['zypper', 'lr', '-u']
+        command = ['zypper', 'lr', '--no-refresh']
         result = subprocess.run(command, capture_output=True, check=True, text=True)
-        return result.stdout.splitlines()
-
-    def _find_existing_repository(self, repo_input, existing_repos):
-        existing_repo_data = []
-        for line in existing_repos:
-            line_parts = [part.strip() for part in line.split('|')]
-            if len(line_parts) >= 4:
-                existing_repo_data.append({'alias': line_parts[2], 'url': line_parts[4]})
-
-        repo_alias, repo_url = self._parse_repo_input(repo_input)
-
-        for repo_data in existing_repo_data:
-            if repo_data['url'] == repo_url or repo_data['alias'] == repo_alias:
-                return repo_data['alias']
-
-        return None
+        repos = {}
+        for line in result.stdout.splitlines():
+            parts = line.split('|')
+            if len(parts) > 2:  # Valid lines containing repo info
+                alias = parts[1].strip()
+                repos[alias.lower()] = True  # Use lower case for case-insensitive comparison
+        return repos
 
     def _parse_repo_input(self, repo_input):
-        repo_parts = repo_input.split()
-        if len(repo_parts) == 1:
-            repo_url = repo_parts[0]
-            repo_alias = repo_url.rstrip('/').split('/')[-1]
-        elif len(repo_parts) == 2:
-            repo_alias, repo_url = repo_parts
+        if ' ' in repo_input:
+            repo_alias, repo_url = repo_input.split(' ', 1)
         else:
-            raise ValueError(f"Invalid repository input: {repo_input}")
-
-        return repo_alias, repo_url
+            repo_url = repo_input
+            repo_alias = repo_url.rstrip('/').split('/')[-1]
+        return repo_alias.lower(), repo_url  # Lower case to match the case-insensitive check
 
 def setup(bot):
     bot.register_plugin(Zypper)
-

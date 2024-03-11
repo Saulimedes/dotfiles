@@ -37,6 +37,10 @@
 
 ;; Sane defaults
 (setq-default
+ electric-pair-mode 1
+ display-line-numbers 'relative
+ indent-tabs-mode t
+ vc-follow-symlinks t
  use-package-always-ensure t		; Always ensure
  kill-ring-max 300                      ; Set kill-ring to max 300
  indent-tabs-mode nil                   ; Use spaces instead of tabs
@@ -45,7 +49,7 @@
  backup-by-copying t                    ; Don't create backup files
  version-control t                      ; use versioned backups
  delete-old-versions t
- backup-directory-alist '((expand-file-name "backup" user-emacs-directory))
+ backup-directory-alist `(("." . ,(expand-file-name "backup" user-emacs-directory)))
  kept-new-versions 6
  kept-old-versions 2
  auto-save-default nil                  ; Don't auto-save
@@ -77,8 +81,6 @@
 
 ;; Load custom settings from custom.el
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
 (load custom-file)
 
 ;; start server

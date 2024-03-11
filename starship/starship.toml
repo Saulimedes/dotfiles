@@ -1,6 +1,6 @@
 add_newline = false
 format = """$directory$git_branch$git_status$hostname$character"""
-command_timeout = 200
+command_timeout = 400
 
 [character]
 success_symbol = "[❯](bold green)"
