@@ -1,10 +1,8 @@
 - zypper:
     public_keys:
-      - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
       - https://rpm.librewolf.net/pubkey.gpg
       - https://dl.google.com/linux/linux_signing_key.pub
     repositories:
-      - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
       - url: "https://rpm.librewolf.net"
         alias: "librewolf"
       - https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo
@@ -16,9 +14,7 @@
       - ansible
       - ripgrep
       - fzf
-      - procs
       - neofetch
-      - brave-browser
       - ansible-lint
       - bat
       - flatpak
@@ -39,10 +35,8 @@
       - opi
       - lsd
       - openssl 
-      - kubernetes-client
       - stern
       - kail
-      - k9s
       - kubectx
       - kustomize
       - popeye
@@ -75,8 +69,3 @@
       - telegram-desktop
       - pandoc
 
-- flatpak: 
-    - jdownloader
-    - bottle
-    - Zoom 
-    - google-chrome
