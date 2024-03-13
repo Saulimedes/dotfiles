@@ -1,0 +1,41 @@
+---
+packages:
+  - git
+  - stow
+  - bottom
+  - direnv
+  - ansible
+  - ripgrep
+  - fzf
+  - ansible-lint
+  - tealdeer
+  - strace
+  - fish
+  - zip
+  - unrar
+  - ShellCheck
+  - pwgen
+  - gcc
+  - make
+  - openssl
+  - tcpdump
+  - nmap
+  - zoxide
+  - jq
+  - telnet
+  - net-tools
+  - gcc-c++
+  - bind-utils
+  - starship
+  - netcat-openbsd
+  - hyperfine
+  - nodejs
+  - curl
+  - pandoc
+
+fish_plugins:
+  - jorgebucaran/fisher
+  - edc/bass
+  - evanlucas/fish-kubectl-completions
+  - kidonng/zoxide.fish
+  - jorgebucaran/autopair.fish

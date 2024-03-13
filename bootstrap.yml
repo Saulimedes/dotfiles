@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: true
+  roles:
+    - core
+    - desktop
+    - work
+    - librewolf
+    - tailscale

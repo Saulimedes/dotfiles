@@ -1,0 +1,8 @@
+---
+packages:
+  - kubectx
+  - kubernetes-client
+  - stern
+  - kubens
+  - kustomize
+  - helm

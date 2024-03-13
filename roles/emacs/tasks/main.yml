@@ -1,0 +1,9 @@
+---
+- name: Install emacs
+  become: true
+  ansible.builtin.zypper:
+    name: emacs
+    state: present
+
+- name: Symlink emacs config
+  shell: stow --adopt -d config -t ~/ emacs
