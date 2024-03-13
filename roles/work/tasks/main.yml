@@ -1,0 +1,69 @@
+---
+- name: Install work packages
+  become: true
+  ansible.builtin.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Ensure .kube directory exists in the home directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.kube"
+    state: directory
+    mode: '0755'
+
+- name: Import Microsoft GPG key
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+
+- name: Add Microsoft Edge repository
+  become: true
+  ansible.builtin.zypper_repository:
+    name: microsoft-edge
+    repo: https://packages.microsoft.com/yumrepos/edge
+    state: present
+    autorefresh: true
+
+- name: Install Microsoft Edge Stable
+  become: true
+  ansible.builtin.zypper:
+    name: microsoft-edge-stable
+    state: present
+
+- name: Check if AWS CLI is already installed
+  command: aws --version
+  register: aws_cli_check
+  ignore_errors: yes
+
+- name: Download AWS CLI v2 installation package
+  ansible.builtin.get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: "/tmp/awscliv2.zip"
+
+- name: Unzip AWS CLI v2 installation package
+  ansible.builtin.unarchive:
+    src: "/tmp/awscliv2.zip"
+    dest: "/tmp/"
+    remote_src: yes
+
+- name: Update AWS CLI v2
+  become: true
+  ansible.builtin.command:
+    cmd: "/tmp/aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update"
+  when: aws_cli_check.rc == 0
+
+- name: Install AWS CLI v2
+  become: true
+  ansible.builtin.command:
+    cmd: "/tmp/aws/install"
+  when: aws_cli_check.rc != 0
+
+- name: Clean up installation files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/tmp/awscliv2.zip"
+    - "/tmp/aws/"

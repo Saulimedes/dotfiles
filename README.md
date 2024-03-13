@@ -1,11 +1,13 @@
 # Dotfiles
 
-<p align="center">
-  <img src="images/dotfiles.png" alt="My Dotfiles Setup">
-</p>
+  ·▄▄▄▄        ▄▄▄▄▄·▄▄▄▪  ▄▄▌  ▄▄▄ ..▄▄ · 
+  ██▪ ██ ▪     •██  ▐▄▄·██ ██•  ▀▄.▀·▐█ ▀. 
+  ▐█· ▐█▌ ▄█▀▄  ▐█.▪██▪ ▐█·██▪  ▐▀▀▪▄▄▀▀▀█▄
+  ██. ██ ▐█▌.▐▌ ▐█▌·██▌.▐█▌▐█▌▐▌▐█▄▄▌▐█▄▪▐█
+▀ ▀▀▀▀▀•  ▀█▄▀▪ ▀▀▀ ▀▀▀ ▀▀▀.▀▀▀  ▀▀▀  ▀▀▀▀ 
 
 ## About
-This repo is a collection of all my dotfiles managed by dotbot.
+This repo is a collection of all my dotfiles managed by Ansible.
 
 ## Installation
 ```
@@ -15,7 +17,7 @@ cd .dotfiles
 ```
 
 ## What gets installed
-* Distro: opensuse
+* Distro: OpenSuSE
 * Bootstrap Installation
 * Editor: neovim
 * Fonts: MonoLisa

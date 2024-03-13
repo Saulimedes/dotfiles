@@ -1,0 +1,9 @@
+---
+- name: Install neovim
+  become: true
+  ansible.builtin.zypper:
+    name: neovim
+    state: present
+
+- name: Symlink neovim config
+  shell: stow --adopt -d config -t ~/ nvim

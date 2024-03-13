@@ -1,0 +1,21 @@
+---
+fonts:
+  - fontawesome-fonts
+  - google-roboto-fonts
+  - fetchmsttfonts
+
+packages:
+  - telegram-desktop
+  - wl-clipboard
+  - wezterm
+  - podman 
+  - mpv
+  - yt-dlp
+  #- hplip
+  - flatpak
+  - android-tools
+
+flatpak:
+  - org.jdownloader.JDownloader
+  - com.usebottles.bottles
+  - us.zoom.Zoom 

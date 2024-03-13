@@ -1,0 +1,50 @@
+---
+- name: Install fonts
+  become: true
+  ansible.builtin.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ fonts }}"
+
+- name: Ensure fonts submodule is updated
+  ansible.builtin.git:
+    repo: 'git@github.com:Saulimedes/fonts.git' 
+    dest: '{{ playbook_dir }}//fonts'
+    recursive: true
+    force: true 
+    accept_hostkey: true
+
+- name: Ensure .local/share/fonts directory exists in the home directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/share/fonts"
+    state: directory
+    mode: '0755' 
+
+- name: Copy fonts to the target directory
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ ansible_env.HOME }}/.local/share/fonts/"
+    mode: '0644'
+  with_fileglob:
+    - "fonts/*.ttf"
+
+- name: Install desktop packages
+  become: true
+  ansible.builtin.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Install Flatpak packages
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ flatpak }}"
+
+- name: Symlink desktop dotfiles
+  shell: stow --adopt -d config -t ~/ {{ item }}
+  loop:
+    - yt-dlp
+    - mpv
+    - wezterm
+ 

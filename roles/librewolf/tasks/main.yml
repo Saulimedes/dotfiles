@@ -1,0 +1,27 @@
+---
+- name: Import LibreWolf GPG key
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://rpm.librewolf.net/pubkey.gpg
+
+- name: Add the LibreWolf repository
+  become: true
+  ansible.builtin.zypper_repository:
+    name: librewolf
+    repo: https://rpm.librewolf.net
+    auto_import_keys: true
+    state: present
+
+- name: Install LibreWolf
+  become: true
+  ansible.builtin.zypper:
+    name: librewolf
+    state: present
+
+- name: Uninstall firefox if installed
+  become: true
+  ansible.builtin.zypper:
+    name: firefox
+    state: absent
+

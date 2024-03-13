@@ -1,0 +1,88 @@
+---
+- name: Install core packages
+  become: true
+  ansible.builtin.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Locate the fish shell
+  ansible.builtin.shell: command -v fish
+  register: fish_path
+  ignore_errors: true
+
+- name: Change the default shell to fish
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    shell: "{{ fish_path.stdout }}"
+  when: fish_path.rc == 0 and fish_path.stdout != ''
+
+- name: Symlink core dotfiles
+  shell: stow --adopt -d config -t ~/ {{ item }}
+  loop:
+    - ansible
+    - bat
+    - btop
+    - direnv
+    - fd
+    - fish
+    - git
+    - ripgrep
+    - starship
+    - ssh
+    - tmux
+    - lsd
+
+- name: Ensure .local/bin directory exists in the home directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: '0755' 
+
+- name: Symlink scripts
+  shell: stow --adopt -d scripts -t ~/.local/bin scripts
+
+- name: Install Fisher package manager
+  ansible.builtin.shell:
+    cmd: "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+  args:
+    executable: "{{ fish_path.stdout }}"
+  ignore_errors: yes
+
+- name: Update Fish Plugins
+  ansible.builtin.shell:
+    cmd: "fisher update"
+  args:
+    executable: "{{ fish_path.stdout }}"
+
+- name: Update Fish Completions
+  ansible.builtin.shell:
+    cmd: "fish_update_completions"
+  args:
+    executable: "{{ fish_path.stdout }}"
+
+- name: Install Fish plugins
+  ansible.builtin.shell:
+    cmd: fisher install {{ item }}
+  loop: "{{ fish_plugins }}"
+  args:
+    executable: "{{ fish_path.stdout }}"
+
+- name: Ensure tmux plugin directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+    state: directory
+    mode: '0755'
+
+- name: Install TPM (Tmux Plugin Manager)
+  ansible.builtin.git:
+    repo: 'https://github.com/tmux-plugins/tpm'
+    dest: "{{ ansible_env.HOME }}/.tmux/plugins/tpm"
+    clone: yes
+    update: yes
+
+- name: Update tmux plugins
+  ansible.builtin.shell:
+    cmd: "{{ ansible_env.HOME }}/.tmux/plugins/tpm/bin/update_plugins all"
+    executable: /bin/bash
