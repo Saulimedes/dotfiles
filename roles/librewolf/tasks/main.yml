@@ -25,3 +25,78 @@
     name: firefox
     state: absent
 
+- name: Check for the existence of profiles.ini
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.librewolf/profiles.ini"
+  register: profiles_ini_stat
+
+- name: Start Librewolf to generate profiles.ini if not exists
+  ansible.builtin.shell:
+    cmd: "librewolf --headless"
+  changed_when: false
+  async: 40
+  poll: 0
+  when: not profiles_ini_stat.stat.exists
+
+- name: Wait a few seconds for Librewolf to initialize
+  ansible.builtin.pause:
+    seconds: 40
+  when: not profiles_ini_stat.stat.exists
+
+- name: Kill Librewolf after initialization
+  ansible.builtin.shell:
+    cmd: pkill -f librewolf
+  changed_when: false
+  when: not profiles_ini_stat.stat.exists
+
+- name: Verify the contents of profiles.ini
+  ansible.builtin.shell:
+    cmd: cat "{{ ansible_env.HOME }}/.librewolf/profiles.ini"
+  register: profiles_ini_contents
+  changed_when: false
+
+- name: Extract path of the default profile from profiles.ini
+  ansible.builtin.shell:
+    cmd: awk -F= '/Path=/ && f{print $2; exit} /Default=1/{f=1}' "{{ ansible_env.HOME }}/.librewolf/profiles.ini"
+  register: librewolf_default_profile_path_raw
+  changed_when: false
+
+- name: Debug contents of profiles.ini
+  ansible.builtin.debug:
+    msg: "{{ profiles_ini_contents.stdout }}"
+
+- name: Set librewolf default profile path as fact
+  ansible.builtin.set_fact:
+    librewolf_default_profile_path: "{{ ansible_env.HOME }}/.librewolf/{{ librewolf_default_profile_path_raw.stdout }}"
+  when: librewolf_default_profile_path_raw.stdout | length > 0
+
+- name: Debug extracted path
+  ansible.builtin.debug:
+    var: librewolf_default_profile_path_raw.stdout
+
+- name: Add in Librewolf config
+  ansible.builtin.copy:
+    src: files/user.js
+    dest: "{{ librewolf_default_profile_path }}/user.js"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  when: librewolf_default_profile_path is defined and librewolf_default_profile_path != ''
+
+- name: Create chrome directory in Librewolf profile
+  ansible.builtin.file:
+    path: "{{ librewolf_default_profile_path }}/chrome"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+  when: librewolf_default_profile_path is defined and librewolf_default_profile_path != ''
+
+- name: Copy chrome directory content to Librewolf profile
+  ansible.builtin.copy:
+    src: files/chrome/
+    dest: "{{ librewolf_default_profile_path }}/chrome"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  when: librewolf_default_profile_path is defined and librewolf_default_profile_path != ''
+
