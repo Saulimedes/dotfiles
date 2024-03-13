@@ -43,7 +43,7 @@
     - wezterm
 
 - name: Add Flathub remote for current user
-  ansible.builtin.shell: flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  ansible.builtin.shell: flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 - name: Install Flatpak packages
   community.general.flatpak:
