@@ -1,0 +1,12 @@
+---
+packages:
+  - hyprland
+  - wofi
+  - xdg-desktop-portal-hyprland
+  - grim
+  - xwayland
+  - swww  
+  - pipewire
+  - mako
+  - clipman   
+

@@ -18,6 +18,11 @@
     shell: "{{ fish_path.stdout }}"
   when: fish_path.rc == 0 and fish_path.stdout != ''
 
+- name: Delete .bashrc file in the user's home directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    state: absent
+
 - name: Symlink core dotfiles
   shell: stow --adopt -d config -t ~/ {{ item }}
   loop:
@@ -41,7 +46,7 @@
     mode: '0755' 
 
 - name: Symlink scripts
-  shell: stow --adopt -d scripts -t ~/.local/bin scripts
+  shell: stow --adopt -d . -t ~/.local/bin scripts
 
 - name: Install Fisher package manager
   ansible.builtin.shell:

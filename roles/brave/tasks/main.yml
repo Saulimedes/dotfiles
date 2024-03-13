@@ -18,3 +18,9 @@
   ansible.builtin.zypper:
     name: brave-browser
     state: present
+
+- name: Uninstall firefox if installed
+  become: true
+  ansible.builtin.zypper:
+    name: firefox
+    state: absent

@@ -1,0 +1,12 @@
+---
+- name: Install hyprland packages
+  become: true
+  ansible.builtin.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Symlink hyprland dotfiles
+  shell: stow -d config -t ~/ {{ item }}
+  loop:
+    - hypr
