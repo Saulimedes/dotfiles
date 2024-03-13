@@ -35,16 +35,19 @@
     state: present
   loop: "{{ packages }}"
 
-- name: Install Flatpak packages
-  community.general.flatpak:
-    name: "{{ item }}"
-    state: present
-  loop: "{{ flatpak }}"
-
 - name: Symlink desktop dotfiles
   shell: stow --adopt -d config -t ~/ {{ item }}
   loop:
     - yt-dlp
     - mpv
     - wezterm
- 
+
+- name: Add Flathub remote for current user
+  ansible.builtin.shell: flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+- name: Install Flatpak packages
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ flatpak }}"
+
