@@ -1,5 +1,7 @@
 # default features
 set -U fish_features stderr-nocaret qmark-noglob ampersand-nobg-in-token
+set -U fisher_path ~/.config/fish/plugins
+
 set fish_greeting ""
 set -x DIRENV_LOG_FORMAT ""
 

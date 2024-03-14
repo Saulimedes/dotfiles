@@ -1,8 +1,3 @@
-# Run direnv on initial fish with fish_prompt event
-# Support history arrows
-# To override create direnv-hook function in your ~/.config/fish/functions
-# Thanks to wderezin
-
 function direnv-hook
     function __direnv_export
         command direnv export fish | source
@@ -53,3 +48,4 @@ function direnv-hook
         functions --erase __direnv_cd_hook
     end
 end
+
