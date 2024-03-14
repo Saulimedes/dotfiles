@@ -21,6 +21,23 @@
 .*.local
 .Trash
 .terraform
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+.org-id-locations
+*_archive
+*_flymake.*
+.projectile
+.dir-locals.el
+tags
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
 
 # python
 __pycache__/
