@@ -1,0 +1,7 @@
+---
+- name: Update registries.conf
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/containers/registries.conf"
+    regexp: '^(unqualified-search-registries\s*=\s*\[)(.*)("$)'
+    line: '\g<1>"docker.io", "registry.fedoraproject.org"\3'
+    backrefs: yes

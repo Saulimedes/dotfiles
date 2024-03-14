@@ -34,13 +34,13 @@
   ansible.builtin.shell:
     cmd: "librewolf --headless"
   changed_when: false
-  async: 40
+  async: 25 
   poll: 0
   when: not profiles_ini_stat.stat.exists
 
 - name: Wait a few seconds for Librewolf to initialize
   ansible.builtin.pause:
-    seconds: 40
+    seconds: 25
   when: not profiles_ini_stat.stat.exists
 
 - name: Kill Librewolf after initialization

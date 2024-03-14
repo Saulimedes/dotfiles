@@ -5,8 +5,13 @@ packages:
   - xdg-desktop-portal-hyprland
   - grim
   - xwayland
-  - swww  
+  - wl-clipboard
   - pipewire
-  - mako
+  - wireplumber
+  - NetworkManager-applet
+  - dunst
   - clipman   
+  - lxappearance
+  - qt6-wayland
+  - qt6ct
 

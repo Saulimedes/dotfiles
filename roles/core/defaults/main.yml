@@ -3,6 +3,8 @@ packages:
   - git
   - stow
   - bottom
+  - bat
+  - bat-extras
   - direnv
   - ansible
   - ripgrep
@@ -10,6 +12,7 @@ packages:
   - ansible-lint
   - tealdeer
   - strace
+  - sshpass
   - fish
   - zip
   - unrar

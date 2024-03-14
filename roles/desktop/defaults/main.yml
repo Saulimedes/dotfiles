@@ -6,11 +6,21 @@ fonts:
 
 packages:
   - telegram-desktop
-  - wl-clipboard
   - wezterm
   - podman 
+  - podman-compose 
+  - NetworkManager-tui
+  - NetworkManager-vpnc
+  - NetworkManager-wwan
+  - NetworkManager-openconnect
+  - NetworkManager-openvpn
+  - NetworkManager-connection-editor
+  - NetworkManager-dns-dnsmasq
   - mpv
   - yt-dlp
+  - xdg-user-dirs 
+  - xdg-utils
+  - ffmpeg
   #- hplip
   - flatpak
   - android-tools

@@ -6,3 +6,4 @@ packages:
   - kubens
   - kustomize
   - helm
+  - popeye

@@ -42,6 +42,26 @@
     - mpv
     - wezterm
 
+- name: Create a containers directory in the current user's .config directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/containers"
+    state: directory
+    mode: '0755'
+    
+- name: Copy registries.conf to the new containers directory
+  ansible.builtin.copy:
+    src: /etc/containers/registries.conf
+    dest: "{{ ansible_env.HOME }}/.config/containers/registries.conf"
+    remote_src: yes
+  notify: Update registries.conf
+
+- name: Add current user to the flatpak group
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    groups: flatpak
+    append: yes
+
 - name: Add Flathub remote for current user
   ansible.builtin.shell: flatpak remote-add --user --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 

@@ -1,0 +1,4 @@
+---
+packages:
+  - neovim
+  - ruby-devel
