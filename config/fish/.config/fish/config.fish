@@ -1,13 +1,21 @@
 # default features
 set -U fish_features stderr-nocaret qmark-noglob ampersand-nobg-in-token
-set -U fisher_path ~/.config/fish/plugins
-
 set fish_greeting ""
 set -x DIRENV_LOG_FORMAT ""
 
 # paths
 set -gx PATH /usr/local/bin /usr/bin /usr/sbin /usr/local/sbin $PATH
 set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin 
+
+## fish plugins
+set fisher_path $__fish_config_dir/plugins
+
+set fish_complete_path $fish_complete_path[1] $fisher_path/completions $fish_complete_path[2..]
+set fish_function_path $fish_function_path[1] $fisher_path/functions $fish_function_path[2..]
+
+for file in $fisher_path/conf.d/*.fish
+    source $file
+end
 
 # exports
 set -gx EDITOR "nvim"
