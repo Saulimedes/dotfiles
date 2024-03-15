@@ -25,6 +25,4 @@ jobs:
       run: ansible-lint
 
     - name: Execute bootstrap script
-      run: |
-        chmod +x ./bootstrap
-        ./bootstrap
+      run: ./bootstrap
