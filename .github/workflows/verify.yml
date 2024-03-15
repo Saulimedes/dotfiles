@@ -20,6 +20,8 @@ jobs:
       - name: Install Ansible and ansible-lint
         run: |
           zypper install -y ansible ansible-lint
+          echo "root ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/github-actions
+          chmod 0440 /etc/sudoers.d/github-actions
 
       - name: Run ansible-lint
         run: ansible-lint
