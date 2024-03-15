@@ -1,4 +1,4 @@
-name: Ansible Lint and Bootstrap
+name: lint and bootstrap
 
 on:
   push:
@@ -21,7 +21,7 @@ jobs:
         zypper install -y ansible ansible-lint
 
     - name: Run ansible-lint
-      run: ansible-lint -c ./ansible-lint
+      run: ansible-lint -c .ansible-lint
 
     - name: Execute bootstrap script
       run: ./bootstrap
