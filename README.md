@@ -34,7 +34,11 @@ This repo is a collection of all my dotfiles managed by Ansible.
 ```
 git clone git@github.com:Saulimedes/dotfiles.git .dotfiles
 cd .dotfiles
+# install and configure system
 ./bootstrap
+
+# just configure system
+./config
 ```
 
 ## What gets installed

@@ -25,6 +25,8 @@
 - name: Symlink fonts
   shell: stow --adopt -d . -t ~/.local/share/fonts/ fonts
   when: fonts_submodule_update is not failed
+  tags: 
+    - dotfiles
 
 - name: Install desktop packages
   become: true
@@ -38,6 +40,8 @@
   loop:
     - yt-dlp
     - mpv
+  tags: 
+    - dotfiles
 
 - name: Create a containers directory in the current user's .config directory
   ansible.builtin.file:

@@ -1,0 +1,21 @@
+---
+skip_list:
+  - 'package-latest' 
+  - 'command-instead-of-module' 
+  - 'command-instead-of-shell'
+  - 'unnamed-task' 
+
+warn_list: 
+  - 'idempotency' 
+  - 'no-changed-when'
+
+rulesdir: [] 
+
+exclude_paths:
+  - '.venv/' 
+  - 'tests/' 
+
+quiet: false 
+parseable: false 
+use_default_rules: true 
+

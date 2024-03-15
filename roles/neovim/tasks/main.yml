@@ -7,3 +7,5 @@
 
 - name: Symlink neovim config
   shell: stow --adopt -d config -t ~/ nvim
+  tags: 
+    - dotfiles

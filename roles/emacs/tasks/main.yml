@@ -7,3 +7,5 @@
 
 - name: Symlink emacs config
   shell: stow --adopt -d config -t ~/ emacs
+  tags: 
+    - dotfiles

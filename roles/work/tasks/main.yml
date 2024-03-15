@@ -35,7 +35,7 @@
 - name: Check if AWS CLI is already installed
   command: aws --version
   register: aws_cli_check
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Download AWS CLI v2 installation package
   ansible.builtin.get_url:

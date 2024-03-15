@@ -1,2 +1,2 @@
 #!/usr/bin/sh
-ansible-playbook bootstrap.yml --ask-become-pass
+ansible-playbook install.yml --ask-become-pass

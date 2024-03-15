@@ -1,0 +1,30 @@
+name: Ansible Lint and Bootstrap on openSUSE
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: opensuse/tumbleweed
+
+    steps:
+    - uses: actions/checkout@v2
+      name: Check out repository code
+
+    - name: Install Ansible and ansible-lint
+      run: |
+        zypper install -y ansible
+        ansible-galaxy install ansible-lint
+
+    - name: Run ansible-lint
+      run: ansible-lint
+
+    - name: Execute bootstrap script
+      run: |
+        chmod +x ./bootstrap
+        ./bootstrap

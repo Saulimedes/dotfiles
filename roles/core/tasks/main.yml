@@ -38,6 +38,8 @@
     - ssh
     - tmux
     - lsd
+  tags: 
+    - dotfiles
 
 - name: Ensure .local/bin directory exists in the home directory
   ansible.builtin.file:
@@ -47,6 +49,8 @@
 
 - name: Symlink scripts
   shell: stow --adopt -d . -t ~/.local/bin scripts
+  tags: 
+    - dotfiles
 
 - name: Install Fisher package manager
   ansible.builtin.shell:
