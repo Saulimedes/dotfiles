@@ -22,8 +22,8 @@ jobs:
           zypper install -y ansible ansible-lint
 
       - name: Run ansible-lint
-        run: ansible-lint -c .ansible-lint
+        run: ansible-lint
 
       - name: Execute bootstrap script
-        run: ./bootstrap
+        run: ansible-playbook install.yml 
 
