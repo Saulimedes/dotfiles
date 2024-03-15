@@ -8,6 +8,8 @@ packages:
   - wl-clipboard
   - pipewire
   - wireplumber
+  - playerctl
+  - wezterm
   - NetworkManager-applet
   - dunst
   - clipman   

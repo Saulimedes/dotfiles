@@ -8,11 +8,13 @@
 
 - name: Ensure fonts submodule is updated
   ansible.builtin.git:
-    repo: 'git@github.com:Saulimedes/fonts.git' 
-    dest: '{{ playbook_dir }}//fonts'
+    repo: 'git@github.com:Saulimedes/fonts.git'
+    dest: '{{ playbook_dir }}/fonts'
     recursive: true
-    force: true 
+    force: true
     accept_hostkey: true
+  ignore_errors: true
+  register: fonts_submodule_update
 
 - name: Ensure .local/share/fonts directory exists in the home directory
   ansible.builtin.file:
@@ -20,13 +22,9 @@
     state: directory
     mode: '0755' 
 
-- name: Copy fonts to the target directory
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ ansible_env.HOME }}/.local/share/fonts/"
-    mode: '0644'
-  with_fileglob:
-    - "fonts/*.ttf"
+- name: Symlink fonts
+  shell: stow --adopt -d . -t ~/.local/share/fonts/ fonts
+  when: fonts_submodule_update is not failed
 
 - name: Install desktop packages
   become: true
@@ -40,7 +38,6 @@
   loop:
     - yt-dlp
     - mpv
-    - wezterm
 
 - name: Create a containers directory in the current user's .config directory
   ansible.builtin.file:

@@ -10,3 +10,31 @@
   shell: stow -d config -t ~/ {{ item }}
   loop:
     - hypr
+    - wezterm
+
+- name: Install greetd
+  become: true
+  ansible.builtin.zypper:
+    name: greetd
+    state: present
+
+- name: Install tuigreet
+  become: true
+  ansible.builtin.zypper:
+    name: tuigreet
+    state: present
+
+- name: Configure greetd from template
+  become: true
+  ansible.builtin.template:
+    src: greetd_config.toml.j2
+    dest: /etc/greetd/config.toml
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable greetd
+  become: true
+  ansible.builtin.systemd:
+    name: greetd
+    enabled: yes

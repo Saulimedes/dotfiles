@@ -6,7 +6,6 @@ fonts:
 
 packages:
   - telegram-desktop
-  - wezterm
   - podman 
   - podman-compose 
   - NetworkManager-tui

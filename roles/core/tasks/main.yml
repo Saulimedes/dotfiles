@@ -53,7 +53,7 @@
     cmd: "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
   args:
     executable: "{{ fish_path.stdout }}"
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: Update Fish Plugins
   ansible.builtin.shell:
