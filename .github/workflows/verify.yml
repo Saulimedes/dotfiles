@@ -22,7 +22,7 @@ jobs:
           zypper install -y ansible ansible-lint
 
       - name: Run ansible-lint
-        run: ansible-lint
+        run: ansible-lint -c .ansible-lint
 
       - name: Execute bootstrap script
         run: ./bootstrap
