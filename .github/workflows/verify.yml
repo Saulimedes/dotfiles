@@ -1,4 +1,4 @@
-name: Ansible Lint and Bootstrap on openSUSE
+name: Ansible Lint and Bootstrap
 
 on:
   push:
@@ -18,8 +18,7 @@ jobs:
 
     - name: Install Ansible and ansible-lint
       run: |
-        zypper install -y ansible
-        ansible-galaxy install ansible-lint
+        zypper install -y ansible ansible-lint
 
     - name: Run ansible-lint
       run: ansible-lint
