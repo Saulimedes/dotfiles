@@ -1,11 +1,11 @@
 ---
 - name: Install neovim
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: neovim
     state: present
 
 - name: Symlink neovim config
-  shell: stow --adopt -d config -t ~/ nvim
+  ansible.builtin.shell: stow --adopt -d config -t ~/ nvim
   tags: 
     - dotfiles

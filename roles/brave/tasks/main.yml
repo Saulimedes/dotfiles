@@ -7,7 +7,7 @@
 
 - name: Add the Brave browser repository
   become: true
-  ansible.builtin.zypper_repository:
+  community.general.zypper_repository:
     name: brave-browser
     repo: https://brave-browser-rpm-release.s3.brave.com/x86_64/
     state: present
@@ -15,12 +15,12 @@
 
 - name: Install Brave browser
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: brave-browser
     state: present
 
 - name: Uninstall firefox if installed
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: firefox
     state: absent

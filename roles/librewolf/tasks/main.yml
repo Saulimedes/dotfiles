@@ -7,7 +7,7 @@
 
 - name: Add the LibreWolf repository
   become: true
-  ansible.builtin.zypper_repository:
+  community.general.zypper_repository:
     name: librewolf
     repo: https://rpm.librewolf.net
     auto_import_keys: true
@@ -15,13 +15,13 @@
 
 - name: Install LibreWolf
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: librewolf
     state: present
 
 - name: Uninstall firefox if installed
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: firefox
     state: absent
 
@@ -89,6 +89,7 @@
     state: directory
     owner: "{{ ansible_user_id }}"
     group: "{{ ansible_user_gid }}"
+    mode: '0700'
   when: librewolf_default_profile_path is defined and librewolf_default_profile_path != ''
 
 - name: Copy chrome directory content to Librewolf profile

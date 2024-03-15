@@ -1,7 +1,7 @@
 ---
 - name: Install work packages
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
@@ -20,7 +20,7 @@
 
 - name: Add Microsoft Edge repository
   become: true
-  ansible.builtin.zypper_repository:
+  community.general.zypper_repository:
     name: microsoft-edge
     repo: https://packages.microsoft.com/yumrepos/edge
     state: present
@@ -28,17 +28,18 @@
 
 - name: Install Microsoft Edge Stable
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: microsoft-edge-stable
     state: present
 
 - name: Check if AWS CLI is already installed
-  command: aws --version
+  ansible.builtin.command: aws --version
   register: aws_cli_check
   ignore_errors: true
 
 - name: Download AWS CLI v2 installation package
   ansible.builtin.get_url:
+    mode: '0600'
     url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
     dest: "/tmp/awscliv2.zip"
 

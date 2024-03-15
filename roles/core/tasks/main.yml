@@ -1,7 +1,7 @@
 ---
 - name: Install core packages
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
@@ -24,7 +24,7 @@
     state: absent
 
 - name: Symlink core dotfiles
-  shell: stow --adopt -d config -t ~/ {{ item }}
+  ansible.builtin.shell: stow --adopt -d config -t ~/ {{ item }}
   loop:
     - ansible
     - bat
@@ -48,7 +48,7 @@
     mode: '0755' 
 
 - name: Symlink scripts
-  shell: stow --adopt -d . -t ~/.local/bin scripts
+  ansible.builtin.shell: stow --adopt -d . -t ~/.local/bin scripts
   tags: 
     - dotfiles
 

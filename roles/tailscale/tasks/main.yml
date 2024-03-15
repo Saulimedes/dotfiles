@@ -7,14 +7,14 @@
 
 - name: Add the Tailscale repository
   become: true
-  ansible.builtin.zypper_repository:
+  community.general.zypper_repository:
     repo: 'https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo'
     state: present
     auto_import_keys: yes
 
 - name: Install Tailscale
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: tailscale
     state: present
 

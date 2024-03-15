@@ -1,11 +1,11 @@
 ---
 - name: Install emacs
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: emacs
     state: present
 
 - name: Symlink emacs config
-  shell: stow --adopt -d config -t ~/ emacs
+  ansible.builtin.shell: stow --adopt -d config -t ~/ emacs
   tags: 
     - dotfiles

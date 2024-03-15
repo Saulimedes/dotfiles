@@ -1,26 +1,26 @@
 ---
 - name: Install hyprland packages
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
 
 - name: Symlink hyprland dotfiles
-  shell: stow -d config -t ~/ {{ item }}
+  ansible.builtin.shell: stow -d config -t ~/ {{ item }}
   loop:
     - hypr
     - wezterm
 
 - name: Install greetd
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: greetd
     state: present
 
 - name: Install tuigreet
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: tuigreet
     state: present
 

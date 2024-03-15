@@ -1,7 +1,7 @@
 ---
 - name: Install fonts
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: "{{ item }}"
     state: present
   loop: "{{ fonts }}"
@@ -23,20 +23,20 @@
     mode: '0755' 
 
 - name: Symlink fonts
-  shell: stow --adopt -d . -t ~/.local/share/fonts/ fonts
+  ansible.builtin.shell: stow --adopt -d . -t ~/.local/share/fonts/ fonts
   when: fonts_submodule_update is not failed
   tags: 
     - dotfiles
 
 - name: Install desktop packages
   become: true
-  ansible.builtin.zypper:
+  community.general.zypper_repository:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
 
 - name: Symlink desktop dotfiles
-  shell: stow --adopt -d config -t ~/ {{ item }}
+  ansible.builtin.shell: stow --adopt -d config -t ~/ {{ item }}
   loop:
     - yt-dlp
     - mpv
@@ -54,6 +54,8 @@
     src: /etc/containers/registries.conf
     dest: "{{ ansible_env.HOME }}/.config/containers/registries.conf"
     remote_src: yes
+    mode: '0644'
+    owner: "{{ ansible_user_id }}"
   notify: Update registries.conf
 
 - name: Add current user to the flatpak group

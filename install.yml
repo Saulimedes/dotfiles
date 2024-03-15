@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  name: Setup system
   gather_facts: true
   roles:
     - core
