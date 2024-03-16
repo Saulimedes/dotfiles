@@ -6,6 +6,13 @@
     state: present
   loop: "{{ packages }}"
 
+- name: Install stow for dotfiles management
+  become: true
+  community.general.zypper: 
+    name: stow
+    state: present
+  tags: dotfiles
+
 - name: Locate the fish shell
   ansible.builtin.shell: command -v fish
   register: fish_path
