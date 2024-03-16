@@ -2,7 +2,7 @@
 
 ![test](https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-green)
-
+![Dotfiles](https://img.shields.io/badge/logo-codementor-blue?dotfiles)
 
 ```
                 .-+#%@@@@@@%*=:                                                 

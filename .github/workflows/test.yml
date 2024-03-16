@@ -28,7 +28,5 @@ jobs:
         run: ansible-lint
 
       - name: Install System Configuration
-        run: |
-          mkdir -p /run/tmux/0
-          ansible-playbook install.yml
+        run: ansible-playbook install.yml
         shell: bash
