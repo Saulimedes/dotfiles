@@ -1,5 +1,5 @@
 ---
-name: lint and bootstrap
+name: test
 
 on:
   push:
@@ -26,3 +26,4 @@ jobs:
 
       - name: Install System Configuration
         run: ansible-playbook install.yml
+        shell: bash
