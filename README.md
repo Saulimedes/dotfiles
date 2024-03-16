@@ -1,6 +1,8 @@
 # Dotfiles
 
 ![test](https://github.com/Saulimes/dotfiles/actions/workflows/testy.yml/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 
 ```
                 .-+#%@@@@@@%*=:                                                 
