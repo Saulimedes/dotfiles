@@ -2,7 +2,8 @@
 
 ![test](https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Dotfiles](https://img.shields.io/badge/Saulimedes%20|%20dotfiles-blue?style=flat&logo=terminal)
+![Dotfiles](https://img.shields.io/badge/Saulimedes%20|%20dotfiles-blue?style=flat&logo=gnometerminal&logoColor=lightgrey)
+
 
 
 ```
