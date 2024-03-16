@@ -1,7 +1,7 @@
 ---
 - name: Install hyprland packages
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
@@ -14,13 +14,13 @@
 
 - name: Install greetd
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: greetd
     state: present
 
 - name: Install tuigreet
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: tuigreet
     state: present
 

@@ -1,7 +1,7 @@
 ---
 - name: Install neovim
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: neovim
     state: present
 

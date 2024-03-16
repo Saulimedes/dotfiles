@@ -15,13 +15,13 @@
 
 - name: Install LibreWolf
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: librewolf
     state: present
 
 - name: Uninstall firefox if installed
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: firefox
     state: absent
 

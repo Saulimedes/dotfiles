@@ -1,7 +1,7 @@
 ---
 - name: Install work packages
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
@@ -28,7 +28,7 @@
 
 - name: Install Microsoft Edge Stable
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: microsoft-edge-stable
     state: present
 

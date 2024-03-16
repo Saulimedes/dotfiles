@@ -14,7 +14,7 @@
 
 - name: Install Tailscale
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: tailscale
     state: present
 

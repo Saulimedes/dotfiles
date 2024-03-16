@@ -1,7 +1,7 @@
 ---
 - name: Install fonts
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: "{{ item }}"
     state: present
   loop: "{{ fonts }}"
@@ -30,7 +30,7 @@
 
 - name: Install desktop packages
   become: true
-  community.general.zypper_repository:
+  community.general.zypper: 
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"

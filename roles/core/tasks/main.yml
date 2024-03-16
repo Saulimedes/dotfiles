@@ -17,6 +17,7 @@
     name: "{{ ansible_env.USER }}"
     shell: "{{ fish_path.stdout }}"
   when: fish_path.rc == 0 and fish_path.stdout != ''
+  ignore_errors: true
 
 - name: Delete .bashrc file in the user's home directory
   ansible.builtin.file:
