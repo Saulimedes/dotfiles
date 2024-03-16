@@ -4,3 +4,23 @@
 	overflow-y:scroll;
 	overflow-x:hidden;
 }
+
+:root {
+    --tab-border-radius: 0 !important;
+    --tab-block-margin: 0 !important;
+}
+
+:root[uidensity="compact"] {
+    --tab-min-height: 34px !important;
+    --tab-border-radius: 0 !important;
+    --tab-block-margin: 0 !important;
+}
+
+#tabbrowser-tabs:not([secondarytext-unsupported]) .tab-label-container {
+    height: initial !important; 
+}
+
+#tabbrowser-tabs { 
+  visibility: collapse !important;
+}
+

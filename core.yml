@@ -1,6 +1,6 @@
 ---
-- name: Setup system
+- name: Setup core system
   hosts: all
   gather_facts: true
   roles:
-    - librewolf
+    - core

@@ -6,13 +6,13 @@ on:
     branches:
       - main
   pull_request:
-  workflow_dispatch:  # Allows manual trigger for the complete system setup
+  workflow_dispatch:
 
 env:
   ANSIBLE_FORCE_COLOR: true
 
 jobs:
-  setup-dotfiles-and-lint:
+  test:
     runs-on: ubuntu-latest
     container: 
       image: opensuse/tumbleweed
@@ -28,14 +28,14 @@ jobs:
         run: ansible-lint
 
       - name: Setup Dotfiles
-        run: ansible-playbook install.yml --tags dotfiles
+        run: ansible-playbook core.yml --tags dotfiles
 
-  system-setup:
+  setup:
     runs-on: ubuntu-latest
     container: 
       image: opensuse/tumbleweed
-    needs: setup-dotfiles-and-lint  # Ensures this job runs after setup-dotfiles-and-lint
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # Runs only when manually triggered
+    needs: test
+    if: ${{ github.event_name == 'workflow_dispatch' }} 
 
     steps:
       - uses: actions/checkout@v2
@@ -45,4 +45,4 @@ jobs:
         run: zypper install -y ansible
 
       - name: Execute Full System Setup
-        run: ansible-playbook install.yml
+        run: ansible-playbook core.yml

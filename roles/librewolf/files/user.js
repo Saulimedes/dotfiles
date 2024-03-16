@@ -1,4 +1,5 @@
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("browser.compactmode.show", true);
 user_pref("browser.download.useDownloadDir", false);
 user_pref("browser.download.alwaysOpenPanel", false);
 user_pref("browser.download.manager.addToRecentDocs", false);
@@ -17,11 +18,15 @@ user_pref("gfx.webrender.all", true); // enables WR (GPU) + additional features
 user_pref("gfx.webrender.precache-shaders", true);
 user_pref("gfx.webrender.compositor", true);
 user_pref("layers.gpu-process.enabled", true);
+user_pref("webgl.disabled", false);
+user_pref("identity.fxaccounts.enabled", true);
 user_pref("media.hardware-video-decoding.enabled", true);
 user_pref("browser.cache.memory.max_entry_size", 153600); 
 user_pref("network.buffer.cache.size", 262144); // preferred=327680; default=32768
 user_pref("network.buffer.cache.count", 128); // preferred=240; default=24
 user_pref("network.http.max-connections", 1800); // default=900
+user_pref("browser.translations.neverTranslateLanguages", de)
+user_pref("browser.translations.panelShown", false)
 user_pref("network.http.max-persistent-connections-per-server", 10); // default=6; download connections; anything above 10 is excessive
 
 user_pref("general.smoothScroll",                                       true); // DEFAULT
