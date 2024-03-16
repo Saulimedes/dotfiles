@@ -24,6 +24,5 @@ jobs:
       - name: Run ansible-lint
         run: ansible-lint
 
-      - name: Execute bootstrap script
-        run: ansible-playbook install.yml 
-
+      - name: Install System Configuration
+        run: ansible-playbook install.yml -vvvv
