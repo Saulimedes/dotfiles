@@ -35,6 +35,7 @@ packages:
   - nodejs
   - curl
   - pandoc
+  - tmux
 
 fish_plugins:
   - jorgebucaran/fisher

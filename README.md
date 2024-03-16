@@ -1,5 +1,7 @@
 # Dotfiles
 
+![test](https://github.com/Saulimes/dotfiles/actions/workflows/testy.yml/badge.svg)
+
 ```
                 .-+#%@@@@@@%*=:                                                 
              :*@@@@@@@@@@@@@@@@@+.                                              
