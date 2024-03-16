@@ -25,4 +25,4 @@ jobs:
         run: ansible-lint
 
       - name: Install System Configuration
-        run: ansible-playbook install.yml -vvvv
+        run: ansible-playbook install.yml
