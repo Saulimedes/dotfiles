@@ -5,11 +5,10 @@ set -x DIRENV_LOG_FORMAT ""
 
 # paths
 set -gx PATH /usr/local/bin /usr/bin /usr/sbin /usr/local/sbin $PATH
-set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/.config/emacs/bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin 
+set -U fish_user_paths $fish_user_paths ~/.local/bin ~/.bin ~/.krew/bin bin ~/Applications /var/lib/flatpak/exports/bin/ ~/.cargo/bin 
 
 ## fish plugins
 set fisher_path $__fish_config_dir/plugins
-
 set fish_complete_path $fish_complete_path[1] $fisher_path/completions $fish_complete_path[2..]
 set fish_function_path $fish_function_path[1] $fisher_path/functions $fish_function_path[2..]
 
@@ -21,26 +20,26 @@ end
 set -gx EDITOR "nvim"
 set -gx VISUAL "emacsclient -c -a emacs" 
 
-# bindings
-fish_default_key_bindings
-
-function fish_user_key_bindings
-  bind \b backward-kill-word
-  bind \e\[3\;5~ kill-word
- 
-  # fzf bindings
-  fzf_key_bindings
-  if type -q fzf-history-widget
-    function __custom_fzf_history
-      history --merge
-      fzf-history-widget
-    end
-
-    bind \cr __custom_fzf_history
-  end  
-end
-
 if status --is-interactive
+  # bindings
+  fish_default_key_bindings
+
+  function fish_user_key_bindings
+    bind \b backward-kill-word
+    bind \e\[3\;5~ kill-word
+  
+    # fzf bindings
+    fzf_key_bindings
+    if type -q fzf-history-widget
+      function __custom_fzf_history
+        history --merge
+        fzf-history-widget
+      end
+
+      bind \cr __custom_fzf_history
+    end  
+  end
+
   # direnv hook
   if command -q direnv
     set -g direnv_fish_mode eval_after_arrow
@@ -55,34 +54,35 @@ if status --is-interactive
   # zoxide
   set --universal zoxide_cmd cd
 
+  # fzf
+  set -U FZF_DISABLE_KEYBINDINGS 1
+  set -U FZF_PREVIEW_DIR_CMD "lsd"
+  set -U FZF_TMUX 1
+  set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
+  set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
+  set -x FZF_ALT_C_OPTS "--preview 'lsd -l --depth 1 {} | head -200'"
+
   # ssh
   if test -z (pgrep ssh-agent | string collect)
     eval (ssh-agent -c)
     set -Ux SSH_AUTH_SOCK $SSH_AUTH_SOCK
     set -Ux SSH_AGENT_PID $SSH_AGENT_PID
   end
+
+  # starship prompt
+  if type starship &> /dev/null;
+    starship init fish | source
+  end
 end
-
-# fzf
-set -U FZF_DISABLE_KEYBINDINGS 1
-set -U FZF_PREVIEW_DIR_CMD "lsd"
-set -U FZF_TMUX 1
-set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
-set -gx FZF_DEFAULT_OPTS "--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
-
-#set -x FZF_CTRL_T_OPTS "--preview 'bat {}'"
-set -x FZF_ALT_C_OPTS "--preview 'lsd -l --depth 1 {} | head -200'"
 
 # helper
 alias e="$EDITOR"
-alias em="emacsclient -t -a ''"
 alias cp="cp -airv"
 alias scp="scp -r"
 alias cat="bat"
-alias cls="clear; printf '\033[3J'"
 alias dd="dd status=progress"
 alias mkdir="mkdir -p"
-alias privatemode="fish --private"
+alias nohist="fish --private"
 alias ip="ip --color"
 alias diff="diff --color=auto"
 alias vdir="vdir --color=auto"
@@ -158,9 +158,4 @@ if type -q git
   abbr grb "git rebase"
   abbr gs "git s"
   alias newtag='git tag -a'
-end
-
-# starship prompt
-if type starship &> /dev/null;
-   starship init fish | source
 end

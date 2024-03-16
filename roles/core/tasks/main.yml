@@ -23,6 +23,8 @@
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.bashrc"
     state: absent
+  tags:
+    - dotfiles
 
 - name: Symlink core dotfiles
   ansible.builtin.shell: stow --adopt -d config -t ~/ {{ item }}

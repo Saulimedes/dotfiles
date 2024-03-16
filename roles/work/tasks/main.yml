@@ -32,6 +32,30 @@
     name: microsoft-edge-stable
     state: present
 
+- name: Add Google Cloud SDK repository
+  community.general.zypper_repository:
+    name: google-cloud-sdk
+    repo: https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
+    state: present
+    auto_import_keys: yes
+    disable_gpg_check: no
+  become: true
+
+- name: Import Google Cloud SDK GPG keys
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ item }}"
+  loop:
+    - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+    - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  become: true
+
+- name: Install Google Cloud SDK
+  become: true
+  community.general.zypper: 
+    name: google-cloud-sdk
+    state: present
+
 - name: Check if AWS CLI is already installed
   ansible.builtin.command: aws --version
   register: aws_cli_check

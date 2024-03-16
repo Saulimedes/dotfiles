@@ -33,6 +33,7 @@ packages:
   - netcat-openbsd
   - hyperfine
   - nodejs
+  - httpie
   - curl
   - pandoc
   - tmux
