@@ -1,6 +1,9 @@
 ---
 name: test
 
+env:
+  ANSIBLE_FORCE_COLOR: true
+
 on:
   push:
     branches:

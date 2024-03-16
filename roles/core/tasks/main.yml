@@ -95,4 +95,4 @@
 - name: Update tmux plugins
   ansible.builtin.shell:
     cmd: "{{ ansible_env.HOME }}/.tmux/plugins/tpm/bin/update_plugins all"
-    executable: /bin/bash
+  ignore_errors: true
