@@ -5,7 +5,6 @@ packages:
   - xdg-desktop-portal-hyprland
   - grim
   - xwayland
-  - wl-clipboard
   - pipewire
   - wireplumber
   - playerctl
