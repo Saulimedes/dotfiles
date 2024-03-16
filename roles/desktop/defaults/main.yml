@@ -15,7 +15,6 @@ packages:
   - NetworkManager-openvpn
   - NetworkManager-connection-editor
   - NetworkManager-dns-dnsmasq
-  - wl-clipboard
   - mpv
   - yt-dlp
   - xdg-user-dirs 

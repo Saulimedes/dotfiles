@@ -6,6 +6,7 @@ packages:
   - grim
   - xwayland
   - pipewire
+  - wl-clipboard
   - wireplumber
   - playerctl
   - wezterm
@@ -15,4 +16,3 @@ packages:
   - lxappearance
   - qt6-wayland
   - qt6ct
-

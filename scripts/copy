@@ -4,5 +4,9 @@ case "$(uname -s)" in
    Darwin)
      pbcopy ;;
    *)
-  	 wl-copy ;;
+     if [ ! -z "$WAYLAND_DISPLAY" ]; then
+  		 wl-copy
+  	 else
+  		 xclip -selection clipboard
+		 fi;;
 esac
