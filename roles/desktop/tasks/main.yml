@@ -66,6 +66,7 @@
     append: yes
 
 - name: Add the Flathub repository
+  become: true
   community.general.flatpak_remote:
     name: flathub
     state: present
