@@ -76,5 +76,6 @@
   community.general.flatpak:
     name: "{{ item }}"
     state: present
+    method: user
   loop: "{{ flatpak }}"
 
