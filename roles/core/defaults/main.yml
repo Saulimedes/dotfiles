@@ -8,6 +8,7 @@ packages:
   - direnv
   - ansible
   - ripgrep
+  - pyenv
   - fzf
   - ansible-lint
   - tealdeer
