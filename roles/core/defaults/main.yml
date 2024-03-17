@@ -47,3 +47,4 @@ fish_plugins:
   - evanlucas/fish-kubectl-completions
   - kidonng/zoxide.fish
   - jorgebucaran/autopair.fish
+  - PatrickF1/fzf.fish
