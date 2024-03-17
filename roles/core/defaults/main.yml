@@ -10,6 +10,9 @@ packages:
   - ripgrep
   - pyenv
   - fzf
+  - fzf-fish-completion
+  - fzf-bash-completion
+  - fzf-tmux
   - fd
   - ansible-lint
   - tealdeer
@@ -28,6 +31,8 @@ packages:
   - nmap
   - zoxide
   - jq
+  - yq
+  - yq-fish-completion
   - telnet
   - net-tools
   - gcc-c++
@@ -40,6 +45,7 @@ packages:
   - curl
   - pandoc
   - tmux
+  - yazi
 
 fish_plugins:
   - jorgebucaran/fisher
@@ -47,4 +53,3 @@ fish_plugins:
   - evanlucas/fish-kubectl-completions
   - kidonng/zoxide.fish
   - jorgebucaran/autopair.fish
-  - PatrickF1/fzf.fish

@@ -7,3 +7,5 @@ packages:
   - kustomize
   - helm
   - popeye
+  - kubesec
+  - kubie
