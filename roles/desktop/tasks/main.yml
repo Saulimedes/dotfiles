@@ -79,3 +79,32 @@
     method: user
   loop: "{{ flatpak }}"
 
+- name: Update XDG user directories
+  ansible.builtin.command:
+    cmd: xdg-user-dirs-update
+
+- name: Ensure the Projects directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/Projects"
+    state: directory
+    mode: '0755'
+
+- name: Ensure the Documents/org directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/Documents/org"
+    state: directory
+    mode: '0755'
+
+- name: Add custom Projects directory to XDG user-dirs.dirs
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/user-dirs.dirs"
+    regexp: '^XDG_PROJECTS_DIR='
+    line: 'XDG_PROJECTS_DIR="$HOME/Projects"'
+    create: yes
+
+- name: Add custom Documents/org directory to XDG user-dirs.dirs
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/user-dirs.dirs"
+    regexp: '^XDG_ORG_DIR='
+    line: 'XDG_ORG_DIR="$HOME/Documents/org"'
+    create: yes
