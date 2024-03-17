@@ -5,6 +5,8 @@
   roles:
     - core
     - neovim
+    - emacs
     - desktop
     - work
     - tailscale
+    - hyprland
