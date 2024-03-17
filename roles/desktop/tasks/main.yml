@@ -87,13 +87,13 @@
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/Projects"
     state: directory
-    mode: '0755'
+    mode: '0770'
 
 - name: Ensure the Documents/org directory exists
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/Documents/org"
     state: directory
-    mode: '0755'
+    mode: '0770'
 
 - name: Add custom Projects directory to XDG user-dirs.dirs
   ansible.builtin.lineinfile:
@@ -101,6 +101,7 @@
     regexp: '^XDG_PROJECTS_DIR='
     line: 'XDG_PROJECTS_DIR="$HOME/Projects"'
     create: yes
+    mode: '0770'
 
 - name: Add custom Documents/org directory to XDG user-dirs.dirs
   ansible.builtin.lineinfile:
@@ -108,3 +109,4 @@
     regexp: '^XDG_ORG_DIR='
     line: 'XDG_ORG_DIR="$HOME/Documents/org"'
     create: yes
+    mode: '0770'

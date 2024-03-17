@@ -3,9 +3,10 @@ packages:
   - hyprland
   - wofi
   - xdg-desktop-portal-hyprland
-  - grim
   - xwayland
   - pipewire
+  - hyprpaper
+  - hyprshot
   - wl-clipboard
   - wireplumber
   - playerctl

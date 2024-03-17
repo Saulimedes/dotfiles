@@ -10,6 +10,7 @@ packages:
   - ripgrep
   - pyenv
   - fzf
+  - fd
   - ansible-lint
   - tealdeer
   - lsd
