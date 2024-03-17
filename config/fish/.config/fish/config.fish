@@ -112,12 +112,9 @@ alias "......"=".5"
 
 ## kubectl
 if type -q kubectl
-  set KUBEDIR  ~/.kube
 
-  # Check if the directory exists
-  if test -d $KUBEDIR
-  # Find files within the directory, check for specific content, and then join the paths with ":"
-    set -x KUBECONFIG (string join ":" (fd --max-depth 1 --type f . $KUBEDIR | xargs -I {} sh -c 'grep -qm1 "apiVersion:\|kind:\|clusters:\|contexts:\|users:" "{}" && echo "{}"'))
+  if test -d ~/.kube
+    set -x KUBECONFIG (string join ":" (fd --max-depth 1 --type f . ~/.kube | xargs -I {} sh -c 'grep -qm1 "apiVersion:\|kind:\|clusters:\|contexts:\|users:" "{}" && echo "{}"'))
   end
 
   alias k="kubectl"

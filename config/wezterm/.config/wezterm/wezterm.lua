@@ -1,14 +1,12 @@
 local wezterm = require 'wezterm';
 local act = wezterm.action
 
-
 return {
   font = wezterm.font("IosevkaTerm Nerd Font", {weight="Regular"}),
   font_size = 12.0,
   hide_tab_bar_if_only_one_tab = true,
   hide_mouse_cursor_when_typing = true,
   scrollback_lines = 9999999,
-
   initial_cols = 140,
   initial_rows = 65,
   adjust_window_size_when_changing_font_size = false,
@@ -17,7 +15,7 @@ return {
   force_reverse_video_cursor = true,
   color_scheme = 'Nord (Gogh)',
   enable_tab_bar = true,
-  enable_wayland = false,
+  enable_wayland = true,
   pane_focus_follows_mouse = true,
   default_cursor_style = 'BlinkingBlock',
   automatically_reload_config = false,
@@ -75,8 +73,6 @@ return {
     {key = "f", mods = "CMD", action = act.Search("CurrentSelectionOrEmptyString") },
 	  {key = "PageDown", mods = "", action = act.ScrollByPage(0.8) },
 	  {key = "PageUp", mods = "", action = act.ScrollByPage(-0.8) },
-
-
     {key="L", mods="CTRL|SHIFT", action="DisableDefaultAssignment" },
   }
 }
