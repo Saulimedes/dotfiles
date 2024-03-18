@@ -22,6 +22,7 @@ packages:
   - fish
   - zip
   - unrar
+  - btop
   - ShellCheck
   - pwgen
   - gcc

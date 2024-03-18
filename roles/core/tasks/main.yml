@@ -41,6 +41,7 @@
     - bat
     - btop
     - direnv
+    - tealdeer
     - fd
     - fish
     - git

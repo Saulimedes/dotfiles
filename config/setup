@@ -1,2 +1,0 @@
-#!/usr/bin/sh
-ansible-playbook install.yml --ask-become-pass --tags dotfiles

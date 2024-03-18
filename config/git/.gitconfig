@@ -26,10 +26,6 @@
 [color]
   ui = always
   pager = true
-[color "branch"]
-  current = yellow bold
-  local = green bold
-  remote = cyan bold
 [gc]
   auto = 256
 [clean]
@@ -39,22 +35,6 @@
   autosetuprebase = always
 [tag]
   sort = version:refname
-[color "diff"]
-  meta = yellow bold
-  frag = magenta bold
-  old = red bold
-  new = green bold
-  whitespace = red reverse
-[color "diff-highlight"]
-  oldNormal = red bold
-  oldHighlight = red bold
-  newNormal = green bold
-  newHighlight = green bold
-  whitespace = red reverse
-[color "status"]
-  added = green bold
-  changed = yellow bold
-  untracked = red bold
 [pull]
   rebase = true
 [fetch]
