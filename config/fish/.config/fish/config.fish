@@ -19,6 +19,7 @@ end
 # exports
 set -gx EDITOR "nvim"
 set -gx VISUAL "emacsclient -c -a emacs" 
+set -Ux MANPAGER 'nvim +Man!'
 
 if status --is-interactive
   # bindings
