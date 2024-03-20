@@ -9,6 +9,7 @@ packages:
   - ansible
   - ripgrep
   - pyenv
+  - 7z
   - fzf
   - fzf-fish-completion
   - fzf-bash-completion
