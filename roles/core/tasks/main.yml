@@ -12,6 +12,8 @@
     name: stow
     state: present
   when: "'dotfiles' in ansible_run_tags"
+  tags:
+    - dotfiles
 
 - name: Locate the fish shell
   ansible.builtin.shell: command -v fish
