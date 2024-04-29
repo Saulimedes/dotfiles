@@ -20,11 +20,12 @@ packages:
   - xdg-user-dirs 
   - xdg-utils
   - ffmpeg
+  - wl-clipboard
+  - rust
   #- hplip
   - flatpak
   - android-tools
 
 flatpak:
   - org.jdownloader.JDownloader
-  - com.usebottles.bottles
   - us.zoom.Zoom 

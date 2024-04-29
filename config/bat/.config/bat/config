@@ -1,13 +1,4 @@
 # General settings
 --paging=never
-
-# Sane defaults as cat replacement
---plain
---wrap=never
-
-# Custom color scheme
 --theme="base16-256"
-
-# File decorations
---style="header,numbers,changes,snip"
---italic-text=always
+--style="header,snip"

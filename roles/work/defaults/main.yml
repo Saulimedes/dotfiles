@@ -4,6 +4,7 @@ packages:
   - kubernetes-client
   - stern
   - kubens
+  - k9s
   - kustomize
   - helm
   - popeye

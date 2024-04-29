@@ -3,13 +3,17 @@ packages:
   - git
   - stow
   - bottom
+  - socat
   - bat
   - bat-extras
   - direnv
   - ansible
   - ripgrep
+  - gzip
   - pyenv
   - 7z
+  - neofetch
+  - gzip
   - fzf
   - fzf-fish-completion
   - fzf-bash-completion

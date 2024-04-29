@@ -5,7 +5,6 @@ return {
   font = wezterm.font("IosevkaTerm Nerd Font", {weight="Regular"}),
   font_size = 12.0,
   hide_tab_bar_if_only_one_tab = true,
-  hide_mouse_cursor_when_typing = true,
   scrollback_lines = 9999999,
   initial_cols = 140,
   initial_rows = 65,

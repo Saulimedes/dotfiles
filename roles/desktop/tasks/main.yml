@@ -15,12 +15,16 @@
     accept_hostkey: true
   ignore_errors: true
   register: fonts_submodule_update
+  tags:
+    - dotfiles
 
 - name: Ensure .local/share/fonts directory exists in the home directory
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.local/share/fonts"
     state: directory
     mode: '0755' 
+  tags:
+    - dotfiles
 
 - name: Symlink fonts
   ansible.builtin.shell: stow --adopt -d . -t ~/.local/share/fonts/ fonts

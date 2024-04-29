@@ -6,19 +6,39 @@
     state: present
   loop: "{{ packages }}"
 
-- name: Symlink work dotfiles
-  ansible.builtin.shell: stow --adopt -d config -t ~/ {{ item }}
-  loop:
-    - k9s
-  tags: 
-    - dotfiles
+#- name: Symlink work dotfiles
+#  ansible.builtin.shell: stow --adopt -d config -t ~/ {{ item }}
+#  loop:
+#  - k9s
+#  tags: 
+#  - dotfiles
+
+- name: Import Google GPG key
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://dl-ssl.google.com/linux/linux_signing_key.pub
+
+- name: Add Google Chrome repository
+  become: true
+  community.general.zypper_repository:
+    name: google-chrome
+    repo: 'http://dl.google.com/linux/chrome/rpm/stable/x86_64'
+    state: present
+    autorefresh: true
+
+- name: Install Google Chrome Stable
+  become: true
+  community.general.zypper:
+    name: google-chrome-stable
+    state: present
 
 - name: Import Microsoft GPG key
   become: true
   ansible.builtin.rpm_key:
     state: present
-    key: https://packages.microsoft.com/keys/microsoft.asc
 
+    key: https://packages.microsoft.com/keys/microsoft.asc
 - name: Add Microsoft Edge repository
   become: true
   community.general.zypper_repository:

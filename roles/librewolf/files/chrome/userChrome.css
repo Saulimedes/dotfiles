@@ -16,11 +16,3 @@
     --tab-block-margin: 0 !important;
 }
 
-#tabbrowser-tabs:not([secondarytext-unsupported]) .tab-label-container {
-    height: initial !important; 
-}
-
-#tabbrowser-tabs { 
-  visibility: collapse !important;
-}
-

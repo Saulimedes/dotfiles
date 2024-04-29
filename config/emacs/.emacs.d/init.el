@@ -1,26 +1,29 @@
 ;; Performance
 (setq gc-cons-threshold (* 50 1000 1000))
 
-;; A function to help us reload the config eithout needing to open the init.el file
-(defun reload-user-init-file()
-  "A function to reload the Emacs config without needing to open the init.el file"
-  (interactive)
-  (load-file user-init-file))
+;; Cache directory
+(defvar emacs-cache-directory (expand-file-name "~/.cache/emacs/"))
+(unless (file-exists-p emacs-cache-directory)
+  (make-directory emacs-cache-directory t))
 
-;; Profile
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (message "*** Emacs loaded in %s with %d garbage collections."
-                     (format "%.2f seconds"
-                             (float-time
-                              (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
+;; Set the GNUPG home directory for package signatures
+(setq package-gnupghome-dir (expand-file-name "~/.gnupg"))
+(unless (file-exists-p package-gnupghome-dir)
+  (make-directory package-gnupghome-dir t))
+
+;; Custom settings
+(setq custom-file (expand-file-name "custom.el" emacs-cache-directory))
+(unless (file-exists-p custom-file)
+  (with-temp-buffer (write-file custom-file)))
+(load custom-file)
 
 ;; Package management
 (require 'package)
+(setq package-user-dir (expand-file-name "elpa" emacs-cache-directory))
+
 (setq package-enable-at-startup nil)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("nongnu" . "https://elpa.nongnu.org/nongnu/")
+                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
                          ("gnu" . "https://elpa.gnu.org/packages/")
                          ("org" . "https://orgmode.org/elpa/")))
 (package-initialize)
@@ -35,36 +38,43 @@
 (eval-when-compile
   (require 'use-package))
 
-;; Sane defaults
+;; Native compilation cache
+(when (boundp 'native-comp-eln-load-path)
+  (setcar native-comp-eln-load-path
+          (expand-file-name "eln-cache/" emacs-cache-directory)))
+
+;; Recent files
+(setq recentf-save-file (expand-file-name "recentf" emacs-cache-directory))
+
+;; Transient settings
+(setq transient-history-file (expand-file-name "transient/history.el" emacs-cache-directory))
+(setq transient-levels-file (expand-file-name "transient/levels.el" emacs-cache-directory))
+(setq transient-values-file (expand-file-name "transient/values.el" emacs-cache-directory))
+
+;; Sane defaults and other settings
 (setq-default
  electric-pair-mode 1
  display-line-numbers 'relative
- indent-tabs-mode t
+ indent-tabs-mode nil
  vc-follow-symlinks t
- use-package-always-ensure t		; Always ensure
- kill-ring-max 300                      ; Set kill-ring to max 300
- indent-tabs-mode nil                   ; Use spaces instead of tabs
- tab-width 2                            ; Set tab width to 2 spaces
- fill-column 80                         ; Set fill column to 80 characters
- backup-by-copying t                    ; Don't create backup files
- version-control t                      ; use versioned backups
+ use-package-always-ensure t
+ kill-ring-max 300
+ tab-width 2
+ fill-column 80
+ backup-by-copying t
+ version-control t
  delete-old-versions t
- backup-directory-alist `(("." . ,(expand-file-name "backup" user-emacs-directory)))
+ backup-directory-alist `(("." . ,(expand-file-name "backup" emacs-cache-directory)))
  kept-new-versions 6
  kept-old-versions 2
- auto-save-default nil                  ; Don't auto-save
- column-number-mode t                   ; Show column number in mode line
- inhibit-startup-screen t               ; Disable startup screen
- initial-scratch-message nil            ; Empty *scratch* buffer
- ring-bell-function 'ignore             ; Disable bell
- )
+ auto-save-default nil
+ column-number-mode t
+ inhibit-startup-screen t
+ initial-scratch-message nil
+ ring-bell-function 'ignore)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
-
-;; Keep buffers automatically up to date
 (global-auto-revert-mode t)
-
-;; context menu
 (setq context-menu-functions
       '(context-menu-ffap
         occur-context-menu
@@ -72,19 +82,12 @@
         context-menu-undo
         context-menu-dictionary))
 
-;; load all .el in lisp directory
+;; Loading additional Emacs Lisp files
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir)
     (dolist (file (directory-files lisp-dir t "\\.el$"))
       (load-file file))))
-
-;; Load custom settings from custom.el
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file)
-
-;; start server
-;;(server-start)
 
 (provide 'init)
 

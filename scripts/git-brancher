@@ -5,7 +5,7 @@ BASE_BRANCH=${2:-$(git rev-parse --abbrev-ref HEAD)}
 
 if [[ -z "$BRANCH" ]]; then
     # List all branches (local and remote), normalize view, exclude specific branches, and use fzf for selection
-    BRANCH=$(git branch -a | sed 's/remotes\///' | grep -v 'origin/HEAD' | grep -v 'origin/main' | grep -v 'origin/master' | sort -u | fzf --height 40% --border)
+    BRANCH=$(git branch --no-color -a | sed 's/remotes\///' | grep -v 'origin/HEAD' | grep -v 'origin/main' | grep -v 'origin/master' | sort -u | fzf --height 40% --border)
     
     # Exit if no selection is made
     if [[ -z "$BRANCH" ]]; then
