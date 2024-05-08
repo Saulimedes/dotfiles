@@ -11,8 +11,8 @@ packages:
   - ripgrep
   - gzip
   - pyenv
-  - 7z
-  - neofetch
+  - 7zip
+  - macchina
   - gzip
   - fzf
   - fzf-fish-completion
