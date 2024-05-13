@@ -1,7 +1,9 @@
 #+TITLE: Dotfiles
 
 #+BEGIN_CENTER
-[[https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml][file:https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml/badge.svg]] [[https://img.shields.io/badge/license-MIT-green][file:https://img.shields.io/badge/license-MIT-green]] [[https://img.shields.io/badge/Saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white][file:https://img.shields.io/badge/Saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white]]
+[[https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml][file:https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml/badge.svg]] 
+[[https://img.shields.io/badge/license-MIT-green][file:https://img.shields.io/badge/license-MIT-green]] 
+[[https://img.shields.io/badge/Saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white][file:https://img.shields.io/badge/Saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white]]
 #+END_CENTER
 
 #+BEGIN_EXAMPLE

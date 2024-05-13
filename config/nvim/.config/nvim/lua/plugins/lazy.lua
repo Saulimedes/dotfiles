@@ -81,7 +81,7 @@ return {
     },
     -- Git Integration
     {
-        "lewis6991/gitsigns.nvim",
+      "lewis6991/gitsigns.nvim",
     },
     {
       "nvim-neo-tree/neo-tree.nvim",
@@ -132,7 +132,8 @@ return {
        dependencies = {"nvim-tree/nvim-web-devicons", "f-person/git-blame.nvim"},
     },
     -- Colorscheme
-    {   'shaunsingh/nord.nvim',
+    {  'shaunsingh/nord.nvim',
+        priority = 1000,
         opts = {
           hot_reload = {
           enabled = true,
@@ -142,6 +143,8 @@ return {
           vim.cmd([[colorscheme nord]])
           vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
           vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+          vim.g.nord_contrast = true
+          vim.g.nord_borders = false
         end
     },
     -- terminal
