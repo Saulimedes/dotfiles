@@ -97,7 +97,6 @@ alias "l."='lsd -a | grep -E "^."'
 alias lg="lsd -l --group-dirs first --ignore-glob .git --icon always"
 alias lt="lsd -t --tree --group-dirs first --depth 4"
 alias mv="mv -iv"
-alias sudoe="sudo -E"
 alias rm="rm -rf"
 alias ln="ln -vi"
 alias rg="rg --color always"
@@ -110,6 +109,10 @@ alias ".4"="cd ../../../.."
 alias "....."=".4"
 alias ".5"="cd ../../../../.."
 alias "......"=".5"
+abbr s "sudo"
+abbr i "sudo zypper in"
+abbr u "sudo zypper update"
+abbr sy "sudo systemctl"
 
 ## kubectl
 if type -q kubectl
@@ -118,26 +121,21 @@ if type -q kubectl
     set -x KUBECONFIG (string join ":" (fd --max-depth 1 --type f . ~/.kube | xargs -I {} sh -c 'grep -qm1 "apiVersion:\|kind:\|clusters:\|contexts:\|users:" "{}" && echo "{}"'))
   end
 
-  alias k="kubectl"
-  alias kgd="kubectl get deployments -o wide"
-  alias kg="kubectl get"
-  alias kgh="kubectl get hr -o wide"
-  alias kge="kubectl get events --watch"
-  alias kgsv="kubectl get service -o wide"
-  alias krr="kubectl rollout restart"
-  alias krs="kubectl rollout status"
-  alias kgy="kubectl get -o yaml"
-  alias kaf="kubectl apply -f"
-  alias krm="kubectl delete"
-  alias kwatch="kubectl get po --all-namespaces"
+  abbr k "kubectl"
+  abbr kgd "kubectl get deployments -o wide"
   abbr kg "kubectl get"
+  abbr kgp "kubectl get pods"
+  abbr kgh "kubectl get hr -o wide"
+  abbr kge "kubectl get events --watch"
+  abbr kgsv "kubectl get service -o wide"
+  abbr ka "kubectl apply -f"
+  abbr kde "kubectl delete"
+  alias kwatch="kubectl get po --all-namespaces"
   abbr kd "kubectl describe"
   abbr kgs "kubectl get service"
-  abbr kgp "kubectl get pods"
   abbr kex "kubectl exec -it"
   abbr kl "kubectl logs -f -p"
-  abbr kdel "kubectl del"
-  abbr kgwf "watch kubectl get -f"
+  abbr kw "watch kubectl get -f"
 end
 
 if type -q git
