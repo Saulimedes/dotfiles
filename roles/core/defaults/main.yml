@@ -1,6 +1,7 @@
 ---
 packages:
   - git
+  - git-lfs
   - stow
   - bottom
   - socat
