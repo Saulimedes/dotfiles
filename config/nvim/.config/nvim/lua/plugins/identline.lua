@@ -11,7 +11,7 @@ vim.g.indent_blankline_filetype_exclude = {
  "lazy",
  "neogitstatus",
  "NvimTree",
- "Trouble",
+ "Trouble"
 }
 
 vim.g.indentLine_enabled = 1
