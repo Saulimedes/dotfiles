@@ -69,19 +69,26 @@
     groups: flatpak
     append: yes
 
-- name: Add the Flathub repository
+- name: Add the Flathub repository 
   become: true
   community.general.flatpak_remote:
     name: flathub
     state: present
     flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
 
+- name: Verify Flathub repository
+  become: true
+  command: flatpak remote-list --system
+  register: remote_list
+
 - name: Install Flatpak packages
+  become: true
   community.general.flatpak:
     name: "{{ item }}"
     state: present
-    method: user
+    method: system
   loop: "{{ flatpak }}"
+  when: remote_list.stdout != ""
 
 - name: Update XDG user directories
   ansible.builtin.command:
