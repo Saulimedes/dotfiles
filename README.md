@@ -25,4 +25,9 @@ cd .dotfiles
 ```
 
 ## What gets installed
-* Distro: ![OpenSuSE](https://img.shields.io/badge/Distro-OpenSuSE-brightgreen?logo=opensuse&logoColor=white)
+* ![OpenSuSE](https://img.shields.io/badge/Distro-OpenSuSE-brightgreen?logo=opensuse&logoColor=white)
+* Bootstrap Installation
+* ![Neovim](https://img.shields.io/badge/Editor-neovim-blue?logo=neovim&logoColor=white)
+- ![MonoLisa](https://img.shields.io/badge/Font-MonoLisa-orange)
+- ![fish](https://img.shields.io/badge/Shell-fish-yellow?logo=fish&logoColor=white)
+* Additional: ![Git](https://img.shields.io/badge/Git-Helper-purple?logo=git&logoColor=white)
