@@ -2,7 +2,11 @@
 
 ![Build Status](https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
-![Saulimedes Dotfiles](https://img.shields.io/badge/Saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white.svg)
+![Saulimedes Dotfiles](https://img.shields.io/badge/saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white.svg)
+![OpenSuSE](https://img.shields.io/badge/distro-openSuSE-brightgreen?logo=opensuse&logoColor=white)
+![Neovim](https://img.shields.io/badge/editor-neovim-teal?logo=neovim&logoColor=white)
+![MonoLisa](https://img.shields.io/badge/font-MonoLisa-green)
+![fish](https://img.shields.io/badge/shell-fish-lightgreen?logo=fish&logoColor=white)
 
 <p align="center">
   <img src="./config/emacs/.emacs.d/dashboard/banner.png" alt="Banner" style="width:320px;"/>
@@ -23,9 +27,3 @@ cd .dotfiles
 # just configure system
 ./config
 ```
-
-## What gets installed
-* ![OpenSuSE](https://img.shields.io/badge/Distro-OpenSuSE-brightgreen?logo=opensuse&logoColor=white)
-* ![Neovim](https://img.shields.io/badge/Editor-neovim-blue?logo=neovim&logoColor=white)
-- ![MonoLisa](https://img.shields.io/badge/Font-MonoLisa-orange)
-- ![fish](https://img.shields.io/badge/Shell-fish-yellow?logo=fish&logoColor=white)
