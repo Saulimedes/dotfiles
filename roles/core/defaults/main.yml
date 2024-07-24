@@ -5,6 +5,7 @@ packages:
   - stow
   - bottom
   - socat
+  - thefuck
   - bat
   - bat-extras
   - direnv
@@ -12,6 +13,7 @@ packages:
   - ripgrep
   - gzip
   - pyenv
+  - pipx
   - 7zip
   - macchina
   - gzip
