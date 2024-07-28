@@ -12,6 +12,7 @@ packages:
   - ansible
   - ripgrep
   - gzip
+  - gettext-tools
   - pyenv
   - pipx
   - 7zip
@@ -20,6 +21,7 @@ packages:
   - fzf
   - fzf-fish-completion
   - fzf-bash-completion
+  - fzf-zsh-completion
   - fzf-tmux
   - fd
   - ansible-lint
@@ -28,6 +30,7 @@ packages:
   - strace
   - sshpass
   - fish
+  - zsh
   - zip
   - unrar
   - btop
