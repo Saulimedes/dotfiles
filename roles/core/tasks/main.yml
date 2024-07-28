@@ -28,6 +28,18 @@
   when: fish_path.rc == 0 and fish_path.stdout != ''
   ignore_errors: true
 
+- name: Ensure .antidote directory exists
+  file:
+    path: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME')) }}/.antidote"
+    state: directory
+
+- name: Clone the antidote repository
+  git:
+    repo: https://github.com/mattmc3/antidote.git
+    dest: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME')) }}/.antidote"
+    depth: 1
+    clone: yes
+
 - name: Delete .bashrc file in the user's home directory
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.bashrc"
