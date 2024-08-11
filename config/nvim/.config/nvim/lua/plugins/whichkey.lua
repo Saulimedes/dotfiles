@@ -109,6 +109,11 @@ wk.add({
   { "<leader>th", "<cmd>ToggleTerm size=10 direction=horizontal<cr>", desc = "Horizontal" },
   { "<leader>tv", "<cmd>ToggleTerm size=80 direction=vertical<cr>", desc = "Vertical" },
 
+  { "<leader>bd", ":bd<CR>", desc = "Delete Buffer" },
+  { "<leader>bn", ":bnext<CR>", desc = "Next Buffer" },
+  { "<leader>bp", ":bprevious<CR>", desc = "Previous Buffer" },
+
+
   -- Visual mode mappings
   {
     mode = "v",
