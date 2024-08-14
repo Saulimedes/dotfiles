@@ -44,23 +44,9 @@
   loop:
     - yt-dlp
     - mpv
+    - podman
   tags: 
     - dotfiles
-
-- name: Create a containers directory in the current user's .config directory
-  ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.config/containers"
-    state: directory
-    mode: '0755'
-    
-- name: Copy registries.conf to the new containers directory
-  ansible.builtin.copy:
-    src: /etc/containers/registries.conf
-    dest: "{{ ansible_env.HOME }}/.config/containers/registries.conf"
-    remote_src: yes
-    mode: '0644'
-    owner: "{{ ansible_user_id }}"
-  notify: Update registries.conf
 
 - name: Add current user to the flatpak group
   become: true
