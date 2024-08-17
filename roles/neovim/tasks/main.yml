@@ -9,3 +9,9 @@
   ansible.builtin.shell: stow --adopt -d config -t ~/ nvim
   tags: 
     - dotfiles
+
+- name: Install Neovim plugins
+  ansible.builtin.command: nvim --headless "+Lazy! sync" +qa
+
+- name: Update Neovim plugins
+  ansible.builtin.command: nvim --headless "+Lazy! update" +qa

@@ -116,7 +116,6 @@ abbr sy "sudo systemctl"
 
 ## kubectl
 if type -q kubectl
-
   if test -d ~/.kube
     set -x KUBECONFIG (string join ":" (fd --max-depth 1 --type f . ~/.kube | xargs -I {} sh -c 'grep -qm1 "apiVersion:\|kind:\|clusters:\|contexts:\|users:" "{}" && echo "{}"'))
   end

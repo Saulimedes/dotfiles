@@ -73,7 +73,8 @@ return {
     },
     -- Indentation Highlighting
     {
-        "lukas-reineke/indent-blankline.nvim",
+        { "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} }
+
     },
     -- DAP
     {
@@ -134,17 +135,15 @@ return {
     -- Colorscheme
     {  'shaunsingh/nord.nvim',
         priority = 1000,
-        opts = {
-          hot_reload = {
-          enabled = true,
-          },
-        },
+        opts = {},
         config = function()
           vim.cmd([[colorscheme nord]])
           vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
           vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
           vim.g.nord_contrast = true
           vim.g.nord_borders = false
+          vim.g.nord_disable_background = true
+          vim.g.nord_enable_sidebar_background = true
         end
     },
     -- terminal
@@ -167,7 +166,10 @@ return {
 
     -- Which-key
     {
-        'folke/which-key.nvim'
+        dependencies = 'echasnovski/mini.icons',
+        'folke/which-key.nvim',
+         event = "VeryLazy",
+
     },
 }
 

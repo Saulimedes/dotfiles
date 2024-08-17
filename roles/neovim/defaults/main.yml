@@ -1,8 +1,10 @@
 ---
 packages:
+  - npm
+  - julia
+  - go
   - neovim
   - ruby-devel
   - gzip
   - go
-  - npm
   - tree-sitter

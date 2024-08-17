@@ -32,7 +32,6 @@ cmp_mappings['<Tab>'] = nil
 cmp_mappings['<S-Tab>'] = nil
 
 --vim.lsp.set_log_level("debug")
-
 lsp.setup_nvim_cmp({
   mapping = cmp_mappings,
   sources = {

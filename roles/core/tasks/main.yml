@@ -28,15 +28,16 @@
   when: fish_path.rc == 0 and fish_path.stdout != ''
   ignore_errors: true
 
-- name: Ensure .antidote directory exists
-  file:
-    path: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME')) }}/.antidote"
+- name: Ensure antidote directory exists
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME') + '/.config/zsh/antidote', true) }}"
     state: directory
+    mode: '0750'
 
 - name: Clone the antidote repository
-  git:
+  ansible.builtin.git:
     repo: https://github.com/mattmc3/antidote.git
-    dest: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME')) }}/.antidote"
+    dest: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME') + '/.config/zsh/antidote', true) }}"
     depth: 1
     clone: yes
 

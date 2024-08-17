@@ -4,7 +4,6 @@ packages:
   - kubernetes-client
   - git-crypt
   - opentofu
-  - terraform
   - stern
   - kubens
   - k9s
