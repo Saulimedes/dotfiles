@@ -1,7 +1,7 @@
 # Dotfiles
 
 ![Build Status](https://github.com/Saulimedes/dotfiles/actions/workflows/test.yml/badge.svg)
-![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![License: GPLv3](https://img.shields.io/badge/license-GPLv3-green.svg)
 ![Saulimedes Dotfiles](https://img.shields.io/badge/saulimedes%20%20-dotfiles-blue?style=flat&logo=gnometerminal&logoColor=white.svg)
 ![OpenSuSE](https://img.shields.io/badge/distro-openSuSE-brightgreen?logo=opensuse&logoColor=white)
 ![Neovim](https://img.shields.io/badge/editor-neovim-teal?logo=neovim&logoColor=white)
