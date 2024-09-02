@@ -1,0 +1,10 @@
+zsh-users/zsh-syntax-highlighting
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-history-substring-search
+mattmc3/zfunctions
+olets/zsh-abbr
+hlissner/zsh-autopair
+joshskidmore/zsh-fzf-history-search
+mafredri/zsh-async
+chrishrb/zsh-kubectl
+raisedadead/zsh-awsssh
