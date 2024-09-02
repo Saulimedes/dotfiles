@@ -18,7 +18,6 @@ packages:
   - macchina
   - gzip
   - fzf
-  - fzf-fish-completion
   - fzf-bash-completion
   - fzf-zsh-completion
   - fzf-tmux
@@ -28,7 +27,6 @@ packages:
   - lsd
   - strace
   - sshpass
-  - fish
   - zsh
   - zip
   - unrar
@@ -43,7 +41,6 @@ packages:
   - zoxide
   - jq
   - yq
-  - yq-fish-completion
   - telnet
   - net-tools
   - gcc-c++
@@ -52,15 +49,6 @@ packages:
   - netcat-openbsd
   - hyperfine
   - nodejs
-  - httpie
   - curl
   - pandoc
   - tmux
-  - yazi
-
-fish_plugins:
-  - jorgebucaran/fisher
-  - edc/bass
-  - evanlucas/fish-kubectl-completions
-  - kidonng/zoxide.fish
-  - jorgebucaran/autopair.fish
