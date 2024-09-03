@@ -11,7 +11,7 @@ setopt menucomplete autolist automenu
 
 # Zstyle configurations
 zstyle ':completion:*' menu select=1            # Show menu after the first ambiguous completion
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'  # Case-insensitive completion
+zstyle ':completion:*' matcher-list ''
 zstyle ':completion:*:default' list-prompt '%Sscroll: %p'  # Customize the list prompt
 
 # Group and format completion output
