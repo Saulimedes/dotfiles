@@ -8,6 +8,7 @@ antidote load
 autoload -Uz compinit
 compinit
 setopt menucomplete autolist automenu
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue'
 
 # Zstyle configurations
 zstyle ':completion:*' menu select=1            # Show menu after the first ambiguous completion
@@ -61,7 +62,7 @@ export FZF_ALT_C_OPTS="--preview 'lsd -l --depth 1 {} | head -200'"
 
 # SSH agent setup
 if [[ -z $(pgrep ssh-agent) ]]; then
-  eval $(ssh-agent -c)
+  eval $(ssh-agent -s) > /dev/null
   export SSH_AUTH_SOCK
   export SSH_AGENT_PID
 fi
