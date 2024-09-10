@@ -1,5 +1,8 @@
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("browser.compactmode.show", true);
+user_pref("browser.startup.homepage", "about:blank");
+user_pref("browser.newtabpage.enabled", false);
+user_pref("browser.newtab.url", "about:blank");
 user_pref("browser.download.useDownloadDir", false);
 user_pref("browser.download.alwaysOpenPanel", false);
 user_pref("browser.download.manager.addToRecentDocs", false);
@@ -25,7 +28,7 @@ user_pref("browser.cache.memory.max_entry_size", 153600);
 user_pref("network.buffer.cache.size", 262144); // preferred=327680; default=32768
 user_pref("network.buffer.cache.count", 128); // preferred=240; default=24
 user_pref("network.http.max-connections", 1800); // default=900
-user_pref("browser.translations.neverTranslateLanguages", de)
+user_pref("browser.translations.neverTranslateLanguages", "de, en")
 user_pref("browser.translations.panelShown", false)
 user_pref("network.http.max-persistent-connections-per-server", 10); // default=6; download connections; anything above 10 is excessive
 
@@ -40,3 +43,10 @@ user_pref("general.smoothScroll.msdPhysics.slowdownSpringConstant",     250);
 user_pref("general.smoothScroll.currentVelocityWeighting",              1.0);
 user_pref("general.smoothScroll.stopDecelerationWeighting",             1.0);
 user_pref("mousewheel.default.delta_multiplier_y",                      300); // 250-400
+
+user_pref("distribution.openSUSE.bookmarksProcessed", false);
+user_pref("app.partner.opensuse", "");
+user_pref("toolkit.aboutProcesses.showProfilerIcons", false);
+user_pref("privacy.donottrackheader.enabled", true);
+user_pref("sidebar.verticalTabs", true);
+user_pref("extensions.pocket.enabled", false);

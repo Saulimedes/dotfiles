@@ -1,0 +1,6 @@
+---
+firefox_addons:
+  - ublock-origin
+  - bitwarden-password-manager
+  - redirector
+  - sponsorblock
