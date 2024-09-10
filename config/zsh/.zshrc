@@ -4,6 +4,12 @@ zsh_plugins=${ZDOTDIR}/zsh_plugins
 source $ZDOTDIR/antidote/antidote.zsh
 antidote load
 
+# HISTORY
+setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS
+HISTSIZE=10000
+SAVEHIST=50000
+HISTFILE=$HOME/.local/share/zsh_history
+
 # Initialize Zsh completion system
 autoload -Uz compinit
 compinit
