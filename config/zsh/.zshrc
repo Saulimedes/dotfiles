@@ -1,5 +1,7 @@
 # Load Antidote plugin manager
 ZDOTDIR=$HOME/.zsh
+ABBR_USER_ABBREVIATIONS_FILE=$ZDOTDIR/abbreviations
+ABBR_SET_EXPANSION_CURSOR=1
 zsh_plugins=${ZDOTDIR}/zsh_plugins
 source $ZDOTDIR/antidote/antidote.zsh
 antidote load
