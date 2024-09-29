@@ -2,5 +2,15 @@
 firefox_addons:
   - ublock-origin
   - bitwarden-password-manager
-  - redirector
   - sponsorblock
+  - multi-account-containers
+  - violentmonkey
+  - return-youtube-dislikes
+  - clearurls
+  - buster-captcha-solver
+  - fastforwardteam 
+  - absolute-enable-right-click
+  - i-dont-care-about-cookies
+  - darkreader
+  - surfingkeys_ff
+  - view-page-archive

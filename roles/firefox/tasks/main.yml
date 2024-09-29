@@ -89,3 +89,4 @@
   when: firefox_default_profile_path is defined and firefox_default_profile_path != ''
   loop: "{{ firefox_addons }}"
   ignore_errors: true
+
