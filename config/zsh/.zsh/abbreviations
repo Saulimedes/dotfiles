@@ -17,7 +17,7 @@ abbr ka="kubectl apply -f"
 abbr kde="kubectl delete"
 abbr kd="kubectl describe"
 abbr kgs="kubectl get service"
-abbr kex="kubectl exec -it"
+abbr kex="kubectl exec -it % /bin/bash/bash"
 abbr kl="kubectl logs -f -p"
 abbr kw="watch kubectl get -f"
 

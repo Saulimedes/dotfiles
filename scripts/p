@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Function to check gopass and GPG setup
+check_gopass_gpg() {
+    gpg_dir="$1"
+    
+    # Check if gopass is installed
+    if ! command -v gopass >/dev/null 2>&1; then
+        echo "Error: gopass is not installed or not in PATH"
+        return 1
+    fi
+
+    # Use custom GPG directory if provided
+    if [ -n "$gpg_dir" ]; then
+        GNUPGHOME="$gpg_dir"
+        export GNUPGHOME
+    fi
+
+    # Check if gopass can list entries
+    if ! gopass ls >/dev/null 2>&1; then
+        echo "Error: Unable to list pass entries. Check your gopass setup and GPG keys."
+        echo "Current GNUPGHOME: $GNUPGHOME"
+        return 1
+    fi
+
+    return 0
+}
+
+# Main script
+QUERY="$1"
+GPG_DIR="$2"  # Optional second argument for custom GPG directory
+
+if ! check_gopass_gpg "$GPG_DIR"; then
+    exit 1
+fi
+
+# Use fzf to select a password entry and show it
+selected_entry=$(gopass ls --flat | fzf -q "$QUERY" --preview "gopass show {}")
+
+if [ -n "$selected_entry" ]; then
+    gopass show -C "$selected_entry"
+else
+    echo "No entry selected"
+fi

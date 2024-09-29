@@ -15,13 +15,17 @@ HISTFILE=$HOME/.local/share/zsh_history
 # Initialize Zsh completion system
 autoload -Uz compinit
 compinit
-setopt menucomplete autolist automenu
+setopt menucomplete autolist automenu complete_in_word
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue'
 
 # Zstyle configurations
 zstyle ':completion:*' menu select=1            # Show menu after the first ambiguous completion
-zstyle ':completion:*' matcher-list ''
 zstyle ':completion:*:default' list-prompt '%Sscroll: %p'  # Customize the list prompt
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+# Enable completion caching
+zstyle ':completion::complete:*' use-cache 1
+zstyle ':completion::complete:*' cache-path $ZDOTDIR/.zcompcache
 
 # Group and format completion output
 zstyle ':completion:*' group-name ''
@@ -29,12 +33,31 @@ zstyle ':completion:*:*:*:*:descriptions' format '%F{green}-- %d --%f'
 zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!%f'
 zstyle ':completion:*:messages' format '%F{purple} -- %d --%f'
 zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'
+zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
 
 # Improve the selection process
 zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
 
+## custom
+zstyle ':completion:*:*:git:*' user-commands brancher:'switch or create git branch'
+
 # Disable problematic features
 setopt NO_BEEP NO_BG_NICE
+
+# Enable typo correction
+setopt CORRECT
+setopt CORRECT_ALL
+
+# Enable completion of wildcard patterns for all file types
+zstyle ':completion:*' file-patterns '*:all-files'
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*:*:*:*' completer _expand _complete _ignored _match _approximate
+
+# Automatically accept exact matches when there's only one result
+zstyle ':completion:*' accept-exact 'yes'
+
+# Enable globbing
+setopt GLOB_COMPLETE
 
 # Environment and PATH configuration
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
@@ -52,6 +75,7 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(zoxide init --cmd cd zsh)"
 
 # Key bindings
+bindkey '^I' expand-or-complete
 bindkey "^H" backward-delete-char
 bindkey "^[[3;5~" kill-word
 autoload -Uz edit-command-line
@@ -80,7 +104,8 @@ alias e="$EDITOR"
 alias cp="cp -airv"
 alias scp="scp -r"
 alias cat="bat"
-alias dd="dd status=progress"
+alias dd="sudo dd status=progress bs=4M oflag=sync"
+alias fdisk="sudo fdisk -l"
 alias mkdir="mkdir -p"
 alias nohist="zsh --no-history"
 alias ip="ip --color"
@@ -124,3 +149,4 @@ fi
 if type starship &>/dev/null; then
   eval "$(starship init zsh)"
 fi
+
