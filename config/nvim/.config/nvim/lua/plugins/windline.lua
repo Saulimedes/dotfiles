@@ -183,11 +183,11 @@ local default = {
         basic.square_mode,
         basic.vi_mode,
         basic.file,
-        basic.lsp_diagnos,
         git_blame_component,  -- Git blame added here with white color
         basic.divider,
         basic.lsp_name,
         basic.git,
+        basic.lsp_diagnos,
         { git_comps.git_branch(), { 'white', 'black' }, breakpoint_width },
         { ' ', hl_list.Black },
         basic.modified_square_mode, -- Use modified square mode on the right
