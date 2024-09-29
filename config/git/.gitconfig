@@ -73,7 +73,7 @@
   origin-url = "url"
   original = "!git fetch origin && git reset --hard origin/master"
   panic = "!tar cvf ../git_panic.tar *"
-  permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
+  permission-reset = "!git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply"
   publish = "push -u origin HEAD"
   repo = "!git remote -v | grep fetch | awk '{print $2}'"
   root = "rev-parse --show-toplevel"
@@ -103,9 +103,3 @@
   relativePaths = true
 [init]
   defaultBranch = main
-[credential "https://github.com"]
-	helper = 
-	helper = !/usr/bin/gh auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !/usr/bin/gh auth git-credential
