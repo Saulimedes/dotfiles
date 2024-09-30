@@ -15,7 +15,7 @@ packages:
   - gettext-tools
   - pyenv
   - 7zip
-  - macchina
+  - fastfetch
   - gzip
   - fzf
   - fzf-bash-completion
@@ -27,6 +27,7 @@ packages:
   - lsd
   - strace
   - sshpass
+  - gopass
   - zsh
   - zip
   - unrar

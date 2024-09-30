@@ -18,9 +18,3 @@
   community.general.zypper: 
     name: brave-browser
     state: present
-
-- name: Uninstall firefox if installed
-  become: true
-  community.general.zypper: 
-    name: firefox
-    state: absent
