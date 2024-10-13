@@ -20,12 +20,14 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=blue'
 
 # Zstyle configurations
 zstyle ':completion:*' menu select=1            # Show menu after the first ambiguous completion
+zstyle ':completion:*' insert-unambiguous yes
 zstyle ':completion:*:default' list-prompt '%Sscroll: %p'  # Customize the list prompt
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' accept-exact 'yes'
 
 # Enable completion caching
 zstyle ':completion::complete:*' use-cache 1
-zstyle ':completion::complete:*' cache-path $ZDOTDIR/.zcompcache
+zstyle ':completion:*' cache-path ~/.cache/zsh/completions
 
 # Group and format completion output
 zstyle ':completion:*' group-name ''
@@ -34,6 +36,11 @@ zstyle ':completion:*:*:*:*:corrections' format '%F{yellow}!- %d (errors: %e) -!
 zstyle ':completion:*:messages' format '%F{purple} -- %d --%f'
 zstyle ':completion:*:warnings' format '%F{red}-- no matches found --%f'
 zstyle -e ':completion:*:(ssh|scp|sftp|rsh|rsync):hosts' hosts 'reply=(${=${${(f)"$(cat {/etc/ssh_,~/.ssh/known_}hosts(|2)(N) /dev/null)"}%%[# ]*}//,/ })'
+
+zstyle ':completion:*:*:git:*' use-cache on
+zstyle ':completion:*:*:git:*' menu select=1
+zstyle ':completion:*:*:git:*' accept-exact true
+zstyle ':completion:*:*:git:*' insert-unambiguous true
 
 # Improve the selection process
 zstyle ':completion:*' select-prompt '%SScrolling active: current selection at %p%s'
@@ -51,10 +58,8 @@ setopt CORRECT_ALL
 # Enable completion of wildcard patterns for all file types
 zstyle ':completion:*' file-patterns '*:all-files'
 zstyle ':completion:*' special-dirs true
-zstyle ':completion:*:*:*:*' completer _expand _complete _ignored _match _approximate
+zstyle ':completion:*' completer _expand _complete _correct _ignored _approximate
 
-# Automatically accept exact matches when there's only one result
-zstyle ':completion:*' accept-exact 'yes'
 
 # Enable globbing
 setopt GLOB_COMPLETE
@@ -133,6 +138,8 @@ alias ".4"="cd ../../../.."
 alias "....."=".4"
 alias ".5"="cd ../../../../.."
 alias "......"=".5"
+alias back="cd $OLDPWD"
+alias docker="podman"
 
 # kubernetes
 if command -v kubectl >/dev/null 2>&1; then
@@ -144,6 +151,11 @@ if command -v kubectl >/dev/null 2>&1; then
     done | sed 's/:$//')
   fi
 fi
+
+# functions
+for file in ~/.zsh/functions/*.zsh; do
+  [ -r "$file" ] && source "$file"
+done
 
 # Starship prompt
 if type starship &>/dev/null; then

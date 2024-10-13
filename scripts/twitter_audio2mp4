@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Check if podman is installed
+if ! command_exists podman; then
+    echo "Error: podman is not installed. Please install podman and try again."
+    exit 1
+fi
+
+# Check if two input files are provided
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 <cover_image> <audio_file>"
+    exit 1
+fi
+
+cover_image="$1"
+audio_file="$2"
+output_file="${audio_file%.*}_twitter.mp4"
+
+# Run ffmpeg using podman
+echo "Creating video from audio and cover image..."
+if podman run --rm -v "$(pwd)":/tmp -w /tmp jrottenberg/ffmpeg \
+    -loop 1 -i "$cover_image" -i "$audio_file" \
+    -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
+    -c:a aac -b:a 128k -shortest -movflags +faststart \
+    "$output_file"; then
+    echo "Video creation complete. Output file: $output_file"
+else
+    echo "Error: Video creation failed."
+    exit 1
+fi

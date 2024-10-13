@@ -16,7 +16,7 @@ require('gitsigns').setup({
     changedelete = { text = '~' },
     untracked    = { text = '┆' },
   },
-  current_line_blame = true, -- Toggle with `:Gitsigns toggle_current_line_blame`
+  current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
   signcolumn = true,  -- Toggle with `:Gitsigns toggle_signs`
   numhl      = false, -- Toggle with `:Gitsigns toggle_numhl`
   linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
@@ -44,4 +44,3 @@ vim.api.nvim_set_hl(0, 'GitSignsAddLn', { link = 'GitGutterAdd' })
 vim.api.nvim_set_hl(0, 'GitSignsChangeLn', { link = 'GitGutterChange' })
 vim.api.nvim_set_hl(0, 'GitSignsDeleteLn', { link = 'GitGutterDelete' })
 vim.api.nvim_set_hl(0, 'GitSignsTopdelete', { link = 'GitGutterDelete' })
-

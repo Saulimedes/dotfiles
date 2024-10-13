@@ -13,3 +13,4 @@ packages:
   - kubesec
   - kubie
   - clang
+  - ollama
