@@ -62,7 +62,7 @@ zstyle ':completion:*' completer _expand _complete _correct _ignored _approximat
 
 
 # Enable globbing
-setopt GLOB_COMPLETE
+setopt GLOB_COMPLETE EXTENDED_GLOB
 
 # Environment and PATH configuration
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
@@ -119,12 +119,12 @@ alias vdir="vdir --color=auto"
 alias egrep="egrep --color=auto"
 alias fgrep="fgrep --color=auto"
 alias ls="ls --color=auto"
-alias la="lsd -a --group-dirs first"
-alias ll="lsd -la --group-dirs first --icon always"
+alias la="lsd -a --hyperlink always --group-dirs first"
+alias ll="lsd -la --hyperlink always --group-dirs first --icon always"
 alias l="ll"
 alias "l."='lsd -a | grep -E "^."'
-alias lg="lsd -l --group-dirs first --ignore-glob .git --icon always"
-alias lt="lsd -t --tree --group-dirs first --depth 4"
+alias lg="lsd -l --hyperlink always --group-dirs first --ignore-glob .git --icon always"
+alias lt="lsd -t --hyperlink always --tree --group-dirs first --depth 4"
 alias mv="mv -iv"
 alias rm="rm -rf"
 alias ln="ln -vi"

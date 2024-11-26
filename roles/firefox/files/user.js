@@ -1,7 +1,9 @@
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("svg.context-properties.content.enabled", true);
 user_pref("browser.compactmode.show", true);
 user_pref("browser.startup.homepage", "about:blank");
 user_pref("browser.newtabpage.enabled", false);
+user_pref("browser.tabs.tabClipWidth", 83);
 user_pref("browser.newtab.url", "about:blank");
 user_pref("browser.download.useDownloadDir", false);
 user_pref("browser.download.alwaysOpenPanel", false);

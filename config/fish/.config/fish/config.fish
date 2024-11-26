@@ -110,6 +110,8 @@ alias "....."=".4"
 alias ".5"="cd ../../../../.."
 alias "......"=".5"
 abbr s "sudo"
+abbr se "sudo edit"
+abbr sea "sudo zypper search"
 abbr i "sudo zypper in"
 abbr u "sudo zypper update"
 abbr sy "sudo systemctl"
@@ -126,13 +128,14 @@ if type -q kubectl
   abbr kgp "kubectl get pods"
   abbr kgh "kubectl get hr -o wide"
   abbr kge "kubectl get events --watch"
+  abbr kgw --set-cursor=! 'kubectl get pod ! --watch'
   abbr kgsv "kubectl get service -o wide"
   abbr ka "kubectl apply -f"
   abbr kde "kubectl delete"
   alias kwatch="kubectl get po --all-namespaces"
   abbr kd "kubectl describe"
   abbr kgs "kubectl get service"
-  abbr kex "kubectl exec -it"
+  abbr kex --set-cursor=! 'kubectl exec -i ! /bin/bash'
   abbr kl "kubectl logs -f -p"
   abbr kw "watch kubectl get -f"
 end
@@ -141,7 +144,7 @@ if type -q git
   abbr g "git"
   abbr ga "git add"
   abbr gb "git brancher"
-  abbr gc "git commit -m"
+  abbr gc --set-cursor=! 'git commit -m "!"'
   abbr gdf "git diff --name-only"
   abbr gdc "git diff --cached"
   abbr gd "git diff"
