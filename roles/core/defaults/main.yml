@@ -18,8 +18,7 @@ packages:
   - fastfetch
   - gzip
   - fzf
-  - fzf-bash-completion
-  - fzf-zsh-completion
+  - fzf-fish-completion
   - fzf-tmux
   - fd
   - ansible-lint
@@ -28,7 +27,7 @@ packages:
   - strace
   - sshpass
   - gopass
-  - zsh
+  - fish
   - zip
   - unrar
   - btop
@@ -53,3 +52,13 @@ packages:
   - curl
   - pandoc
   - tmux
+
+fish_plugins:
+  - jorgebucaran/fisher
+  - edc/bass
+  - evanlucas/fish-kubectl-completions
+  - kidonng/zoxide.fish
+  - jorgebucaran/autopair.fish
+  - franciscolourenco/done
+  - pymander/vfish
+  - pymander/plugin-emacs

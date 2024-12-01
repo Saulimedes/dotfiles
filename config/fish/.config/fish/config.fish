@@ -21,6 +21,9 @@ set -gx EDITOR "nvim"
 set -gx VISUAL "emacsclient -c -a emacs" 
 set -Ux MANPAGER 'nvim +Man!'
 
+bind \cp _fish_ai_codify_or_explain
+bind -k nul _fish_ai_autocomplete_or_fix
+
 if status --is-interactive
   # bindings
   fish_default_key_bindings
@@ -28,6 +31,9 @@ if status --is-interactive
   function fish_user_key_bindings
     bind \b backward-kill-word
     bind \e\[3\;5~ kill-word
+    bind \cp up-or-search
+    bind \cx\cf _fish_ai_codify_or_explain
+
   
     # fzf bindings
     fzf_key_bindings
@@ -89,13 +95,13 @@ alias diff="diff --color=auto"
 alias vdir="vdir --color=auto"
 alias egrep="egrep --color=auto"
 alias fgrep="fgrep --color=auto"
-alias ls="eza --hyperlink=always"
-alias la="eza -a --group-directories-first --hyperlink=always"
-alias ll="eza -la --group-directories-first --icons --hyperlink=always"
+alias ls="eza"
+alias la="eza -a --group-directories-first"
+alias ll="eza -la --group-directories-first --icons "
 alias l="ll"
-alias l.='eza -a --hyperlink=always | grep -E "^\\."'
-alias lg="eza -l --group-directories-first --ignore-glob='.git' --icons --hyperlink=always"
-alias lt="eza -T --group-directories-first --level=4 --hyperlink=always"
+alias l.='eza -a  | grep -E "^\\."'
+alias lg="eza -l --group-directories-first --ignore-glob='.git' --icons"
+alias lt="eza -T --group-directories-first --level=4"
 alias mv="mv -iv"
 alias rm="rm -rf"
 alias ln="ln -vi"

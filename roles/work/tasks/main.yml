@@ -37,8 +37,8 @@
   become: true
   ansible.builtin.rpm_key:
     state: present
-
     key: https://packages.microsoft.com/keys/microsoft.asc
+
 - name: Add Microsoft Edge repository
   become: true
   community.general.zypper_repository:
@@ -76,6 +76,7 @@
   community.general.zypper: 
     name: google-cloud-sdk
     state: present
+    force: yes
 
 - name: Check if AWS CLI is already installed
   ansible.builtin.command: aws --version
@@ -113,3 +114,19 @@
   loop:
     - "/tmp/awscliv2.zip"
     - "/tmp/aws/"
+
+- name: Ensure k9s Directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/k9s"
+    state: directory
+    mode: '0755' 
+  tags:
+    - dotfiles
+
+- name: Config k9s
+  ansible.builtin.copy:
+    src: "{{ role_path }}/../../config/k9s/.config/k9s/"
+    dest: "{{ ansible_env.HOME }}/.config/k9s"
+    mode: '0755'
+  tags:
+    - dotfiles

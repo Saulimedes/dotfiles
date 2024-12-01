@@ -15,31 +15,18 @@
   tags:
     - dotfiles
 
-- name: Locate the zsh shell
-  ansible.builtin.shell: command -v zsh
-  register: zsh_path
+- name: Locate the fish shell
+  ansible.builtin.shell: command -v fish
+  register: fish_path
   ignore_errors: true
 
-- name: Change the default shell to zsh
+- name: Change the default shell to fish
   become: true
   ansible.builtin.user:
     name: "{{ ansible_env.USER }}"
-    shell: "{{ zsh_path.stdout }}"
-  when: zsh_path.rc == 0 and zsh_path.stdout != ''
+    shell: "{{ fish_path.stdout }}"
+  when: fish_path.rc == 0 and fish_path.stdout != ''
   ignore_errors: true
-
-- name: Ensure antidote directory exists
-  ansible.builtin.file:
-    path: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME') + '/.zsh/antidote', true) }}"
-    state: directory
-    mode: '0750'
-
-- name: Clone the antidote repository
-  ansible.builtin.git:
-    repo: https://github.com/mattmc3/antidote.git
-    dest: "{{ lookup('env', 'ZDOTDIR') | default(lookup('env', 'HOME') + '/.zsh/antidote', true) }}"
-    depth: 1
-    clone: yes
 
 - name: Delete .bashrc file in the user's home directory
   ansible.builtin.file:
@@ -55,6 +42,7 @@
     - bat
     - btop
     - direnv
+    - eza
     - tealdeer
     - fd
     - git
@@ -62,8 +50,8 @@
     - starship
     - ssh
     - tmux
-    - lsd
-    - zsh
+    - fish
+    - lsd 
   tags: 
     - dotfiles
 
@@ -79,6 +67,32 @@
   ansible.builtin.shell: stow --adopt -d . -t ~/.local/bin scripts
   tags: 
     - dotfiles
+
+- name: Install Fisher package manager
+  ansible.builtin.shell:
+    cmd: "curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher"
+  args:
+    executable: "{{ fish_path.stdout }}"
+  ignore_errors: true
+
+- name: Update Fish Plugins
+  ansible.builtin.shell:
+    cmd: "fisher update"
+  args:
+    executable: "{{ fish_path.stdout }}"
+
+- name: Update Fish Completions
+  ansible.builtin.shell:
+    cmd: "fish_update_completions"
+  args:
+    executable: "{{ fish_path.stdout }}"
+
+- name: Install Fish plugins
+  ansible.builtin.shell:
+    cmd: fisher install {{ item }}
+  loop: "{{ fish_plugins }}"
+  args:
+    executable: "{{ fish_path.stdout }}"
 
 - name: Ensure tmux plugin directory exists
   ansible.builtin.file:
