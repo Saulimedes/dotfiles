@@ -1,0 +1,15 @@
+classic = false
+
+[color]
+when = "auto"
+theme = "default"
+date = "+%d %b %y %H:%M"
+
+[icons]
+when = "auto"
+theme = "fancy"
+ignore-globs = [".git"]
+size = "short"
+hyperlink = "auto"
+header = false
+symlink-arrow = "➔"
