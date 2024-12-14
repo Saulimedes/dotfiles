@@ -21,6 +21,7 @@
 [push]
   default = current
   followTags = true
+	ff = only
 [submodule]
   recurse = true
 [color]

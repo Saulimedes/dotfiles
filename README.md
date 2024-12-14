@@ -9,7 +9,7 @@
 ![fish](https://img.shields.io/badge/shell-fish-lightgreen?logo=fish&logoColor=white)
 
 <p align="center">
-  <img src="./config/emacs/.emacs.d/dashboard/banner.png" alt="Banner" style="width:320px;"/>
+  <img src="./.github/images/dotfile_image.png" alt="Banner" style="width:320px;"/>
 </p>
 
 ## About
