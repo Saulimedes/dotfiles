@@ -1,40 +1,51 @@
-local lsp = require('lsp-zero')
-lsp.preset('recommended')
+local lsp_zero = require('lsp-zero')
 
-lsp.on_attach(function(client, bufnr)
-  lsp.default_keymaps({buffer = bufnr})
-  -- Disable semantic tokens to improve performance
+-- Load default LSP-zero behavior
+lsp_zero.extend_lspconfig()
+
+-- Keymaps + client capabilities
+lsp_zero.on_attach(function(client, bufnr)
+  lsp_zero.default_keymaps({buffer = bufnr})
+
+  -- Disable semantic tokens for performance
   client.server_capabilities.semanticTokensProvider = nil
-  
-  -- Add additional keymaps for LSP functionality
+
   local opts = {buffer = bufnr, remap = false}
-  vim.keymap.set("n", "gd", function() vim.lsp.buf.definition() end, opts)
-  vim.keymap.set("n", "K", function() vim.lsp.buf.hover() end, opts)
-  vim.keymap.set("n", "<leader>vws", function() vim.lsp.buf.workspace_symbol() end, opts)
-  vim.keymap.set("n", "<leader>vd", function() vim.diagnostic.open_float() end, opts)
-  vim.keymap.set("n", "[d", function() vim.diagnostic.goto_next() end, opts)
-  vim.keymap.set("n", "]d", function() vim.diagnostic.goto_prev() end, opts)
-  vim.keymap.set("n", "<leader>ca", function() vim.lsp.buf.code_action() end, opts)
-  vim.keymap.set("n", "<leader>vrr", function() vim.lsp.buf.references() end, opts)
-  vim.keymap.set("n", "<leader>vrn", function() vim.lsp.buf.rename() end, opts)
-  vim.keymap.set("i", "<C-h>", function() vim.lsp.buf.signature_help() end, opts)
+  local map = vim.keymap.set
+  map("n", "gd", vim.lsp.buf.definition, opts)
+  map("n", "K", vim.lsp.buf.hover, opts)
+  map("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
+  map("n", "<leader>vd", vim.diagnostic.open_float, opts)
+  map("n", "[d", vim.diagnostic.goto_next, opts)
+  map("n", "]d", vim.diagnostic.goto_prev, opts)
+  map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+  map("n", "<leader>vrr", vim.lsp.buf.references, opts)
+  map("n", "<leader>vrn", vim.lsp.buf.rename, opts)
+  map("i", "<C-h>", vim.lsp.buf.signature_help, opts)
 end)
 
--- LSP servers to install
-lsp.ensure_installed({
-  'ansiblels',
-  'docker_compose_language_service',
-  'lua_ls',
-  'bashls',
-  'dockerls',
-  'terraformls',
-  'pyright',
-  'marksman',
-  'yamlls'
+-- Setup mason + LSP installations
+require('mason').setup()
+
+require('mason-lspconfig').setup({
+  ensure_installed = {
+    'ansiblels',
+    'docker_compose_language_service',
+    'lua_ls',
+    'bashls',
+    'dockerls',
+    'terraformls',
+    'pyright',
+    'marksman',
+    'yamlls'
+  },
+  handlers = {
+    lsp_zero.default_setup,
+  }
 })
 
--- Configure lua_ls specifically for Neovim
-lsp.configure('lua_ls', {
+-- Specific lua_ls config
+require('lspconfig').lua_ls.setup({
   settings = {
     Lua = {
       diagnostics = {
@@ -51,57 +62,53 @@ lsp.configure('lua_ls', {
   }
 })
 
--- Completion setup
+-- nvim-cmp setup
 local cmp = require('cmp')
 local luasnip = require('luasnip')
+local cmp_action = require('lsp-zero').cmp_action()
 
-local cmp_select = {behavior = cmp.SelectBehavior.Select}
-local cmp_mappings = lsp.defaults.cmp_mappings({
-  ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
-  ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
-  ['<C-y>'] = cmp.mapping.confirm({ select = true }),
-  ["<CR>"] = cmp.mapping.confirm({ select = false }),
-  ["<C-Space>"] = cmp.mapping.complete(),
-  -- Add snippet expansion
-  ["<Tab>"] = cmp.mapping(function(fallback)
-    if cmp.visible() then
-      cmp.select_next_item()
-    elseif luasnip.expand_or_jumpable() then
-      luasnip.expand_or_jump()
-    else
-      fallback()
-    end
-  end, {"i", "s"}),
-  ["<S-Tab>"] = cmp.mapping(function(fallback)
-    if cmp.visible() then
-      cmp.select_prev_item()
-    elseif luasnip.jumpable(-1) then
-      luasnip.jump(-1)
-    else
-      fallback()
-    end
-  end, {"i", "s"}),
-})
-
--- Setup nvim-cmp with improved sources
-lsp.setup_nvim_cmp({
-  mapping = cmp_mappings,
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ['<C-p>']     = cmp.mapping.select_prev_item(),
+    ['<C-n>']     = cmp.mapping.select_next_item(),
+    ['<C-y>']     = cmp.mapping.confirm({ select = true }),
+    ['<CR>']      = cmp.mapping.confirm({ select = false }),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, {"i", "s"}),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {"i", "s"}),
+  }),
   sources = cmp.config.sources({
     {name = 'nvim_lsp', priority = 1000},
-    {name = 'luasnip', priority = 750},
-    {name = 'path', priority = 500},
-    {name = 'tmux', priority = 250},
-    {name = 'buffer', keyword_length = 3, priority = 200},
+    {name = 'luasnip',  priority = 750},
+    {name = 'path',     priority = 500},
+    {name = 'tmux',     priority = 250},
+    {name = 'buffer',   keyword_length = 3, priority = 200},
   }),
   formatting = {
     fields = {'abbr', 'kind', 'menu'},
     format = function(entry, vim_item)
       vim_item.menu = ({
         nvim_lsp = "[LSP]",
-        luasnip = "[Snippet]",
-        buffer = "[Buffer]",
-        path = "[Path]",
-        tmux = "[Tmux]",
+        luasnip  = "[Snippet]",
+        buffer   = "[Buffer]",
+        path     = "[Path]",
+        tmux     = "[Tmux]",
       })[entry.source.name]
       return vim_item
     end,
@@ -117,28 +124,19 @@ lsp.setup_nvim_cmp({
   },
 })
 
--- Configure lua language server for neovim
-lsp.nvim_workspace()
-
--- Final LSP setup with options
-lsp.setup {
-  incremental_sync = true,
+-- Global diagnostics style
+vim.diagnostic.config({
+  virtual_text = { spacing = 4, prefix = '●' },
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
   float = {
+    focusable = true,
+    style = 'minimal',
     border = 'rounded',
+    source = 'always',
+    header = '',
+    prefix = '',
   },
-  diagnostic = {
-    virtual_text = { spacing = 4, prefix = '●' },
-    underline = true,
-    update_in_insert = false,
-    severity_sort = true,
-    float = {
-      focusable = true,
-      style = 'minimal',
-      border = 'rounded',
-      source = 'always',
-      header = '',
-      prefix = '',
-    },
-  },
-}
+})
 
