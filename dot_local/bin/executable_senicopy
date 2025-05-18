@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# If no parameters are provided, use the 'paste' script
+if [ "$#" -eq 0 ]; then
+    content=$(paste)
+else
+    content="$@"
+fi
+
+# Replace potential passwords with "SECRET"
+sanitized_content=$(echo "$content" | sed 's/\b[A-Za-z0-9]\{5,\}\b/SECRET/g')
+
+# Print the sanitized content
+echo "$sanitized_content"
+
+# Pipe the sanitized content to the 'copy' script
+echo "$sanitized_content" | copy

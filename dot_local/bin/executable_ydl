@@ -1,0 +1,4 @@
+#!/bin/sh
+VIDEO="$1"
+[ -z $VIDEO ] && VIDEO="$(paste)"
+yt-dlp "$VIDEO"

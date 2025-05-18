@@ -1,0 +1,8 @@
+data:
+  user:
+    name: "Paul Becker"
+    email: "REDACTED"
+  editor: "nvim"
+
+git:
+  autoPush: true

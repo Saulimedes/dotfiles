@@ -1,0 +1,31 @@
+#theme = dark:nord-wave,light:nord-light
+theme = rose-pine
+background = #000000
+cursor-color = #eeeeee
+selection-background = 222222
+
+window-width = 120
+window-height = 45
+window-padding-x = 3
+shell-integration = fish
+shell-integration-features = no-cursor
+cursor-style-blink = true
+cursor-style = block
+adjust-underline-position = 40%
+adjust-underline-thickness = -60%
+font-family = MonoLisaVariable Nerd Font
+font-size = 11
+
+window-step-resize = true
+clipboard-read = allow
+clipboard-write = allow
+auto-update = download
+copy-on-select = false
+clipboard-paste-protection = false
+mouse-hide-while-typing = true
+mouse-shift-capture = true
+mouse-scroll-multiplier = 3
+gtk-titlebar-hide-when-maximized = true
+
+keybind = performable:ctrl+shift+c=copy_to_clipboard
+keybind = performable:ctrl+shift+v=paste_from_clipboard

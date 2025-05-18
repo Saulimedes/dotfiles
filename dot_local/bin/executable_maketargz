@@ -1,0 +1,5 @@
+#!/bin/sh
+if [ -d "$1" ]; then
+  local ARCHIVEDIR=$(basename "$1.tar.gz")
+  export GZIP="-9"; tar -pcvJf  "${TAR_OPTS}" "$1" "${ARCHIVENAME}"
+fi

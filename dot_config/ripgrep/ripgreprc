@@ -1,0 +1,15 @@
+--hidden
+--follow
+--no-ignore
+--glob=!{.git,.svn,.tldr,node_modules,Trash,vendor}
+--glob=!*.{lock}
+--glob=!{package-lock.json}
+--max-columns=10000
+--smart-case
+--sort=path
+--colors=path:bg:0x3b,0x3b,0x3b
+--colors=path:fg:white
+--colors=line:fg:0xf2,0xc2,0x60
+--colors=match:bg:0x2b,0x83,0xa6
+--colors=match:fg:0xff,0xff,0xff
+--colors=match:style:nobold

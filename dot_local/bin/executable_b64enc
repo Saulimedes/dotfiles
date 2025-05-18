@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# If no parameters are provided, use the 'paste' script
+if [ "$#" -eq 0 ]; then
+    content=$(paste)
+else
+    content="$@"
+fi
+
+# Encode the content to base64
+encoded=$(echo "$content" | base64)
+
+# Print the encoded content
+echo "$encoded"
+
+# Pipe the encoded content to the 'copy' script
+echo "$encoded" | copy

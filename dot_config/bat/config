@@ -1,0 +1,4 @@
+# General settings
+--paging=never
+--theme="base16-256"
+--style="header,snip"

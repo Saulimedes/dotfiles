@@ -1,0 +1,6 @@
+[Unit]
+Description=Podman prune job
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash -eux -o pipefail -c "podman system prune -af && podman volume prune --filter 'name=^[0-9a-z]{64}$'"

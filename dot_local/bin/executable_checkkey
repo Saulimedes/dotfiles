@@ -1,0 +1,2 @@
+#!/bin/sh
+openssl rsa -in "$1" -text -noout -check

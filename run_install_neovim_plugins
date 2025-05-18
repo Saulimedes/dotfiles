@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if ! command -v nvim >/dev/null; then
+  echo "Neovim not installed. Skipping plugin installation."
+  exit 0
+fi
+
+if [ ! -d "$HOME/.config/nvim" ]; then
+  echo "Neovim config not found at ~/.config/nvim. Skipping."
+  exit 0
+fi
+
+echo "Installing Neovim plugins..."
+nvim --headless "+Lazy! sync" +qa
+
+echo "Updating Neovim plugins..."
+nvim --headless "+Lazy! update" +qa

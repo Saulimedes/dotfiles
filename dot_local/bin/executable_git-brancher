@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Function to switch to a branch
+switch_to_branch() {
+    local branch="$1"
+    if [[ "$branch" == $(git rev-parse --abbrev-ref HEAD) ]]; then
+        echo "Already on branch $branch"
+    elif git show-ref --verify --quiet "refs/heads/$branch"; then
+        git switch "$branch"
+    elif git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+        git switch -c "$branch" "origin/$branch"
+    else
+        echo "Branch $branch not found locally or remotely."
+        return 1
+    fi
+}
+
+# Function to list branches for fzf
+list_branches() {
+    git branch --no-color -a | sed 's/remotes\///' | grep -vE 'origin/HEAD|origin/main|origin/master' | sort -u
+}
+
+BRANCH=$1
+BASE_BRANCH=${2:-$(git rev-parse --abbrev-ref HEAD)}
+
+if [[ -z "$BRANCH" ]]; then
+    # Use fzf for branch selection
+    BRANCH=$(list_branches | fzf --height 40% --border)
+    
+    # Exit if no selection is made
+    if [[ -z "$BRANCH" ]]; then
+        echo "No branch selected. Exiting."
+        exit 1
+    fi
+    
+    # Remove any leading space and asterisk
+    BRANCH=$(echo "$BRANCH" | sed 's/^[ *]*//')
+    
+    # Switch to the selected branch
+    switch_to_branch "$BRANCH"
+else
+    # Check if the branch exists
+    if git show-ref --verify --quiet "refs/heads/$BRANCH" || git show-ref --verify --quiet "refs/remotes/origin/$BRANCH"; then
+        # Switch to the existing branch
+        switch_to_branch "$BRANCH"
+    else
+        # Create a new branch
+        git checkout -b "$BRANCH" "$BASE_BRANCH"
+    fi
+fi

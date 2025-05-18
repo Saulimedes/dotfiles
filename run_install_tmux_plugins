@@ -1,0 +1,12 @@
+#!/bin/sh
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+
+if [ -d "$TPM_DIR" ]; then
+  echo "Updating tmux plugins..."
+  "$TPM_DIR/bin/update_plugins"
+else
+  echo "Cloning TPM..."
+  git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+  echo "Installing tmux plugins..."
+  "$TPM_DIR/bin/install_plugins"
+fi
