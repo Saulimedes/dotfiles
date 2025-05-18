@@ -1,0 +1,9 @@
+[Unit]
+Description=Update dotfiles
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env chezmoi update --force
+SyslogIdentifier=chezmoi

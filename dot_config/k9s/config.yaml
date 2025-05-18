@@ -1,0 +1,210 @@
+k9s:
+  liveViewAutoRefresh: false
+  refreshRate: 2
+  maxConnRetry: 5
+  readOnly: false
+  noExitOnCtrlC: false
+  ui:
+    skin: transparent
+    enableMouse: true
+    headless: false
+    logoless: true
+    crumbsless: false
+    reactive: true
+    noIcons: false
+    defaultsToFullScreen: false
+  skipLatestRevCheck: false
+  disablePodCounting: false
+  shellPod:
+    image: busybox:1.35.0
+    namespace: default
+    tty: true
+    limits:
+      cpu: 100m
+      memory: 100Mi
+  imageScans:
+    enable: false
+    exclusions:
+      namespaces: []
+      labels: {}
+  logger:
+    tail: 200
+    buffer: 5000
+    sinceSeconds: -1
+    textWrap: false
+    showTime: false
+    colors:
+      - "error:red"
+      - "warning:yellow"
+      - "info:green"
+    filters:
+      - "container=nginx"
+      - "namespace=dev"
+  thresholds:
+    cpu:
+      critical: 90
+      warn: 70
+    memory:
+      critical: 90
+      warn: 70
+  context:
+    active: my-context
+  namespace:
+    active: default
+    favorites:
+      - kube-system
+      - default
+      - dev
+  aliases:
+    po: pods
+    dep: deployments
+    svc: services
+    ns: namespaces
+  resources:
+    maxItems: 1000
+  views:
+    pods:
+      columns:
+        - NAME
+        - READY
+        - STATUS
+        - RESTARTS
+        - AGE
+        - IP
+        - NODE
+  bindings:
+    actions:
+      delete: ":delete" # Delete resource
+      logs: ":logs"     # Show logs
+      open: ":open"      # Open resource
+      refresh: ":refresh" # Refresh view
+    navigation:
+      j: down
+      k: up
+      h: left
+      l: right
+      gg: top
+      G: bottom
+      "Ctrl-d": page-down
+      "Ctrl-u": page-up
+      q: quit
+      v: view
+      "/": search
+      ":": command
+      "Shift-R": refresh
+  skin:
+    view:
+      defaultFgColor: white
+      defaultBgColor: black
+    status:
+      errorColor: red
+      successColor: green
+      warningColor: yellow
+  xray:
+    active: true
+  saveDir: ~/.k9s
+  editor: vim
+  plugins:
+    open_dashboard:
+      shortCut: "d"
+      description: "Open Kubernetes Dashboard"
+      command: "kubectl proxy"
+      background: true
+    argocd:
+      shortCut: "s"
+      description: Sync ArgoCD Application
+      scopes:
+        - application
+      command: argocd
+      args: 
+        - app
+        - sync
+        - $NAME
+        - --app-namespace
+        - $NAMESPACE
+      background: true
+      confirm: true
+    get-all-namespace:
+      shortCut: "g"
+      confirm: false
+      description: get-all
+      scopes:
+        - namespaces
+      command: sh
+      background: false
+      args:
+        - -c
+        - "kubectl get-all --context $CONTEXT -n $NAME | less -K"
+    get-all-other:
+      shortCut: "g"
+      confirm: false
+      description: get-all
+      scopes:
+        - all
+      command: sh
+      background: false
+      args:
+        - -c
+        - "kubectl get-all --context $CONTEXT -n $NAMESPACE | less -K"
+    raw-logs-follow:
+      shortCut: Ctrl-G
+      description: logs -f
+      scopes:
+        - po
+      command: kubectl
+      background: false
+      args:
+        - logs
+        - -f
+        - $NAME
+        - -n
+        - $NAMESPACE
+        - --context
+        - $CONTEXT
+        - --kubeconfig
+        - $KUBECONFIG
+    log-less:
+      shortCut: Shift-K
+      description: "logs|less"
+      scopes:
+        - po
+      command: bash
+      background: false
+      args:
+        - -c
+        - '"$@" | less'
+        - dummy-arg
+        - kubectl
+        - logs
+        - $NAME
+        - -n
+        - $NAMESPACE
+        - --context
+        - $CONTEXT
+        - --kubeconfig
+        - $KUBECONFIG
+    log-less-container:
+      shortCut: Shift-L
+      description: "logs|less"
+      scopes:
+        - containers
+      command: bash
+      background: false
+      args:
+        - -c
+        - '"$@" | less'
+        - dummy-arg
+        - kubectl
+        - logs
+        - -c
+        - $NAME
+        - $POD
+        - -n
+        - $NAMESPACE
+        - --context
+        - $CONTEXT
+        - --kubeconfig
+        - $KUBECONFIG
+  buffers:
+    podLogs: 100
+

@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+import subprocess
+import argparse
+import sys
+import webbrowser
+from urllib.parse import urlparse
+
+def run_git_command(command):
+    result = subprocess.run(["git"] + command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    return result.stdout.decode().strip()
+
+def is_git_repo():
+    try:
+        run_git_command(["rev-parse", "--is-inside-work-tree"])
+        return True
+    except subprocess.CalledProcessError:
+        print("Not a git repository.")
+        sys.exit(1)
+
+def get_git_remote_url(remote):
+    if not is_git_repo():
+        return None
+    try:
+        return run_git_command(["remote", "get-url", remote])
+    except subprocess.CalledProcessError:
+        print(f"Git remote is not set for {remote}.")
+        sys.exit(1)
+
+def detect_hosting_service(giturl):
+    if 'github.com' in giturl:
+        return 'github'
+    elif 'gitlab.com' in giturl:
+        return 'gitlab'
+    elif 'gitea.com' in giturl:
+        return 'gitea'
+    elif 'sr.ht' in giturl:
+        return 'srht'
+    else:
+        return 'selfhosted'
+
+def construct_web_url(giturl, branch, commit, issue, pr):
+    service = detect_hosting_service(giturl)
+    domain, path = parse_git_url(giturl)
+    base_url = f"https://{domain}/{path}"
+
+    if service in ['github', 'gitlab', 'gitea']:
+        if commit:
+            return f"{base_url}/commit/{commit}"
+        elif issue:
+            return f"{base_url}/issues"
+        elif pr:
+            pr_url = 'pulls' if service == 'github' else 'merge_requests'
+            return f"{base_url}/{pr_url}"
+        else:
+            return f"{base_url}/tree/{branch}"
+    elif service == 'srht':
+        # SourceHut's URL structure can be unique and might require customization
+        if commit or branch:
+            return f"{base_url}/browse"  # Adjust as needed
+        # SourceHut may not have a standard issue tracking in the same way
+    else:
+        # Handle selfhosted or other services
+        # This is a placeholder and might need customization based on your setup
+        print("Self-hosted Git service detected. URL construction is not standardized.")
+        sys.exit(1)
+
+    return base_url  # Default return if no specific conditions are met
+
+def parse_git_url(giturl):
+    parsed_url = urlparse(giturl)
+    if parsed_url.scheme:
+        domain = parsed_url.hostname
+        path = parsed_url.path.lstrip('/')
+    else:
+        try:
+            user_host, path = giturl.split(':', 1)
+            domain = user_host.split('@')[-1]
+        except ValueError:
+            print(f"Unable to parse Git URL: {giturl}")
+            sys.exit(1)
+    return domain, path.rstrip('/.git')
+
+def open_in_browser(url):
+    try:
+        webbrowser.open(url)
+    except webbrowser.Error:
+        print("Failed to open the URL in a browser.")
+        sys.exit(1)
+
+def main():
+    parser = argparse.ArgumentParser(description='Open a GitHub page for a repo/branch in your browser.')
+    parser.add_argument('--commit', action='store_true', help='open current commit')
+    parser.add_argument('--issue', action='store_true', help='open issues page')
+    parser.add_argument('--pr', action='store_true', help='open pull/merge requests page')
+    parser.add_argument('--branch', help='git branch')
+    parser.add_argument('--print', action='store_true', help='just print the url')
+    parser.add_argument('remote', nargs='?', default='origin', help='git remote')
+    args = parser.parse_args()
+
+    giturl = get_git_remote_url(args.remote)
+    if not giturl:
+        return  # Exit if there is no Git remote URL
+
+    branch = args.branch if args.branch else run_git_command(["rev-parse", "--abbrev-ref", "HEAD"])
+    commit = run_git_command(["rev-parse", "HEAD"]) if args.commit else None
+    issue = args.issue
+    pr = args.pr
+
+    web_url = construct_web_url(giturl, branch, commit, issue, pr)
+
+    if args.print:
+        print(web_url)
+    else:
+        open_in_browser(web_url)
+
+if __name__ == "__main__":
+    main()

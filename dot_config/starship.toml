@@ -1,0 +1,49 @@
+add_newline = false
+format = """$directory$git_branch$git_status$hostname$shell$character"""
+command_timeout = 400
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❭](bold red)"
+vimcmd_symbol = "[❰](bold cyan)"
+
+[directory]
+truncation_length = 3
+truncation_symbol = '…/'
+truncate_to_repo	= true
+
+[directory.substitutions]
+"Documents" = "📄"
+"Downloads" = "💾"
+"org" = "✏️"
+"Music" = "🎵"
+"Videos" = "📺"
+"Pictures" = "📷"
+"Projects" = "💻"
+
+[git_branch]
+format = '[$symbol$branch(:$remote_branch)]($style)'
+ignore_branches = ['master', 'main']
+
+[git_status]
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+behind = '⇣${count}'
+stashed = ''
+
+[hostname]
+ssh_only = true
+trim_at = "."
+format = '[$ssh_symbol]($style)'
+ssh_symbol = "❯"
+style = 'bold green'
+
+[shell]
+powershell_indicator = 'ᛏ'
+bash_indicator = 'ᛒ'
+zsh_indicator = 'ᛗ'
+fish_indicator = ''
+unknown_indicator	= ''
+disabled = false
+style = "bold green"
+format = '[$indicator]($style)'

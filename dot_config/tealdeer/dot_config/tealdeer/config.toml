@@ -1,0 +1,18 @@
+[display]
+compact = true
+
+[style.command_name]
+foreground = "red"
+
+[style.example_text]
+foreground = "green"
+
+[style.example_code]
+foreground = "blue"
+
+[style.example_variable]
+foreground = "blue"
+
+[updates]
+auto_update = true
+auto_update_interval_hours = 168
