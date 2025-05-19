@@ -19,8 +19,6 @@
 (unless (file-exists-p emacs-cache-directory)
   (make-directory emacs-cache-directory t))
 
-;; Game directory warning is already handled in early-init.el
-
 ;; Set the GNUPG home directory for package signatures
 (setq package-gnupghome-dir (expand-file-name "~/.gnupg"))
 (unless (file-exists-p package-gnupghome-dir)

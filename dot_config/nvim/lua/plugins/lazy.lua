@@ -1,18 +1,22 @@
 return {
   -- UI and Appearance
   {
-    'projekt0n/github-nvim-theme',
+    'rose-pine/neovim',
     priority = 1000,
     opts = {},
     config = function()
-      vim.cmd([[colorscheme github_dark_default]])
-      vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-      vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-      vim.g.nord_contrast = true
-      vim.g.nord_borders = false
-      vim.g.nord_disable_background = true
-      vim.g.nord_enable_sidebar_background = true
-    end
+      require('rose-pine').setup({
+        variant = 'main',
+        dark_variant = 'main',
+        disable_background = true,
+        disable_float_background = true,
+        highlight_groups = {
+          Normal = { bg = 'none' },
+          NormalFloat = { bg = 'none' },
+        },
+      })
+      vim.cmd.colorscheme('rose-pine')
+    end,
   },
   {
     "lukas-reineke/indent-blankline.nvim",
