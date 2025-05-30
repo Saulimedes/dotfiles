@@ -11,7 +11,6 @@ on:
 env:
   ANSIBLE_FORCE_COLOR: true
   HOME: /home/ci
-  XDG_DATA_HOME: ${{ github.workspace }}/.local/share
 
 jobs:
   test:
