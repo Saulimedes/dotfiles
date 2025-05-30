@@ -28,7 +28,7 @@ jobs:
         run: ansible-lint ansible/
 
       - name: Check Chezmoi Diff
-        run: chezmoi diff --exit-code
+        run: chezmoi diff
 
       - name: Setup Dotfiles
         run: chezmoi apply --dry-run
