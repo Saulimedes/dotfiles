@@ -1,0 +1,31 @@
+{
+  "logo": {
+    "type": "auto"
+  },
+  "modules": [
+    "os",
+    "host",
+    "kernel",
+    "uptime",
+    "packages",
+    "shell",
+    "terminal",
+    "cpu",
+    "memory"
+  ],
+  "display": {
+    "separator": "  ",
+    "color": "blue"
+  },
+  "moduleConfigs": {
+    "uptime": {
+      "compact": true
+    },
+    "memory": {
+      "displayType": "percentage"
+    },
+    "packages": {
+      "managers": ["auto"]
+    }
+  }
+}

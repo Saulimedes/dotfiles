@@ -1,0 +1,85 @@
+alias e="$EDITOR"
+alias cp="cp -airv"
+alias scp="scp -r"
+alias cat="bat"
+alias dd="dd status=progress"
+alias mkdir="mkdir -p"
+alias nohist="fish --private"
+alias ip="ip --color"
+alias diff="diff --color=auto"
+alias vdir="vdir --color=auto"
+alias egrep="egrep --color=auto"
+alias fgrep="fgrep --color=auto"
+alias ls="ls"
+alias la="eza -a --group-directories-first"
+alias ll="eza -la --group-directories-first --icons "
+alias l="ll"
+alias l.='eza -a  | grep -E "^\\."'
+alias lg="eza -l --group-directories-first --ignore-glob='.git' --icons"
+alias lt="eza -T --group-directories-first --level=4"
+alias mv="mv -iv"
+alias rm="rm -rf"
+alias ln="ln -vi"
+alias rg="rg --color always"
+alias getip="curl ifconfig.me"
+alias ".."="cd .."
+alias "..."="cd ../.."
+alias ".3"="cd ../../.."
+alias "...."=".3"
+alias ".4"="cd ../../../.."
+alias "....."=".4"
+alias ".5"="cd ../../../../.."
+alias "......"=".5"
+alias ff "fastfetch"
+abbr s "sudo"
+abbr se "sudo edit"
+abbr sea "sudo zypper search"
+abbr i "sudo zypper in"
+abbr u "sudo zypper update"
+abbr sy "sudo systemctl"
+
+## kubectl
+if type -q kubectl
+  if test -d ~/.kube
+    set -x KUBECONFIG (string join ":" (fd --max-depth 1 --type f . ~/.kube | xargs -I {} sh -c 'grep -qm1 "apiVersion:\|kind:\|clusters:\|contexts:\|users:" "{}" && echo "{}"'))
+  end
+
+  abbr k "kubectl"
+  abbr kgd "kubectl get deployments -o wide"
+  abbr kg "kubectl get"
+  abbr kgp "kubectl get pods -o wide"
+  abbr kgh "kubectl get hr -o wide"
+  abbr kge "kubectl get events --watch"
+  abbr kgw --set-cursor=! 'kubectl get pod ! --watch'
+  abbr kgsv "kubectl get service -o wide"
+  abbr ka "kubectl apply -f"
+  abbr kde "kubectl delete"
+  alias kwatch="kubectl get po --all-namespaces"
+  abbr kd "kubectl describe"
+  abbr kgs "kubectl get service"
+  abbr kex --set-cursor=! 'kubectl exec -it ! /bin/bash'
+  abbr kl "kubectl logs -f -p"
+  abbr kw "watch kubectl get -f"
+end
+
+if type -q git
+  abbr g "git"
+  abbr ga "git add"
+  abbr gb "git brancher"
+  abbr gc --set-cursor=! 'git commit -m "!"'
+  abbr gdf "git diff --name-only"
+  abbr gdc "git diff --cached"
+  abbr gd "git diff"
+  abbr gdx "git rm -r"
+  abbr gf "git fetch"
+  abbr gm "git merge"
+  abbr gp "git pull"
+  abbr gpx "git push"
+  abbr gl "git lg1"
+  abbr gox "git open"
+  abbr gr "git restore"
+  abbr grx "git rm -r"
+  abbr grb "git rebase"
+  abbr gs "git s"
+  alias newtag='git tag -a'
+end

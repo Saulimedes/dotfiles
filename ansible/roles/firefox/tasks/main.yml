@@ -1,0 +1,92 @@
+---
+- name: Install firefox
+  become: true
+  community.general.zypper: 
+    name: firefox
+    state: present
+
+- name: Check for the existence of profiles.ini
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.mozilla/firefox/profiles.ini"
+  register: profiles_ini_stat
+
+- name: Start Firefox to generate profiles.ini if not exists
+  ansible.builtin.shell:
+    cmd: "firefox --headless"
+  changed_when: false
+  async: 25 
+  poll: 0
+  when: not profiles_ini_stat.stat.exists
+
+- name: Wait a few seconds for Firefox to initialize
+  ansible.builtin.pause:
+    seconds: 25
+  when: not profiles_ini_stat.stat.exists
+
+- name: Kill Firefox after initialization
+  ansible.builtin.shell:
+    cmd: pkill -f firefox
+  changed_when: false
+  when: not profiles_ini_stat.stat.exists
+
+- name: Verify the contents of profiles.ini
+  ansible.builtin.shell:
+    cmd: cat "{{ ansible_env.HOME }}/.mozilla/firefox/profiles.ini"
+  register: profiles_ini_contents
+  changed_when: false
+
+- name: Extract path of the default profile from profiles.ini
+  ansible.builtin.shell:
+    cmd: awk -F= '/Path=/ && f{print $2; exit} /Default=1/{f=1}' "{{ ansible_env.HOME }}/.mozilla/firefox/profiles.ini"
+  register: firefox_default_profile_path_raw
+  changed_when: false
+
+- name: Debug contents of profiles.ini
+  ansible.builtin.debug:
+    msg: "{{ profiles_ini_contents.stdout }}"
+
+- name: Set Firefox default profile path as fact
+  ansible.builtin.set_fact:
+    firefox_default_profile_path: "{{ ansible_env.HOME }}/.mozilla/firefox/{{ firefox_default_profile_path_raw.stdout }}"
+  when: firefox_default_profile_path_raw.stdout | length > 0
+
+- name: Debug extracted path
+  ansible.builtin.debug:
+    var: firefox_default_profile_path_raw.stdout
+
+- name: Add custom user.js to Firefox profile
+  ansible.builtin.copy:
+    src: files/user.js
+    dest: "{{ firefox_default_profile_path }}/user.js"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  when: firefox_default_profile_path is defined and firefox_default_profile_path != ''
+
+- name: Create chrome directory in firefox profile
+  ansible.builtin.file:
+    path: "{{ firefox_default_profile_path }}/chrome"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0700'
+  when: firefox_default_profile_path is defined and firefox_default_profile_path != ''
+
+- name: Copy chrome directory content to Firefox profile
+  ansible.builtin.copy:
+    src: files/chrome/
+    dest: "{{ firefox_default_profile_path }}/chrome"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_gid }}"
+    mode: '0644'
+  when: firefox_default_profile_path is defined and firefox_default_profile_path != ''
+
+- name: Install Firefox Addons
+  firefox_addon:
+    name: "{{ item }}"
+    profile_path: "{{ firefox_default_profile_path }}"
+    state: present
+  when: firefox_default_profile_path is defined and firefox_default_profile_path != ''
+  loop: "{{ firefox_addons }}"
+  ignore_errors: true
+

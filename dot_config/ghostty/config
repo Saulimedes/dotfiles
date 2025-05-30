@@ -3,6 +3,7 @@ theme = rose-pine
 background = #000000
 cursor-color = #eeeeee
 selection-background = 222222
+term = xterm-256color
 
 window-width = 120
 window-height = 45
@@ -24,8 +25,10 @@ copy-on-select = false
 clipboard-paste-protection = false
 mouse-hide-while-typing = true
 mouse-shift-capture = true
-mouse-scroll-multiplier = 3
+mouse-scroll-multiplier = 1
 gtk-titlebar-hide-when-maximized = true
 
 keybind = performable:ctrl+shift+c=copy_to_clipboard
 keybind = performable:ctrl+shift+v=paste_from_clipboard
+keybind = performable:ctrl+enter=none
+keybind = performable:f11=toggle_fullscreen

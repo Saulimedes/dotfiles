@@ -1,0 +1,20 @@
+---
+- name: Install core packages
+  become: true
+  community.general.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Locate the fish shell
+  ansible.builtin.shell: command -v fish
+  register: fish_path
+  ignore_errors: true
+
+- name: Change the default shell to fish
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    shell: "{{ fish_path.stdout }}"
+  when: fish_path.rc == 0 and fish_path.stdout != ''
+  ignore_errors: true

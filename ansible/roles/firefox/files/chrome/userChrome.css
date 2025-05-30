@@ -1,0 +1,89 @@
+/* ===== General Scrollbar Adjustments for Content Area ===== */
+#content browser, .browserStack>browser {
+    overflow-y: scroll;              /* Always show vertical scrollbar */
+    overflow-x: hidden;              /* Hide horizontal scrollbar */
+}
+
+/* ===== Tab Customization (General) ===== */
+:root {
+    --tab-border-radius: 0 !important;    /* Removes tab border radius */
+    --tab-block-margin: 0 !important;     /* Removes margin around tabs */
+}
+
+/* ===== Tab Customization (Compact Mode) ===== */
+:root[uidensity="compact"] {
+    --tab-min-height: 28px !important;    /* Sets compact mode tab height */
+}
+
+/* ===== Hide Scroll Buttons in Tab Bar ===== */
+toolbarbutton#scrollbutton-up, 
+toolbarbutton#scrollbutton-down {
+    display: none; /* Hides scroll buttons for the tab bar */
+}
+
+/* ===== Tab Label Container Adjustments ===== */
+#tabbrowser-tabs:not([secondarytext-unsupported]) .tab-label-container {
+    height: initial !important;   /* Restores default tab label container height */
+}
+
+/* ===== Hide Close Buttons in Tabs ===== */
+#tabbrowser-tabs .tabbrowser-tab .tab-close-button {
+    display: none !important;     /* Hides tab close buttons */
+}
+
+/* ===== Grouping Elements to Hide (Button and Menu Items) ===== */
+#firefox-view-button, 
+#fxa-toolbar-menu-button, 
+#alltabs-button, 
+#new-tab-button, 
+#tabs-newtab-button, 
+#statuspanel, 
+#reload-button, 
+#stop-button,
+#stop-reload-button > .toolbarbutton-icon,
+#library-button,
+#reader-mode-button {
+    display: none !important;  /* Hides multiple UI buttons in one rule */
+}
+
+/* ===== Menu and Popup Styling ===== */
+menupopup, panel {
+    --panel-border-radius: 0px !important;  /* Removes panel border radius */
+}
+
+menu, menuitem, menucaption {
+    border-radius: 0px !important;          /* Removes border radius from menu items */
+}
+
+/* ===== Remove Context Menu Items (Navigation Related) ===== */
+menupopup > #context-navigation, 
+menupopup > #context-sep-navigation {
+    display: none !important;  /* Removes navigation menu items */
+}
+
+/* ===== Hide Customizable UI Springs ===== */
+#customizableui-special-spring1, 
+#customizableui-special-spring2 {
+    display: none !important;  /* Hides unnecessary UI springs */
+}
+
+/* ===== Toolbar Button Padding Adjustments ===== */
+toolbar .toolbarbutton-1 {
+    padding: 0 !important;    /* Removes padding from toolbar buttons */
+}
+
+/* ===== Remove Tab Bar Borders ===== */
+#tabbrowser-tabs {
+    border-inline-start: none !important;  /* Removes border from the left side of the tab bar */
+}
+
+.titlebar-spacer {
+    display: none !important;  /* Removes titlebar spacer */
+}
+
+/* ===== Downloads Button Margin Adjustment ===== */
+#downloads-button {
+    margin-left: 2px !important;  /* Adds left margin to the downloads button */
+}
+
+

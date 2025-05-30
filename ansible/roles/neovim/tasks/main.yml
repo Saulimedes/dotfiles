@@ -1,0 +1,7 @@
+---
+- name: Install neovim
+  become: true
+  community.general.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"

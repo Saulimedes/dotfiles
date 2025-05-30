@@ -5,3 +5,4 @@ jorgebucaran/autopair.fish
 franciscolourenco/done
 pymander/vfish
 pymander/plugin-emacs
+danhper/fish-ssh-agent
