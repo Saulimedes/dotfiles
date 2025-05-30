@@ -1,0 +1,26 @@
+---
+- name: Import Tailscale GPG key
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://pkgs.tailscale.com/stable/opensuse/tumbleweed/repo.gpg
+
+- name: Add the Tailscale repository
+  become: true
+  community.general.zypper_repository:
+    repo: 'https://pkgs.tailscale.com/stable/opensuse/tumbleweed/tailscale.repo'
+    state: present
+    auto_import_keys: yes
+
+- name: Install Tailscale
+  become: true
+  community.general.zypper:
+    name: tailscale
+    state: present
+
+- name: Enable and start tailscaled service
+  become: true
+  ansible.builtin.systemd:
+    name: tailscaled
+    enabled: yes
+    state: started

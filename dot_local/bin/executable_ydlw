@@ -1,0 +1,61 @@
+#!/bin/bash
+
+PLAYLIST_FILE=$(mktemp /tmp/playlist.XXXXXX)
+LAST=""
+ABORTED=false
+
+echo "Monitoring clipboard via 'paste'..."
+echo " - Press Ctrl+C to download and exit."
+echo " - Press Ctrl+D or type ':q' to stop adding links (playlist is saved)."
+echo " - Type 'e' + Enter to edit the playlist."
+
+cleanup() {
+    if [ "$ABORTED" = true ]; then
+        echo -e "\nAborted. Playlist kept at: $PLAYLIST_FILE"
+    else
+        echo -e "\nDownload starting..."
+        if ydl --batch-file="$PLAYLIST_FILE"; then
+            echo "Download finished successfully. Deleting playlist."
+            rm "$PLAYLIST_FILE"
+        else
+            echo "Some downloads failed. Playlist retained at: $PLAYLIST_FILE"
+        fi
+    fi
+    exit
+}
+
+trap cleanup SIGINT SIGTERM EXIT
+
+# Clear clipboard initially
+echo " " | copy
+
+while true; do
+    # Check clipboard
+    CURRENT=$(paste)
+    CURRENT="${CURRENT#"${CURRENT%%[![:space:]]*}"}"
+    CURRENT="${CURRENT%"${CURRENT##*[![:space:]]}"}"
+
+    if [[ -n "$CURRENT" && "$CURRENT" =~ ^https?:// && ! $(grep -Fx "$CURRENT" "$PLAYLIST_FILE") ]]; then
+        echo "$CURRENT" >> "$PLAYLIST_FILE"
+        echo "Added: $CURRENT"
+        LAST="$CURRENT"
+    fi
+
+    # Read input with timeout
+    if read -t 1 -r INPUT; then
+        case "$INPUT" in
+            ":q")
+                ABORTED=true
+                break
+                ;;
+            "e")
+                ${EDITOR:-vi} "$PLAYLIST_FILE"
+                ;;
+        esac
+    elif [[ $? -eq 1 ]]; then
+        # Ctrl+D
+        ABORTED=true
+        break
+    fi
+done
+

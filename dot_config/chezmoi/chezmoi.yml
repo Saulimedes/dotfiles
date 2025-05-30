@@ -3,6 +3,8 @@ data:
     name: "Paul Becker"
     email: "p@becker.kiwi"
   editor: "nvim"
+  visual: "emacsclient -c -a emacs"
+  manpager: "nvim +Man!"
 
 git:
   autoPush: true

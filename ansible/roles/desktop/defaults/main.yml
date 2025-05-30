@@ -1,0 +1,36 @@
+---
+fonts:
+  - fontawesome-fonts
+  - google-roboto-fonts
+  - fetchmsttfonts
+  - google-droid-fonts
+
+packages:
+  - telegram-desktop
+  - podman
+  - appimaged
+  - hplip-hpijs
+  - podman-compose
+  - NetworkManager-tui
+  - NetworkManager-vpnc
+  - NetworkManager-wwan
+  - NetworkManager-openconnect
+  - NetworkManager-openvpn
+  - NetworkManager-connection-editor
+  - NetworkManager-dns-dnsmasq
+  - mpv
+  - ghostty
+  - xdg-user-dirs
+  - xdg-utils
+  - ffmpeg
+  - wl-clipboard
+  - rust
+  - flatpak
+  - android-tools
+  - yt-dlp
+  - syncthing
+
+flatpak:
+  - org.jdownloader.JDownloader
+  - us.zoom.Zoom
+  - org.localsend.localsend_app

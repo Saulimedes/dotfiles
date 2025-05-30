@@ -1,0 +1,106 @@
+---
+- name: Install work packages
+  become: true
+  community.general.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Import Google GPG key
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://dl-ssl.google.com/linux/linux_signing_key.pub
+
+- name: Add Google Chrome repository
+  become: true
+  community.general.zypper_repository:
+    name: google-chrome
+    repo: 'http://dl.google.com/linux/chrome/rpm/stable/x86_64'
+    state: present
+    autorefresh: true
+
+- name: Add Mise repository
+  become: true
+  community.general.zypper_repository:
+    name: mise
+    repo: 'https://mise.jdx.dev/rpm/mise.repo'
+    state: present
+    autorefresh: true
+
+- name: Install mise
+  become: true
+  package:
+    name: mise
+    state: present
+
+- name: Add Microsoft Edge repository
+  become: true
+  community.general.zypper_repository:
+    name: microsoft-edge
+    repo: https://packages.microsoft.com/yumrepos/edge
+    state: present
+    autorefresh: true
+
+- name: Add Google Cloud SDK repository
+  community.general.zypper_repository:
+    name: google-cloud-sdk
+    repo: https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
+    state: present
+    auto_import_keys: yes
+    disable_gpg_check: no
+  become: true
+
+- name: Import Google Cloud SDK GPG keys
+  ansible.builtin.rpm_key:
+    state: present
+    key: "{{ item }}"
+  loop:
+    - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+    - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  become: true
+
+- name: Install Google Cloud SDK
+  become: true
+  community.general.zypper:
+    name: google-cloud-sdk
+    state: present
+    force: yes
+
+- name: Check if AWS CLI is already installed
+  ansible.builtin.command: aws --version
+  register: aws_cli_check
+  ignore_errors: true
+
+- name: Download AWS CLI v2 installation package
+  ansible.builtin.get_url:
+    mode: '0600'
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: "/tmp/awscliv2.zip"
+
+- name: Unzip AWS CLI v2 installation package
+  ansible.builtin.unarchive:
+    src: "/tmp/awscliv2.zip"
+    dest: "/tmp/"
+    remote_src: yes
+
+- name: Update AWS CLI v2
+  become: true
+  ansible.builtin.command:
+    cmd: "/tmp/aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update"
+  when: aws_cli_check.rc == 0
+
+- name: Install AWS CLI v2
+  become: true
+  ansible.builtin.command:
+    cmd: "/tmp/aws/install"
+  when: aws_cli_check.rc != 0
+
+- name: Clean up installation files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/tmp/awscliv2.zip"
+    - "/tmp/aws/"
+

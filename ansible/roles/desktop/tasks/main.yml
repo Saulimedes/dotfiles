@@ -1,0 +1,88 @@
+---
+- name: Install fonts
+  become: true
+  community.general.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ fonts }}"
+
+- name: Install desktop packages
+  become: true
+  community.general.zypper:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ packages }}"
+
+- name: Add current user to the flatpak group
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    groups: flatpak
+    append: yes
+
+- name: Add the Flathub repository
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    state: present
+    flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+
+- name: Verify Flathub repository
+  become: true
+  command: flatpak remote-list --system
+  register: remote_list
+
+- name: Install Flatpak packages
+  become: true
+  community.general.flatpak:
+    name: "{{ item }}"
+    state: present
+    method: system
+  loop: "{{ flatpak }}"
+  when: remote_list.stdout != ""
+
+- name: Update XDG user directories
+  ansible.builtin.command:
+    cmd: xdg-user-dirs-update
+
+- name: Ensure the Projects directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/Projects"
+    state: directory
+    mode: '0770'
+
+- name: Ensure the Documents/org directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/Documents/org"
+    state: directory
+    mode: '0770'
+
+- name: Add custom Projects directory to XDG user-dirs.dirs
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/user-dirs.dirs"
+    regexp: '^XDG_PROJECTS_DIR='
+    line: 'XDG_PROJECTS_DIR="$HOME/Projects"'
+    create: yes
+    mode: '0770'
+
+- name: Add custom Documents/org directory to XDG user-dirs.dirs
+  ansible.builtin.lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/user-dirs.dirs"
+    regexp: '^XDG_ORG_DIR='
+    line: 'XDG_ORG_DIR="$HOME/Documents/org"'
+    create: yes
+    mode: '0770'
+
+- name: Find all user systemd services
+  ansible.builtin.find:
+    paths: "{{ ansible_env.HOME }}/.config/systemd/user"
+    patterns: "*.service"
+  register: user_services
+
+- name: Enable user systemd services
+  ansible.builtin.systemd:
+    name: "{{ item.path | basename }}"
+    scope: user
+    enabled: true
+    daemon_reload: true
+  loop: "{{ user_services.files }}"
