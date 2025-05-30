@@ -11,7 +11,6 @@ on:
 env:
   ANSIBLE_FORCE_COLOR: true
 
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -29,7 +28,7 @@ jobs:
         run: ansible-lint ansible/
 
       - name: Set up chezmoi source
-        run: chezmoi init . --working-tree
+        run: chezmoi init --working-tree=.
 
       - name: Setup Dotfiles
         run: chezmoi apply --dry-run --verbose
