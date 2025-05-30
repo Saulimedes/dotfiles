@@ -10,7 +10,6 @@ on:
 
 env:
   ANSIBLE_FORCE_COLOR: true
-  HOME: ${{ github.workspace }}
 
 jobs:
   test:
@@ -29,7 +28,7 @@ jobs:
         run: ansible-lint ansible/
 
       - name: Initialize chezmoi
-        run: chezmoi init --working-tree=.
+        run: chezmoi init --working-tree=${GITHUB_WORKSPACE}
 
       - name: Dry-Run Setup
         run: chezmoi apply --dry-run --verbose
@@ -48,7 +47,7 @@ jobs:
         run: zypper install -y ansible chezmoi
 
       - name: Initialize chezmoi
-        run: chezmoi init --working-tree=.
+        run: chezmoi init --working-tree=${GITHUB_WORKSPACE}
 
       - name: Execute System Setup
         run: chezmoi apply
