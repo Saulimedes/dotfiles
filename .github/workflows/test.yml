@@ -37,6 +37,12 @@ jobs:
 
       - name: Dry-Run Setup
         run: chezmoi apply --dry-run --verbose
+
+      - name: Debug chezmoi config
+        run: |
+          chezmoi data
+          chezmoi source-path
+          chezmoi status --verbose || true
   setup:
     runs-on: ubuntu-latest
     container:
