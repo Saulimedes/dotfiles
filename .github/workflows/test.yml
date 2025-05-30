@@ -10,6 +10,7 @@ on:
 
 env:
   ANSIBLE_FORCE_COLOR: true
+  HOME: ${{ github.workspace }}
 
 jobs:
   test:
