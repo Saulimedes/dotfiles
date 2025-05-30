@@ -33,7 +33,7 @@ jobs:
         run: ansible-lint ${GITHUB_WORKSPACE}/ansible/
 
       - name: Initialize chezmoi
-        run: chezmoi init --working-tree=${GITHUB_WORKSPACE}
+        run: chezmoi init --source=${GITHUB_WORKSPACE}
 
       - name: Dry-Run Setup
         run: chezmoi apply --dry-run --verbose
@@ -61,7 +61,7 @@ jobs:
         run: zypper install -y ansible chezmoi
 
       - name: Initialize chezmoi
-        run: chezmoi init --working-tree=${GITHUB_WORKSPACE}
+        run: chezmoi init --source=${GITHUB_WORKSPACE}
 
       - name: Execute System Setup
         run: chezmoi apply
