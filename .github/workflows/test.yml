@@ -10,7 +10,8 @@ on:
 
 env:
   ANSIBLE_FORCE_COLOR: true
-  HOME: /home/ci
+  HOME: ${{ github.workspace }}
+  XDG_DATA_HOME: ${{ github.workspace }}/.local/share
 
 jobs:
   test:
@@ -21,9 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Check out repository code
-
-      - name: Prepare CI home dir
-        run: mkdir -p "$HOME"
 
       - name: Install dependencies
         run: zypper install -y ansible ansible-lint chezmoi
