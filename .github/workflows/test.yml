@@ -27,6 +27,9 @@ jobs:
       - name: Lint Ansible Playbook
         run: ansible-lint ansible/
 
+      - name: Initialize chezmoi in current directory
+        run: chezmoi init --source . --no-tty --prompt=false
+
       - name: Check Chezmoi Diff
         run: chezmoi diff
 
