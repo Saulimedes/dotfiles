@@ -11,6 +11,7 @@ on:
 env:
   ANSIBLE_FORCE_COLOR: true
 
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -27,14 +28,11 @@ jobs:
       - name: Lint Ansible Playbook
         run: ansible-lint ansible/
 
-      - name: Initialize chezmoi in current directory
-        run: chezmoi init --source . --no-tty --prompt=false
-
-      - name: Check Chezmoi Diff
-        run: chezmoi diff
+      - name: Set up chezmoi source
+        run: chezmoi init . --working-tree
 
       - name: Setup Dotfiles
-        run: chezmoi apply --dry-run
+        run: chezmoi apply --dry-run --verbose
   setup:
     runs-on: ubuntu-latest
     container:
