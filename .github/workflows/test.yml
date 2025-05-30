@@ -29,7 +29,7 @@ jobs:
         run: zypper install -y ansible ansible-lint chezmoi
 
       - name: Lint Ansible Playbook
-        run: ansible-lint $[GITHUB_WORKSPACE}/ansible/
+        run: ansible-lint ${GITHUB_WORKSPACE}/ansible/
 
       - name: Initialize chezmoi
         run: chezmoi init --working-tree=${GITHUB_WORKSPACE}
