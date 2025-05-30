@@ -28,17 +28,17 @@ jobs:
       - name: Lint Ansible Playbook
         run: ansible-lint ansible/
 
-      - name: Set up chezmoi source
+      - name: Initialize chezmoi
         run: chezmoi init --working-tree=.
 
-      - name: Setup Dotfiles
+      - name: Dry-Run Setup
         run: chezmoi apply --dry-run --verbose
   setup:
     runs-on: ubuntu-latest
     container:
       image: opensuse/tumbleweed
     needs: test
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    #if: ${{ github.event_name == 'workflow_dispatch' }}
 
     steps:
       - uses: actions/checkout@v3
@@ -46,6 +46,9 @@ jobs:
 
       - name: Install ansible and chezmoi
         run: zypper install -y ansible chezmoi
+
+      - name: Initialize chezmoi
+        run: chezmoi init --working-tree=.
 
       - name: Execute System Setup
         run: chezmoi apply
