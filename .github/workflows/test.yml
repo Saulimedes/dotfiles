@@ -43,7 +43,12 @@ jobs:
 
       - name: Initialize chezmoi
         run: |
-          chezmoi init --source="${GITHUB_WORKSPACE}" --destination="$HOME"
+          # Create the chezmoi source directory structure
+          mkdir -p "$HOME/.local/share"
+          # Copy the repo contents to the chezmoi source directory
+          cp -r "${GITHUB_WORKSPACE}/." "$HOME/.local/share/chezmoi/"
+          # Initialize chezmoi with explicit paths
+          chezmoi init --source="$HOME/.local/share/chezmoi" --destination="$HOME"
           chezmoi doctor
 
       - name: Dry-Run Setup
@@ -83,7 +88,12 @@ jobs:
 
       - name: Initialize chezmoi
         run: |
-          chezmoi init --source="${GITHUB_WORKSPACE}" --destination="$HOME"
+          # Create the chezmoi source directory structure
+          mkdir -p "$HOME/.local/share"
+          # Copy the repo contents to the chezmoi source directory
+          cp -r "${GITHUB_WORKSPACE}/." "$HOME/.local/share/chezmoi/"
+          # Initialize chezmoi with explicit paths
+          chezmoi init --source="$HOME/.local/share/chezmoi" --destination="$HOME"
           chezmoi doctor
 
       - name: Execute System Setup
