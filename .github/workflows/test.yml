@@ -23,7 +23,9 @@ jobs:
         name: Check out repository code
 
       - name: Create CI home dir
-        run: mkdir -p "$HOME"
+        run: |
+          mkdir -p "$HOME"
+          chown -R $(id -u):$(id -g) "$HOME"
 
       - name: Install dependencies
         run: zypper install -y ansible ansible-lint chezmoi
@@ -31,8 +33,18 @@ jobs:
       - name: Lint Ansible Playbook
         run: ansible-lint ${GITHUB_WORKSPACE}/ansible/
 
+      - name: Debug environment
+        run: |
+          pwd
+          ls -la
+          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+          echo "HOME: $HOME"
+          id
+
       - name: Initialize chezmoi
-        run: chezmoi init --source=${GITHUB_WORKSPACE} --destination=$HOME
+        run: |
+          chezmoi init --source="${GITHUB_WORKSPACE}" --destination="$HOME"
+          chezmoi doctor
 
       - name: Dry-Run Setup
         run: chezmoi apply --dry-run --verbose
@@ -47,20 +59,32 @@ jobs:
     container:
       image: opensuse/tumbleweed
     needs: test
-    #if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' }}
 
     steps:
       - uses: actions/checkout@v3
         name: Check out repository code again
 
       - name: Prepare CI home dir
-        run: mkdir -p "$HOME"
+        run: |
+          mkdir -p "$HOME"
+          chown -R $(id -u):$(id -g) "$HOME"
 
       - name: Install ansible and chezmoi
         run: zypper install -y ansible chezmoi
 
+      - name: Debug environment
+        run: |
+          pwd
+          ls -la
+          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+          echo "HOME: $HOME"
+          id
+
       - name: Initialize chezmoi
-        run: chezmoi init --source=${GITHUB_WORKSPACE} --destination=$HOME
+        run: |
+          chezmoi init --source="${GITHUB_WORKSPACE}" --destination="$HOME"
+          chezmoi doctor
 
       - name: Execute System Setup
-        run: chezmoi apply
+        run: chezmoi apply --verbose
