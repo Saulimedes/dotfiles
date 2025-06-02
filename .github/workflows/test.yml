@@ -10,7 +10,6 @@ on:
 
 env:
   ANSIBLE_FORCE_COLOR: true
-  HOME: /home/ci
 
 jobs:
   test:
@@ -22,79 +21,20 @@ jobs:
       - uses: actions/checkout@v3
         name: Check out repository code
 
-      - name: Create CI home dir
-        run: |
-          mkdir -p "$HOME"
-          chown -R $(id -u):$(id -g) "$HOME"
-
       - name: Install dependencies
-        run: zypper install -y ansible ansible-lint chezmoi
+        run: zypper install -y ansible ansible-lint chezmoi bash
 
       - name: Lint Ansible Playbook
-        run: ansible-lint ${GITHUB_WORKSPACE}/ansible/
+        run: ansible-lint ansible/
 
-      - name: Debug environment
+      - name: Prepare chezmoi Env
         run: |
-          pwd
-          ls -la
-          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-          echo "HOME: $HOME"
-          id
+          useradd -m -d /tmp/home testuser
+          chown -R testuser:testuser /tmp/home
 
-      - name: Initialize chezmoi
+      - name: chezmoi dry-run
         run: |
-          # Create the chezmoi source directory structure
-          mkdir -p "$HOME/.local/share"
-          # Copy the repo contents to the chezmoi source directory
-          cp -r "${GITHUB_WORKSPACE}/." "$HOME/.local/share/chezmoi/"
-          # Initialize chezmoi with explicit paths
-          chezmoi init --source="$HOME/.local/share/chezmoi" --destination="$HOME"
-          chezmoi doctor
-
-      - name: Dry-Run Setup
-        run: chezmoi apply --dry-run --verbose
-
-      - name: Debug chezmoi config
-        run: |
-          chezmoi data
-          chezmoi source-path
-          chezmoi status --verbose || true
-  setup:
-    runs-on: ubuntu-latest
-    container:
-      image: opensuse/tumbleweed
-    needs: test
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-
-    steps:
-      - uses: actions/checkout@v3
-        name: Check out repository code again
-
-      - name: Prepare CI home dir
-        run: |
-          mkdir -p "$HOME"
-          chown -R $(id -u):$(id -g) "$HOME"
-
-      - name: Install ansible and chezmoi
-        run: zypper install -y ansible chezmoi
-
-      - name: Debug environment
-        run: |
-          pwd
-          ls -la
-          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
-          echo "HOME: $HOME"
-          id
-
-      - name: Initialize chezmoi
-        run: |
-          # Create the chezmoi source directory structure
-          mkdir -p "$HOME/.local/share"
-          # Copy the repo contents to the chezmoi source directory
-          cp -r "${GITHUB_WORKSPACE}/." "$HOME/.local/share/chezmoi/"
-          # Initialize chezmoi with explicit paths
-          chezmoi init --source="$HOME/.local/share/chezmoi" --destination="$HOME"
-          chezmoi doctor
-
-      - name: Execute System Setup
-        run: chezmoi apply --verbose
+          su - testuser -c "
+            chezmoi init --source=$PWD --working-tree=$PWD
+            chezmoi apply --dry-run --verbose
+          "
