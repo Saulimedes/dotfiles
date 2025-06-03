@@ -8,6 +8,7 @@ fonts:
 packages:
   - telegram-desktop
   - podman
+  - dragon
   - appimaged
   - hplip-hpijs
   - podman-compose
