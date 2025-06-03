@@ -22,19 +22,18 @@ jobs:
         name: Check out repository code
 
       - name: Install dependencies
-        run: zypper install -y ansible ansible-lint chezmoi bash
+        run: |
+          zypper --non-interactive refresh
+          zypper install -y ansible ansible-lint chezmoi
 
       - name: Lint Ansible Playbook
         run: ansible-lint ansible/
 
-      - name: Prepare chezmoi Env
-        run: |
-          useradd -m -d /tmp/home testuser
-          chown -R testuser:testuser /tmp/home
-
       - name: chezmoi dry-run
         run: |
-          su - testuser -c "
-            chezmoi init --source=$PWD --working-tree=$PWD
-            chezmoi apply --dry-run --verbose
-          "
+          chezmoi apply \
+            --source="$PWD" \
+            --working-tree="$PWD" \
+            --init=false \
+            --dry-run \
+            --verbose
