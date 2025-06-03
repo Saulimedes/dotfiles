@@ -24,7 +24,6 @@ packages:
   - eza
   - strace
   - yazi
-  - dragon
   - sshpass
   - gopass
   - fish

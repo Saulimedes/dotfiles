@@ -1,7 +1,6 @@
 ---
 packages:
   - npm
-  - julia
   - go
   - neovim
   - ruby-devel
