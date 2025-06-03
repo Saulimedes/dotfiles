@@ -34,6 +34,7 @@ jobs:
           chezmoi apply \
             --source="$PWD" \
             --working-tree="$PWD" \
+            --config="$PWD/dot_config/chezmoi/chezmoi.yml" \
             --init=false \
             --dry-run \
             --verbose
