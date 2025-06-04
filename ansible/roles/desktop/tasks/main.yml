@@ -4,6 +4,9 @@
   community.general.zypper:
     name: "{{ item }}"
     state: present
+    extra_args:
+      - --non-interactive
+      - --auto-agree-with-licenses
   loop: "{{ fonts }}"
 
 - name: Install desktop packages
