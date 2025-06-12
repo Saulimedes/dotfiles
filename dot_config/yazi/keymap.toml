@@ -33,8 +33,12 @@ run  = "plugin jump-to-char"
 desc = "Jump to char"
 
 [[manager.prepend_keymap]]
-on  = "<C-n>"
+on  = "<C-o>" # o for output
 run = 'shell -- dragon -x -i -T "$1"'
+
+[[manager.prepend_keymap]]
+on  = "<C-i>"  # "i" for "import"
+run = 'shell -- dragon -t -o "$PWD"'
 
 [[manager.prepend_keymap]]
 on  = "y"
@@ -43,4 +47,3 @@ run = [ 'shell -- for path in "$@"; do echo "file://$path"; done | copy', "yank"
 [[manager.prepend_keymap]]
 on = [ "g", "r" ]
 run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"'
-

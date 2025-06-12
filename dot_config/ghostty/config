@@ -30,5 +30,4 @@ gtk-titlebar-hide-when-maximized = true
 
 keybind = performable:ctrl+shift+c=copy_to_clipboard
 keybind = performable:ctrl+shift+v=paste_from_clipboard
-keybind = performable:ctrl+enter=none
 keybind = performable:f11=toggle_fullscreen
