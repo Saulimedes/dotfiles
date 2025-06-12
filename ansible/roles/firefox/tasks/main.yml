@@ -1,7 +1,7 @@
 ---
 - name: Install firefox
   become: true
-  community.general.zypper: 
+  community.general.zypper:
     name: firefox
     state: present
 
@@ -14,13 +14,14 @@
   ansible.builtin.shell:
     cmd: "firefox --headless"
   changed_when: false
-  async: 25 
+  async: 25
   poll: 0
   when: not profiles_ini_stat.stat.exists
 
-- name: Wait a few seconds for Firefox to initialize
-  ansible.builtin.pause:
-    seconds: 25
+- name: Wait for profiles.ini to appear
+  ansible.builtin.wait_for:
+    path: "{{ ansible_env.HOME }}/.mozilla/firefox/profiles.ini"
+    timeout: 30
   when: not profiles_ini_stat.stat.exists
 
 - name: Kill Firefox after initialization

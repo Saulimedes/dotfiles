@@ -2,13 +2,11 @@
 fonts:
   - fontawesome-fonts
   - google-roboto-fonts
-  - fetchmsttfonts
   - google-droid-fonts
 
 packages:
   - telegram-desktop
   - podman
-  - dragon
   - appimaged
   - hplip-hpijs
   - podman-compose

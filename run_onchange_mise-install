@@ -1,3 +1,9 @@
 #!/bin/bash
+if ! command -v mise >/dev/null 2>&1; then
+  echo "mise not found – installing..."
+  curl https://mise.run | sh
+else
+  echo "mise already installed – skipping installation."
+fi
+
 mise install -y
-#flatpak update -y

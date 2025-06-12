@@ -6,10 +6,26 @@ TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
   echo "Cloning TPM..."
   git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
-  echo "Installing tmux plugins..."
-  "$TPM_DIR/bin/install_plugins"
 fi
 
-# Update all plugins
-echo "Updating tmux plugins..."
-"$TPM_DIR/bin/update_plugins" all
+# Function to run TPM plugin install/update
+run_tpm() {
+  echo "Installing tmux plugins..."
+  "$TPM_DIR/bin/install_plugins"
+  echo "Updating tmux plugins..."
+  "$TPM_DIR/bin/update_plugins" all
+}
+
+# Detect if we're inside tmux
+if [ -n "$TMUX" ]; then
+  echo "Running inside tmux — executing plugin operations directly."
+  run_tpm
+else
+  # Try launching a throwaway tmux session to verify it's usable
+  if tmux has-session 2>/dev/null || tmux new-session -d -s _tpmcheck true 2>/dev/null; then
+    echo "Starting a temporary tmux session for plugin operations..."
+    tmux new-session -d -s tpm-bootstrap "/bin/sh -c '$TPM_DIR/bin/install_plugins && $TPM_DIR/bin/update_plugins all; sleep 1'"
+  else
+    echo "Tmux is not usable in this environment (probably CI or container). Skipping TPM plugin install."
+  fi
+fi

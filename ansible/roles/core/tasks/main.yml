@@ -14,7 +14,7 @@
 - name: Change the default shell to fish
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_env.USER }}"
+    name: "{{ ansible_user_id }}"
     shell: "{{ fish_path.stdout }}"
   when: fish_path.rc == 0 and fish_path.stdout != ''
   ignore_errors: true

@@ -4,9 +4,6 @@
   community.general.zypper:
     name: "{{ item }}"
     state: present
-    extra_args:
-      - --non-interactive
-      - --auto-agree-with-licenses
   loop: "{{ fonts }}"
 
 - name: Install desktop packages
@@ -19,7 +16,7 @@
 - name: Add current user to the flatpak group
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_env.USER }}"
+    name: "{{ ansible_user_id }}"
     groups: flatpak
     append: yes
 
@@ -42,6 +39,7 @@
     state: present
     method: system
   loop: "{{ flatpak }}"
+  ignore_errors: "{{ item == 'us.zoom.Zoom' }}"
   when: remote_list.stdout != ""
 
 - name: Update XDG user directories
@@ -89,3 +87,6 @@
     enabled: true
     daemon_reload: true
   loop: "{{ user_services.files }}"
+  when:
+    - ansible_env.CI is not defined
+    - ansible_user_id != "root"

@@ -24,11 +24,6 @@ rev = "55bf699"
 hash = "104fa2ce07d8890b07fcff68b0aaf923"
 
 [[plugin.deps]]
-use = "yazi-rs/plugins:no-status"
-rev = "55bf699"
-hash = "513a23ac28e1eaa626f3a1bb6c8130d0"
-
-[[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
 rev = "55bf699"
 hash = "36405f8781fcaf33ceab24dffd5cea19"
