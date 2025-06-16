@@ -1,4 +1,4 @@
-search_mode = "fuzzy"
+search_mode = "skim"
 filter_mode = "global"
 style = "compact"
 auto_sync = true
