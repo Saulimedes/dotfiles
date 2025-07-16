@@ -6,7 +6,7 @@
 ![OpenSuSE](https://img.shields.io/badge/distro-openSuSE-brightgreen?logo=opensuse&logoColor=white)
 ![Neovim](https://img.shields.io/badge/editor-neovim-teal?logo=neovim&logoColor=white)
 ![MonoLisa](https://img.shields.io/badge/font-MonoLisa-green)
-![fish](https://img.shields.io/badge/shell-fish-lightgreen?logo=fish&logoColor=white)
+![zsh](https://img.shields.io/badge/shell-zsh-lightgreen?logo=fish&logoColor=white)
 
 <p align="center">
   <img src="./.github/images/dotfile_image.png" alt="Banner" style="width:320px;"/>
