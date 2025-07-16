@@ -13,7 +13,7 @@ SAVEHIST=50000
 HISTFILE=$HOME/.local/share/zsh_history
 
 # Completion System
-setopt COMPLETE_IN_WORD ALWAYS_TO_END AUTO_MENU   MENUCOMPLETE AUTOLIST
+setopt COMPLETE_IN_WORD ALWAYS_TO_END AUTO_MENU MENUCOMPLETE AUTOLIST
 fpath=(~/.zsh/completions $fpath)
 autoload -Uz compinit && compinit
 zstyle ':completion:*' special-dirs true
@@ -25,7 +25,7 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[./]=* r:|=*' 'l:|
 zstyle ':completion:*:default' list-prompt '%Sscroll: %p'
 
 # General Settings
-setopt NO_BEEP NO_BG_NICE CORRECT CORRECT_ALL GLOB_COMPLETE EXTENDED_GLOB
+setopt NO_BEEP NO_BG_NICE CORRECT CORRECT_ALL GLOB_COMPLETE EXTENDED_GLOB INTERACTIVE_COMMENTS NO_BAD_PATTERN
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
 typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)

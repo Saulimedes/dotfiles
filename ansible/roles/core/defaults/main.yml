@@ -3,6 +3,7 @@ packages:
   - git
   - git-lfs
   - chezmoi
+  - nmon
   - bottom
   - socat
   - bat
