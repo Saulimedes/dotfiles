@@ -1,21 +1,21 @@
 return {
   -- UI and Appearance
   {
-    'rose-pine/neovim',
+    'gbprod/nord.nvim',
     priority = 1000,
     opts = {},
     config = function()
-      require('rose-pine').setup({
-        variant = 'main',
-        dark_variant = 'main',
-        disable_background = true,
-        disable_float_background = true,
-        highlight_groups = {
-          Normal = { bg = 'none' },
-          NormalFloat = { bg = 'none' },
-        },
+      require('nord').setup({
+        transparent = true,
+        borders = true,
+        italic = false,
       })
-      vim.cmd.colorscheme('rose-pine')
+
+      vim.cmd([[
+        colorscheme nord
+        highlight Normal guibg=NONE ctermbg=NONE
+        highlight NormalFloat guibg=NONE ctermbg=NONE
+      ]])
     end,
   },
   {

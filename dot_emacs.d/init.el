@@ -97,8 +97,7 @@
  use-package-always-ensure t
  kill-ring-max 300
  tab-width 2
- ;; Disable all game score functionality
- gamegrid-user-score-file-directory nil
+ ;; Game score functionality disabled in early-init.el
  fill-column 80
  backup-by-copying t
  version-control t

@@ -1,5 +1,5 @@
 #theme = dark:nord-wave,light:nord-light
-theme = rose-pine
+theme = nord-wave
 background = #000000
 cursor-color = #eeeeee
 selection-background = 222222

@@ -40,9 +40,9 @@ style = 'bold green'
 
 [shell]
 powershell_indicator = 'ᛏ'
-bash_indicator = 'ᛒ'
-zsh_indicator = 'ᛗ'
-fish_indicator = ''
+bash_indicator = ''
+zsh_indicator = ''
+fish_indicator = 'ᐷ'
 unknown_indicator	= ''
 disabled = false
 style = "bold green"

@@ -10,8 +10,7 @@
 --progress
 --embed-thumbnail
 --geo-bypass
---compat-options
-all
+--compat-options no-live-chat,filename-sanitization
 --sponsorblock-remove
 all
 --no-call-home
