@@ -31,7 +31,7 @@ typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)
 
 ## Mise activation
-eval "$(mise activate zsh)"
+eval "$(mise activate zsh --shims)"
 
 # Exports
 export EDITOR="{{ .editor }}"
