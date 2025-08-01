@@ -11,8 +11,7 @@
 --embed-thumbnail
 --geo-bypass
 --compat-options no-live-chat,filename-sanitization
---sponsorblock-remove
-all
+--sponsorblock-remove all
 --no-call-home
 -f
 bestvideo[ext=mp4][width<2000][height<=1200]+bestaudio[ext=m4a]/bestvideo[ext=webm][width<2000][height<=1200]+bestaudio[ext=webm]/bestvideo[width<2000][height<=1200]+bestaudio/best[width<2000][height<=1200]/best
