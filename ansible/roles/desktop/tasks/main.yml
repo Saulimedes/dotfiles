@@ -6,6 +6,37 @@
     state: present
   loop: "{{ fonts }}"
 
+- name: Add Packman repository
+  community.general.zypper_repository:
+    name: packman
+    description: Packman Tumbleweed
+    repo: https://packman.inode.at/suse/openSUSE_Tumbleweed/
+    auto_import_keys: true
+    disabled: no
+    runrefresh: true
+
+- name: Perform dist-upgrade with vendor change allowed
+  community.general.zypper:
+    name: '*'
+    type: dist-upgrade
+    allow_vendor_change: true
+    force_resolution: true
+    update_cache: true
+
+- name: Install multimedia packages (prefer Packman)
+  community.general.zypper:
+    name:
+      - ffmpeg
+      - gstreamer-plugins-good
+      - gstreamer-plugins-bad
+      - gstreamer-plugins-ugly
+      - gstreamer-plugins-libav
+      - libavcodec
+      - vlc-codecs
+    allow_vendor_change: true
+    force_resolution: true
+    update_cache: false
+
 - name: Install desktop packages
   become: true
   community.general.zypper:
