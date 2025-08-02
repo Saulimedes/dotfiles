@@ -1,4 +1,23 @@
 #!/bin/sh
-VIDEO="$1"
-[ -z $VIDEO ] && VIDEO="$(paste)"
-yt-dlp "$VIDEO"
+VIDEO=""
+NO_PLAYLIST=0
+ARGS=""
+
+for arg in "$@"; do
+    case "$arg" in
+        n)
+            NO_PLAYLIST=1
+            ;;
+        *)
+            VIDEO="$arg"
+            ;;
+    esac
+done
+
+[ -z "$VIDEO" ] && VIDEO="$(paste)"
+
+if [ "$NO_PLAYLIST" -eq 1 ]; then
+    yt-dlp --no-playlist "$VIDEO"
+else
+    yt-dlp "$VIDEO"
+fi
