@@ -45,7 +45,8 @@ require('mason-lspconfig').setup({
 })
 
 -- Specific lua_ls config
-require('lspconfig').lua_ls.setup({
+vim.lsp.config.lua_ls = {
+  cmd = { 'lua-language-server' },
   settings = {
     Lua = {
       diagnostics = {
@@ -60,7 +61,7 @@ require('lspconfig').lua_ls.setup({
       },
     }
   }
-})
+}
 
 -- nvim-cmp setup
 local cmp = require('cmp')

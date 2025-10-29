@@ -2,12 +2,14 @@ search_mode = "skim"
 filter_mode = "global"
 style = "compact"
 auto_sync = true
-sync_frequency = "1h"
+case_sensitive = false
+tore_success_only = true
+sync_frequency = "6h"
 history_format = "plain"
 secrets_filter = true
 show_preview = true
 show_help = false
-inline_height = 15
+inline_height = 20
 word_jump_mode = "emacs"
 ignored_commands = [
   "cd",
