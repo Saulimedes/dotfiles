@@ -1,7 +1,6 @@
 #!/bin/sh
-VIDEO=""
 NO_PLAYLIST=0
-ARGS=""
+VIDEO=""
 
 for arg in "$@"; do
     case "$arg" in
@@ -16,8 +15,14 @@ done
 
 [ -z "$VIDEO" ] && VIDEO="$(paste)"
 
+[ -z "$VIDEO" ] && {
+    echo "No URL provided or found in clipboard." >&2
+    exit 1
+}
+
 if [ "$NO_PLAYLIST" -eq 1 ]; then
     yt-dlp --no-playlist "$VIDEO"
 else
     yt-dlp "$VIDEO"
 fi
+

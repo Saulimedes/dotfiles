@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_info() { echo -e "${BLUE}[INFO]${NC} $1"; }
+print_success() { echo -e "${GREEN}[SUCCESS]${NC} $1"; }
+print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+
+# Check if input file is provided
+if [ -z "$1" ]; then
+    print_error "Usage: $0 <input_video>"
+    print_info "Example: $0 \"VR_Video.mp4\""
+    exit 1
+fi
+
+INPUT_FILE="$1"
+
+# Check if input file exists
+if [ ! -f "$INPUT_FILE" ]; then
+    print_error "File '$INPUT_FILE' not found!"
+    exit 1
+fi
+
+# Check if ffmpeg is installed
+if ! command -v ffmpeg &> /dev/null; then
+    print_error "ffmpeg is not installed or not in PATH"
+    exit 1
+fi
+
+# Create temporary file name with proper extension
+FILENAME=$(basename "$INPUT_FILE")
+EXTENSION="${FILENAME##*.}"
+BASENAME="${FILENAME%.*}"
+DIRECTORY=$(dirname "$INPUT_FILE")
+TEMP_FILE="$DIRECTORY/${BASENAME}_temp.$EXTENSION"
+
+print_info "Converting: $INPUT_FILE"
+print_info "VR side-by-side to 2D (keeping left half)..."
+
+# Convert VR to 2D using temporary file
+ffmpeg -i "$INPUT_FILE" -vf crop=iw/2:ih:0:0 -c:a copy "$TEMP_FILE" -y
+
+# Check if conversion was successful
+if [ $? -eq 0 ]; then
+    # Replace original with converted file
+    mv "$TEMP_FILE" "$INPUT_FILE"
+    print_success "Conversion completed!"
+    print_success "File replaced: $INPUT_FILE"
+
+    # Show final file size
+    FINAL_SIZE=$(du -h "$INPUT_FILE" | cut -f1)
+    print_info "Final size: $FINAL_SIZE"
+else
+    print_error "Conversion failed!"
+    # Clean up temp file if it exists
+    [ -f "$TEMP_FILE" ] && rm "$TEMP_FILE"
+    exit 1
+fi

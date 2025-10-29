@@ -1,5 +1,4 @@
-#theme = dark:nord-wave,light:nord-light
-theme = nord-wave
+theme = dark:nordfox,light:nord-light
 background = #000000
 cursor-color = #eeeeee
 selection-background = 222222
@@ -16,6 +15,7 @@ adjust-underline-position = 40%
 adjust-underline-thickness = -60%
 font-family = MonoLisaVariable Nerd Font
 font-size = 11
+custom-shader = ~/.config/ghostty/shaders/cursor_tail.glsl
 
 window-step-resize = true
 clipboard-read = allow

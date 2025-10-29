@@ -1,18 +1,21 @@
 return {
   -- UI and Appearance
   {
-    'gbprod/nord.nvim',
+    'AlexvZyl/nordic.nvim',
     priority = 1000,
-    opts = {},
     config = function()
-      require('nord').setup({
-        transparent = true,
-        borders = true,
-        italic = false,
+      require('nordic').setup({
+        transparent_bg = true,
+        bold_keywords = false,
+        italic_comments = false,
+        transparent = {
+          bg = true,
+          float = true,
+        },
       })
 
       vim.cmd([[
-        colorscheme nord
+        colorscheme nordic
         highlight Normal guibg=NONE ctermbg=NONE
         highlight NormalFloat guibg=NONE ctermbg=NONE
       ]])

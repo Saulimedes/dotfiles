@@ -48,5 +48,12 @@ use = "pirafrank/what-size"
 rev = "f1c6b69"
 hash = "6e789212eb41d937bab04877ca361099"
 
-[flavor]
-deps = []
+[[flavor.deps]]
+use = "AdithyanA2005/nord"
+rev = "3a791e9"
+hash = "fa7142cda74a50b271ea212356b40b57"
+
+[[flavor.deps]]
+use = "BennyOe/tokyo-night"
+rev = "5f56364"
+hash = "c0bf69ad2c44005892d586e9693993c6"
