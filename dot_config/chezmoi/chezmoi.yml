@@ -4,7 +4,13 @@ data:
     email: "p@becker.kiwi"
   editor: "nvim"
   visual: "emacsclient -c -a emacs"
-  manpager: "nvim +Man!"
+  manpager: "less -R"
 
 git:
   autoPush: true
+
+merge:
+  keep: "none"
+
+apply:
+  force: true

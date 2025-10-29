@@ -14,7 +14,7 @@
 --sponsorblock-remove all
 --no-call-home
 -f
-bestvideo[ext=mp4][width<2000][height<=1200]+bestaudio[ext=m4a]/bestvideo[ext=webm][width<2000][height<=1200]+bestaudio[ext=webm]/bestvideo[width<2000][height<=1200]+bestaudio/best[width<2000][height<=1200]/best
+best[ext=mp4][height<=1080][format_id!*=VR][format_id!*=3D]/best[height<=1080][format_id!*=VR][format_id!*=3D]/best[height<=1080]/best
 --mark-watched
 --cookies-from-browser
 brave
