@@ -1,4 +1,76 @@
-;; Enhanced completion with Corfu
+;; Helm - Incremental completion and selection narrowing framework
+(use-package helm
+  :init
+  (setq helm-split-window-inside-p t
+        helm-move-to-line-cycle-in-source t
+        helm-scroll-amount 4
+        helm-ff-search-library-in-sexp t
+        helm-ff-file-name-history-use-recentf t
+        helm-echo-input-in-header-line t
+        helm-autoresize-max-height 0
+        helm-autoresize-min-height 20
+        helm-buffer-skip-remote-checking t
+        helm-mode-fuzzy-match t
+        helm-completion-in-region-fuzzy-match t
+        helm-candidate-number-limit 150
+        helm-M-x-fuzzy-match t
+        helm-buffers-fuzzy-matching t
+        helm-recentf-fuzzy-match t
+        helm-locate-fuzzy-match t
+        helm-semantic-fuzzy-match t
+        helm-imenu-fuzzy-match t
+        helm-apropos-fuzzy-match t
+        helm-lisp-fuzzy-completion t)
+  :config
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  :bind
+  (("M-x" . helm-M-x)
+   ("C-x C-f" . helm-find-files)
+   ("C-x b" . helm-mini)
+   ("C-x C-r" . helm-recentf)
+   ("C-s" . helm-occur)
+   ("M-y" . helm-show-kill-ring)
+   ("C-c h" . helm-command-prefix))
+  :bind
+  (:map helm-map
+        ("<tab>" . helm-execute-persistent-action)
+        ("C-i" . helm-execute-persistent-action)
+        ("C-z" . helm-select-action)))
+
+;; Helm Swoop - Better search in buffers
+(use-package helm-swoop
+  :after helm
+  :bind
+  (("M-i" . helm-swoop)
+   ("M-I" . helm-swoop-back-to-last-point)
+   ("C-c M-i" . helm-multi-swoop)
+   ("C-x M-i" . helm-multi-swoop-all))
+  :config
+  (setq helm-multi-swoop-edit-save t
+        helm-swoop-split-with-multiple-windows nil
+        helm-swoop-split-direction 'split-window-vertically
+        helm-swoop-speed-or-color nil
+        helm-swoop-move-to-line-cycle t
+        helm-swoop-use-line-number-face t
+        helm-swoop-use-fuzzy-match t))
+
+;; Helm Projectile integration
+(use-package helm-projectile
+  :after (helm projectile)
+  :config
+  (helm-projectile-on)
+  (setq projectile-completion-system 'helm
+        projectile-indexing-method 'alien
+        projectile-switch-project-action #'helm-projectile-find-file))
+
+;; Helm Descbinds - Better describe-bindings
+(use-package helm-descbinds
+  :after helm
+  :config
+  (helm-descbinds-mode))
+
+;; Enhanced completion with Corfu (fallback for in-buffer completion)
 (use-package corfu
   :custom
   (corfu-cycle t)                   ; Cycling through candidates

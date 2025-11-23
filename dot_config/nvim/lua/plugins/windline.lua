@@ -198,6 +198,8 @@ local default = {
         { b_components.line_col, hl_list.Inactive },
         { b_components.progress, hl_list.Inactive },
     },
+    always_active = false,
+    show_last_status = false,
 }
 
 -- Quickfix and Explorer configurations as before
@@ -237,6 +239,7 @@ local explorer = {
 
 windline.setup({
     colors_name = function(colors)
+        -- Use Nord colorscheme colors automatically
         return colors
     end,
     statuslines = {

@@ -93,10 +93,10 @@
     (kbd "<leader>ce") 'iedit-mode
     (kbd "<leader>cf") 'format-all-buffer
     
-    ;; Code evaluation
-    (kbd "<leader>ee") 'eval-last-sexp
-    (kbd "<leader>eb") 'eval-buffer
-    (kbd "<leader>ef") 'eval-defun)
+    ;; Code evaluation - using "x" prefix for execute/eval
+    (kbd "<leader>xe") 'eval-last-sexp
+    (kbd "<leader>xb") 'eval-buffer
+    (kbd "<leader>xf") 'eval-defun)
   
   ;; Update which-key descriptions
   (with-eval-after-load 'which-key

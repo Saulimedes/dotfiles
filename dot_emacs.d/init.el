@@ -8,11 +8,8 @@
             (setq gc-cons-threshold (* 100 1000 1000)
                   gc-cons-percentage 0.1)))
 
-;; Run garbage collection when idle
-(use-package gcmh
-  :ensure t
-  :init
-  (gcmh-mode 1))
+;; Run garbage collection when idle (manual GC management)
+(run-with-idle-timer 5 t 'garbage-collect)
 
 ;; Cache directory
 (defvar emacs-cache-directory (expand-file-name "~/.cache/emacs/"))
@@ -30,33 +27,52 @@
   (with-temp-buffer (write-file custom-file)))
 (load custom-file)
 
-;; Bootstrap straight.el
+;; Bootstrap straight.el with comprehensive error handling
 (defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;; Configure use-package to use straight.el by default
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-
-;; Also integrate with use-package
-(use-package straight
-  :custom
-  (straight-use-package-by-default t)
-  (straight-check-for-modifications '(check-on-save find-when-checking))
-  (straight-repository-branch "develop") ;; Use the develop branch for latest recipes
-  :config
-  ;; Refresh straight.el recipe repositories
-  (straight-pull-recipe-repositories))
+(condition-case err
+    (let ((bootstrap-file
+           (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+          (bootstrap-version 6))
+      (unless (file-exists-p bootstrap-file)
+        (with-current-buffer
+            (url-retrieve-synchronously
+             "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+             'silent 'inhibit-cookies)
+          (goto-char (point-max))
+          (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage)
+      
+      ;; Configure straight.el settings immediately after bootstrap
+      (when (featurep 'straight)
+        (setq straight-use-package-by-default t
+              straight-check-for-modifications '(check-on-save find-when-checking)
+              straight-repository-branch "develop"
+              ;; Disable problematic mirror functionality
+              straight-recipes-gnu-elpa-use-mirror nil
+              straight-recipes-emacsmirror-use-mirror nil)
+        
+        ;; Only update recipe repositories in interactive mode to avoid batch mode issues
+        (unless noninteractive
+          (condition-case repo-err
+              (straight-pull-recipe-repositories)
+            (error (message "Recipe repository update failed: %s" (error-message-string repo-err)))))
+        
+        ;; Install use-package safely
+        (condition-case use-pkg-err
+            (straight-use-package 'use-package)
+          (error (message "Failed to install use-package via straight.el: %s" 
+                         (error-message-string use-pkg-err))))))
+  (error 
+   (message "Failed to bootstrap straight.el: %s" (error-message-string err))
+   (message "Falling back to built-in package.el")
+   ;; Set up basic use-package without straight
+   (require 'package)
+   (package-initialize)
+   (unless (package-installed-p 'use-package)
+     (package-refresh-contents)
+     (package-install 'use-package))
+   (require 'use-package)
+   (setq use-package-always-ensure t)))
 
 ;; Configure package.el for compatibility
 (require 'package)
@@ -146,12 +162,14 @@
 ;; Performance optimization
 (load-file (expand-file-name "init.performance.el" user-emacs-directory))
 
-;; Loading additional Emacs Lisp files
+;; Loading additional Emacs Lisp files with error handling
 (let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir)
     (dolist (file (directory-files lisp-dir t "\\.el$"))
-      (load-file file))))
+      (condition-case err
+          (load-file file)
+        (error (message "Error loading %s: %s" file (error-message-string err)))))))
 
 (provide 'init)
 

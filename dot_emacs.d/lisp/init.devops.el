@@ -1,5 +1,5 @@
 ;; Enhanced Kubernetes integration for Emacs
-;; Integrates with fish shell configuration and provides better tools
+;; Integrates with zsh/bash shell configuration and provides better tools
 
 ;; Core kubernetes package with better settings
 (use-package kubernetes
@@ -14,23 +14,23 @@
          ("C-c C-k" . kubernetes-set-namespace)
          ("C-c C-c" . kubernetes-copy-pod-name)))
 
-;; Get kubectl config from fish shell
-(defun get-kubectl-context-from-fish ()
-  "Get current kubectl context from fish shell."
+;; Get kubectl config from shell (zsh/bash compatible)
+(defun get-kubectl-context-from-shell ()
+  "Get current kubectl context from shell."
   (string-trim
-   (shell-command-to-string "fish -c 'kubectl config current-context'")))
+   (shell-command-to-string "kubectl config current-context")))
 
-(defun get-kubectl-namespace-from-fish ()
-  "Get current kubectl namespace from fish shell."
+(defun get-kubectl-namespace-from-shell ()
+  "Get current kubectl namespace from shell."
   (string-trim
-   (shell-command-to-string "fish -c 'kubectl config view --minify --output \"jsonpath={..namespace}\"'")))
+   (shell-command-to-string "kubectl config view --minify --output \"jsonpath={..namespace}\"")))
 
-;; Function to sync kubectl context from fish
-(defun kubectl-sync-from-fish ()
-  "Sync kubectl context and namespace from fish shell."
+;; Function to sync kubectl context from shell
+(defun kubectl-sync-from-shell ()
+  "Sync kubectl context and namespace from shell."
   (interactive)
-  (let ((context (get-kubectl-context-from-fish))
-        (namespace (get-kubectl-namespace-from-fish)))
+  (let ((context (get-kubectl-context-from-shell))
+        (namespace (get-kubectl-namespace-from-shell)))
     (when (and context (not (string= context "")))
       (message "Setting kubectl context to %s" context)
       (shell-command (format "kubectl config use-context %s" context)))
@@ -246,7 +246,7 @@
     ["Context"
      ("k" "Kubernetes Overview" kubernetes-overview)
      ("x" "Set context" kubernetes-set-context)
-     ("X" "Sync from fish" kubectl-sync-from-fish)
+     ("X" "Sync from shell" kubectl-sync-from-shell)
      ("ns" "Set namespace" kubernetes-set-namespace)])
   
   ;; Bind the menu to a key
@@ -272,28 +272,30 @@
     (shell-command (format "kubectl config set-context --current --namespace=%s" namespace))
     (message "Switched to namespace: %s" namespace)))
 
-;; Add fish shell integration in Eshell for kubectl
+;; Add shell integration in Eshell for kubectl
 (with-eval-after-load 'eshell
   (defun eshell/kc (&rest args)
     "Run kubectl commands in eshell, with completion when possible."
     (let ((cmd (string-join (cons "kubectl" args) " ")))
       (eshell-print (shell-command-to-string cmd)))))
 
-;; Evil-mode integration
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    (kbd "<leader>k") '(:ignore t :which-key "kubernetes")
-    (kbd "<leader>ko") 'kubernetes-overview
-    (kbd "<leader>km") 'kubectl-menu
-    (kbd "<leader>kl") 'kubectl-logs
-    (kbd "<leader>ke") 'kubectl-exec-pod
-    (kbd "<leader>kf") 'kubectl-port-forward
-    (kbd "<leader>kc") 'kubectl-use-context
-    (kbd "<leader>kn") 'kubectl-use-namespace
-    (kbd "<leader>ks") 'kubectl-sync-from-fish)
-  
-  ;; Update which-key descriptions
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC k" "kubernetes")))
+;; General.el integration for kubernetes commands
+(with-eval-after-load 'general
+  (when (fboundp 'my/leader-keys)
+    (my/leader-keys
+      ;; Kubernetes operations
+      "k"  '(:ignore t :which-key "kubernetes")
+      "ko" '(kubernetes-overview :which-key "kubernetes overview")
+      "km" '(kubectl-menu :which-key "kubectl menu")
+      "kl" '(kubectl-logs :which-key "kubectl logs")
+      "ke" '(kubectl-exec-pod :which-key "kubectl exec")
+      "kf" '(kubectl-port-forward :which-key "kubectl port-forward")
+      "kc" '(kubectl-use-context :which-key "kubectl context")
+      "kn" '(kubectl-use-namespace :which-key "kubectl namespace")
+      "ks" '(kubectl-sync-from-shell :which-key "kubectl sync from shell"))))
+
+;; Update which-key descriptions
+(with-eval-after-load 'which-key
+  (which-key-add-key-based-replacements "SPC k" "kubernetes"))
 
 (provide 'init.devops)

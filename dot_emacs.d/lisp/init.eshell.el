@@ -27,7 +27,7 @@
   ;; Better visual commands
   (setq eshell-visual-commands
         '("less" "more" "top" "htop" "vim" "vi" "nvim" "ncmpcpp" "nano"
-          "dstat" "watch" "tail" "ssh" "fish" "nmtui" "alsamixer" "ranger"))
+          "dstat" "watch" "tail" "ssh" "zsh" "bash" "nmtui" "alsamixer" "ranger"))
   
   ;; Configure eshell prompt
   (setq eshell-prompt-regexp "^[^#$\n]*[#$] ")
@@ -107,7 +107,7 @@
                      ("cat" "view-file $1")
                      ("open" "find-file $1")
                      ("cdi" "dired-other-window $1")
-                     ;; Zoxide equivalents from fish
+                     ;; Zoxide equivalents (zsh/bash compatible)
                      ("cd" "z $1") ; Override cd to use zoxide when possible
                      ("za" "zoxide add $1")
                      ("zr" "zoxide remove $1")
@@ -137,15 +137,15 @@
               ;; Make command output read-only
               (add-hook 'eshell-output-filter-functions 'eshell-readonly-command-output-filter nil t))))
 
-;; Eshell syntax highlighting with fish-like features
-(use-package eshell-syntax-highlighting
-  :after eshell
-  :config
-  (eshell-syntax-highlighting-global-mode +1))
+;; Eshell syntax highlighting with shell-like features - disabled to avoid dependency issues
+;; (use-package eshell-syntax-highlighting
+;;   :after eshell
+;;   :config
+;;   (eshell-syntax-highlighting-global-mode +1))
 
-;; Fish-like history searching
-(use-package esh-autosuggest
-  :hook (eshell-mode . esh-autosuggest-mode))
+;; Fish-like history searching - disabled to avoid dependency issues
+;; (use-package esh-autosuggest
+;;   :hook (eshell-mode . esh-autosuggest-mode))
 
 ;; Integrate with system zoxide for smart directory jumping
 (defun eshell/z (&rest args)
@@ -193,20 +193,20 @@
     (when selected
       (eshell/cd selected))))
 
-;; Fish-like prompt
-(use-package eshell-prompt-extras
-  :after eshell
-  :config
-  (with-eval-after-load "em-prompt"
-    (autoload 'epe-theme-lambda "eshell-prompt-extras")
-    (setq eshell-highlight-prompt nil
-          eshell-prompt-function 'epe-theme-lambda)))
+;; Fish-like prompt - disabled to avoid dependency issues
+;; (use-package eshell-prompt-extras
+;;   :after eshell
+;;   :config
+;;   (with-eval-after-load "em-prompt"
+;;     (autoload 'epe-theme-lambda "eshell-prompt-extras")
+;;     (setq eshell-highlight-prompt nil
+;;           eshell-prompt-function 'epe-theme-lambda)))
 
-;; Fish-like directory jumping
-(use-package eshell-up
-  :config
-  (defalias 'eshell/up #'eshell-up)
-  (defalias 'eshell/pk #'eshell-up-peek))
+;; Fish-like directory jumping - disabled to avoid dependency issues
+;; (use-package eshell-up
+;;   :config
+;;   (defalias 'eshell/up #'eshell-up)
+;;   (defalias 'eshell/pk #'eshell-up-peek))
 
 ;; Useful functions for working with Eshell
 
@@ -278,25 +278,26 @@
 ;; Global keybinding for zoxide directory jump
 (global-set-key (kbd "C-c j") 'find-file-zoxide)
 
-;; Integration with Evil mode
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    ;; Eshell commands
-    (kbd "<leader>e") '(:ignore t :which-key "eshell")
-    (kbd "<leader>ee") 'eshell
-    (kbd "<leader>eh") 'eshell-here
-    (kbd "<leader>es") 'split-and-eshell-here
-    (kbd "<leader>et") 'eshell-toggle
-    (kbd "<leader>ep") 'eshell-project-root
-    
-    ;; Zoxide commands
-    (kbd "<leader>ez") '(:ignore t :which-key "zoxide")
-    (kbd "<leader>ezf") 'find-file-zoxide
-    (kbd "<leader>ezi") 'eshell/zi)
-  
-  ;; Update which-key descriptions
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC e" "eshell")
-    (which-key-add-key-based-replacements "SPC ez" "zoxide")))
+;; General.el integration for eshell commands
+(with-eval-after-load 'general
+  (when (fboundp 'my/leader-keys)
+    (my/leader-keys
+      ;; Eshell operations
+      "e"   '(:ignore t :which-key "eshell")
+      "ee"  '(eshell :which-key "eshell")
+      "eh"  '(eshell-here :which-key "eshell here")
+      "es"  '(split-and-eshell-here :which-key "eshell split")
+      "et"  '(eshell-toggle :which-key "eshell toggle")
+      "ep"  '(eshell-project-root :which-key "eshell project root")
+      
+      ;; Zoxide commands
+      "ez"  '(:ignore t :which-key "zoxide")
+      "ezf" '(find-file-zoxide :which-key "zoxide find file")
+      "ezi" '(eshell/zi :which-key "zoxide interactive"))))
+
+;; Update which-key descriptions
+(with-eval-after-load 'which-key
+  (which-key-add-key-based-replacements "SPC e" "eshell")
+  (which-key-add-key-based-replacements "SPC ez" "zoxide"))
 
 (provide 'init.eshell)

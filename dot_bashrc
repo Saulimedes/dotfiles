@@ -1,13 +1,6 @@
 #!/bin/bash
-# Only switch to fish if in an interactive shell and not already in fish
-if [[ -z "$BASH_EXECUTION_STRING" && -t 0 && $- == *i* && $SHELL != *fish ]]; then
-    if command -v fish &>/dev/null; then
-        exec fish
-    fi
-fi
-
 # PATH
-export PATH="$HOME/.local/bin:$HOME/.bin:$HOME/.krew/bin:$HOME/bin:$HOME/Applications:/var/lib/flatpak/exports/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.bin:$HOME/.krew/bin:$HOME/bin:$HOME/Applications:/var/lib/flatpak/exports/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin"
 
 # History
 export HISTSIZE=10000
@@ -20,30 +13,35 @@ export EDITOR=nvim
 export VISUAL="emacsclient -c -a emacs"
 export MANPAGER='nvim +Man!'
 
-# starship
-if command -v starship &>/dev/null; then
-  eval "$(starship init bash)"
-fi
-
 # mise (formerly asdf-compatible toolchains)
-if command -v mise &>/dev/null; then
-  eval "$(mise activate bash)"
-fi
+case $- in
+  *i*)
+    # mise
+    if command -v mise &>/dev/null; then
+      eval "$(mise activate bash)"
+    fi
 
-# direnv
-if command -v direnv &>/dev/null; then
-  eval "$(direnv hook bash)"
-fi
+    # direnv
+    if command -v direnv &>/dev/null; then
+      eval "$(direnv hook bash)"
+    fi
 
-# zoxide
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init bash --cmd cd)"
-fi
+    # zoxide
+    if command -v zoxide &>/dev/null; then
+      eval "$(zoxide init bash --cmd cd)"
+    fi
 
-# atuin
-if command -v atuin &>/dev/null; then
-  eval "$(atuin init bash)"
-fi
+    # atuin
+    if command -v atuin &>/dev/null; then
+      eval "$(atuin init bash)"
+    fi
+
+    # starship
+    if command -v starship &>/dev/null; then
+      eval "$(starship init bash)"
+    fi
+    ;;
+esac
 
 # FZF
 export FZF_DEFAULT_COMMAND='rg --files --follow --no-messages'
@@ -51,8 +49,8 @@ export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,f
 export FZF_ALT_C_OPTS="--preview 'lsd -l --depth 1 {} | head -200'"
 
 # SSH Agent (only spawn if not running)
-if [[ -z "$SSH_AGENT_PID" && -z "$SSH_AUTH_SOCK" && -z $(pgrep -u "$USER" ssh-agent) ]]; then
-  eval $(ssh-agent -s) >/dev/null
+if [[ -z "$SSH_AUTH_SOCK" ]] || ! ssh-add -l &>/dev/null; then
+  eval "$(ssh-agent -s)" >/dev/null
 fi
 
 # Starship prompt
@@ -91,7 +89,6 @@ alias "....."=".4"
 alias ".5"="cd ../../../../.."
 alias "......"=".5"
 alias back="cd $OLDPWD"
-alias docker="podman"
 
 # Kubernetes KUBECONFIG setup
 if command -v kubectl >/dev/null 2>&1 && [[ -d "$HOME/.kube" ]]; then
