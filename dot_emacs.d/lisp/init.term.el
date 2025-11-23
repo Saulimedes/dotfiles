@@ -13,10 +13,11 @@
   :custom
   (vterm-max-scrollback 10000)
   (vterm-buffer-name-string "vterm: %s")
-  (vterm-shell "/usr/bin/fish")  ; Replace with your preferred shell
+  (vterm-shell "/usr/bin/zsh")  ; Use zsh as preferred shell
   :config
-  ;; Make vterm files directory tracking work with fish
-  (setq vterm-tramp-shells '(("ssh" "/bin/bash")))
+  ;; Make vterm files directory tracking work with zsh/bash
+  (setq vterm-tramp-shells '(("ssh" "/bin/bash")
+                             ("ssh" "/usr/bin/zsh")))
   
   ;; Set evil to start in emacs state in vterm
   (with-eval-after-load 'evil
@@ -30,9 +31,9 @@
    ("C-c t n" . multi-vterm-next)
    ("C-c t p" . multi-vterm-prev)))
 
-;; Fish shell syntax highlighting
-(use-package fish-mode
-  :mode "\\.fish\\'")
+;; Fish shell syntax highlighting removed - prioritizing zsh/bash
+;; (use-package fish-mode
+;;   :mode "\\.fish\\'")
 
 ;; Functions to run vterm in splits
 (defun split-horizontal-and-run-vterm ()

@@ -6,6 +6,7 @@ fonts:
 
 packages:
   - podman
+  - podman-docker
   - appimaged
   - hplip-hpijs
   - podman-compose
