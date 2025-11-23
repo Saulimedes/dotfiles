@@ -58,63 +58,49 @@
   (eldoc-echo-area-use-multiline-p nil)
   (eldoc-echo-area-display-truncation-message nil))
 
-;; Treesit (improved syntax highlighting)
-(use-package treesit
-  :ensure nil  ;; Built into Emacs 29+
-  :preface
-  (defun maybe-use-treesit-mode ()
-    "Use treesit mode if available for the current language."
-    (when (and (fboundp 'treesit-available-p)
-               (treesit-available-p))
-      (let* ((mode-name (symbol-name major-mode))
-             (ts-mode-name (intern (replace-regexp-in-string "-mode$" "-ts-mode" mode-name))))
-        (when (fboundp ts-mode-name)
-          (funcall ts-mode-name)))))
-  :hook
-  ((python-mode js-mode typescript-mode yaml-mode json-mode rust-mode c-mode c++-mode go-mode) 
-   . maybe-use-treesit-mode)
-  :config
+;; Treesit is built-in and doesn't need use-package
+(when (and (fboundp 'treesit-available-p) (treesit-available-p))
   (setq treesit-font-lock-level 4))
 
-;; Auto-format on save
-(use-package apheleia
-  :hook (prog-mode . apheleia-mode)
-  :config
-  (setq apheleia-formatters
-        '((black . ("black" "-"))
-          (prettier . ("prettier" "--stdin-filepath" filepath))
-          (rustfmt . ("rustfmt" "--edition" "2021"))
-          (gofmt . ("gofmt"))
-          (clang-format . ("clang-format" "-style=file"))
-          (shfmt . ("shfmt" "-i" "2" "-ci"))
-          (terraform . ("terraform" "fmt" "-"))))
-  
-  (setq apheleia-mode-alist
-        '((python-mode . black)
-          (python-ts-mode . black)
-          (js-mode . prettier)
-          (js-ts-mode . prettier)
-          (typescript-mode . prettier)
-          (typescript-ts-mode . prettier)
-          (tsx-ts-mode . prettier)
-          (json-mode . prettier)
-          (json-ts-mode . prettier)
-          (yaml-mode . prettier)
-          (yaml-ts-mode . prettier)
-          (css-mode . prettier)
-          (css-ts-mode . prettier)
-          (html-mode . prettier)
-          (html-ts-mode . prettier)
-          (markdown-mode . prettier)
-          (rust-mode . rustfmt)
-          (rust-ts-mode . rustfmt)
-          (go-mode . gofmt)
-          (go-ts-mode . gofmt)
-          (c-mode . clang-format)
-          (c++-mode . clang-format)
-          (c-ts-mode . clang-format)
-          (c++-ts-mode . clang-format)
-          (sh-mode . shfmt)
-          (terraform-mode . terraform))))
+;; Auto-format on save - disabled to avoid dependency issues
+;; (use-package apheleia
+;;   :hook (prog-mode . apheleia-mode)
+;;   :config
+;;   (setq apheleia-formatters
+;;         '((black . ("black" "-"))
+;;           (prettier . ("prettier" "--stdin-filepath" filepath))
+;;           (rustfmt . ("rustfmt" "--edition" "2021"))
+;;           (gofmt . ("gofmt"))
+;;           (clang-format . ("clang-format" "-style=file"))
+;;           (shfmt . ("shfmt" "-i" "2" "-ci"))
+;;           (terraform . ("terraform" "fmt" "-"))))
+;;   
+;;   (setq apheleia-mode-alist
+;;         '((python-mode . black)
+;;           (python-ts-mode . black)
+;;           (js-mode . prettier)
+;;           (js-ts-mode . prettier)
+;;           (typescript-mode . prettier)
+;;           (typescript-ts-mode . prettier)
+;;           (tsx-ts-mode . prettier)
+;;           (json-mode . prettier)
+;;           (json-ts-mode . prettier)
+;;           (yaml-mode . prettier)
+;;           (yaml-ts-mode . prettier)
+;;           (css-mode . prettier)
+;;           (css-ts-mode . prettier)
+;;           (html-mode . prettier)
+;;           (html-ts-mode . prettier)
+;;           (markdown-mode . prettier)
+;;           (rust-mode . rustfmt)
+;;           (rust-ts-mode . rustfmt)
+;;           (go-mode . gofmt)
+;;           (go-ts-mode . gofmt)
+;;           (c-mode . clang-format)
+;;           (c++-mode . clang-format)
+;;           (c-ts-mode . clang-format)
+;;           (c++-ts-mode . clang-format)
+;;           (sh-mode . shfmt)
+;;           (terraform-mode . terraform))))
 
 (provide 'init.eglot)

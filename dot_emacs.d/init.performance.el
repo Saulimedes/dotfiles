@@ -1,18 +1,22 @@
-;; Benchmark initialization
-(use-package benchmark-init
-  :ensure t
-  :config
-  (benchmark-init/activate)
-  ;; To disable collection of benchmark data after init is done.
-  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+;; Optional benchmark initialization - only load if available
+(condition-case nil
+    (use-package benchmark-init
+      :ensure t
+      :config
+      (benchmark-init/activate)
+      ;; To disable collection of benchmark data after init is done.
+      (add-hook 'after-init-hook 'benchmark-init/deactivate))
+  (error (message "benchmark-init package not available")))
 
-;; Configure for performance and profiling
-(use-package esup
-  :ensure t
-  :commands (esup)
-  :init
-  (setq esup-depth 0
-        esup-user-init-file user-init-file))
+;; Optional profiling tool - only load if needed
+(condition-case nil
+    (use-package esup
+      :ensure t
+      :commands (esup)
+      :init
+      (setq esup-depth 0
+            esup-user-init-file user-init-file))
+  (error (message "esup package not available")))
 
 ;; Native compilation settings
 (when (fboundp 'native-comp-available-p)

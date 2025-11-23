@@ -29,8 +29,14 @@
 (setq-default line-spacing 1)
 (setq auto-composition-mode nil)
 
-;; Theme setup with modus-themes (dark theme with true black background)
+;; Nano Themes - Elegant and minimal themes
+(use-package nano-theme
+  :config
+  (load-theme 'nano-dark t))
+
+;; Alternative theme fallbacks
 (use-package modus-themes
+  :defer t
   :init
   ;; Configure modus-vivendi colors for true black background
   (setq modus-themes-mode-line '(accented borderless)
@@ -51,25 +57,19 @@
         modus-themes-common-palette-overrides
         '((bg-main "#000000")
           (bg-dim "#050505")
-          (bg-alt "#121212")))
-  :config
-  (load-theme 'modus-vivendi t))
+          (bg-alt "#121212"))))
 
-;; Alternative themes to try
 (use-package catppuccin-theme
   :defer t)
 
 (use-package ef-themes
   :defer t)
 
-(use-package modus-themes
-  :defer t)
-
 ;; Function to cycle between my favorite themes
 (defun my/cycle-theme ()
   "Cycle between favorite themes."
   (interactive)
-  (let ((themes '(doom-nord doom-dracula doom-one catppuccin-mocha ef-dark modus-vivendi))
+  (let ((themes '(nano-dark nano-light catppuccin-mocha ef-dark modus-vivendi))
         (current-theme (car custom-enabled-themes))
         (next-theme nil))
     (if (not current-theme)
@@ -78,7 +78,12 @@
             (or (cadr (member current-theme themes))
                 (car themes)))
       (mapc #'disable-theme custom-enabled-themes)
-      (load-theme next-theme t))
+      (load-theme next-theme t)
+      ;; Special handling for nano themes
+      (when (string-match "nano-" (symbol-name next-theme))
+        (if (eq next-theme 'nano-dark)
+            (nano-dark)
+          (nano-light))))
     (message "Loaded theme: %s" (car custom-enabled-themes))))
 
 ;; Highlight matching parentheses with better color
@@ -258,96 +263,97 @@
 (use-package page-break-lines
   :if (display-graphic-p))
 
-;; Dashboard
-(use-package dashboard
-  :after all-the-icons page-break-lines
-  :custom
-  ;; Set the banner
-  (dashboard-startup-banner
-   (if (display-graphic-p)
-       (expand-file-name "dashboard/banner.png" user-emacs-directory)
-     (expand-file-name "dashboard/banner.txt" user-emacs-directory)))
-  ;; Dashboard layout/appearance
-  (dashboard-center-content t)
-  (dashboard-set-heading-icons t)
-  (dashboard-banner-logo-title "Welcome to Emacs")
-  (dashboard-set-init-info nil)
-  (dashboard-set-file-icons t)
-  (dashboard-footer-icon "")
-  (dashboard-footer-messages '("Don't try to solve serious matters in the middle of the night."))
-  ;; Content settings
-  (dashboard-items '((recents . 5)
-                     (bookmarks . 5)
-                     (projects . 5)
-                     (agenda . 5)
-                     (registers . 5)))
-  ;; Navigate with vi keys
-  (dashboard-set-navigator t)
-  (dashboard-navigator-buttons
-   `(((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
-        "GitHub" "Browse GitHub"
-        (lambda (&rest _) (browse-url "https://github.com")))
-      (,(all-the-icons-fileicon "emacs" :height 1.1 :v-adjust 0.0)
-        "Config" "Open config folder"
-        (lambda (&rest _) (find-file user-emacs-directory))))))
-  ;; Make sure dashboard works with emacsclient
-  (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  :config
-  (dashboard-setup-startup-hook)
-  (add-hook 'dashboard-mode-hook 'page-break-lines-mode))
+;; Dashboard package disabled - using custom simple dashboard from init.dashboard.el
+;; (use-package dashboard
+;;   :after all-the-icons page-break-lines
+;;   :custom
+;;   ;; Set the banner
+;;   (dashboard-startup-banner
+;;    (if (display-graphic-p)
+;;        (expand-file-name "dashboard/banner.png" user-emacs-directory)
+;;      (expand-file-name "dashboard/banner.txt" user-emacs-directory)))
+;;   ;; Dashboard layout/appearance
+;;   (dashboard-center-content t)
+;;   (dashboard-set-heading-icons t)
+;;   (dashboard-banner-logo-title "Welcome to Emacs")
+;;   (dashboard-set-init-info nil)
+;;   (dashboard-set-file-icons t)
+;;   (dashboard-footer-icon "")
+;;   (dashboard-footer-messages '("Don't try to solve serious matters in the middle of the night."))
+;;   ;; Content settings
+;;   (dashboard-items '((recents . 5)
+;;                      (bookmarks . 5)
+;;                      (projects . 5)
+;;                      (agenda . 5)
+;;                      (registers . 5)))
+;;   ;; Navigate with vi keys
+;;   (dashboard-set-navigator t)
+;;   (dashboard-navigator-buttons
+;;    `(((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
+;;         "GitHub" "Browse GitHub"
+;;         (lambda (&rest _) (browse-url "https://github.com")))
+;;       (,(all-the-icons-fileicon "emacs" :height 1.1 :v-adjust 0.0)
+;;         "Config" "Open config folder"
+;;         (lambda (&rest _) (find-file user-emacs-directory))))))
+;;   ;; Make sure dashboard works with emacsclient
+;;   (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+;;   :config
+;;   (dashboard-setup-startup-hook)
+;;   (add-hook 'dashboard-mode-hook 'page-break-lines-mode))
 
-;; A simpler function to jump to dashboard sections
-(defun my/dashboard-goto-section (section)
-  "Jump to the specified SECTION in the dashboard."
-  (interactive "sSection (recent, bookmarks, projects, agenda): ")
-  (when (get-buffer "*dashboard*")
-    (with-current-buffer "*dashboard*"
-      (goto-char (point-min))
-      (let ((section-regexp (pcase section
-                             ("recent" "Recent Files:")
-                             ("bookmarks" "Bookmarks:")
-                             ("projects" "Projects:")
-                             ("agenda" "Agenda:")
-                             (_ "Recent Files:"))))
-        (when (re-search-forward section-regexp nil t)
-          (forward-line 1)
-          (beginning-of-line))))))
+;; Dashboard navigation functions disabled - using simple custom dashboard
+;; (defun my/dashboard-goto-section (section)
+;;   "Jump to the specified SECTION in the dashboard."
+;;   (interactive "sSection (recent, bookmarks, projects, agenda): ")
+;;   (when (get-buffer "*dashboard*")
+;;     (with-current-buffer "*dashboard*"
+;;       (goto-char (point-min))
+;;       (let ((section-regexp (pcase section
+;;                              ("recent" "Recent Files:")
+;;                              ("bookmarks" "Bookmarks:")
+;;                              ("projects" "Projects:")
+;;                              ("agenda" "Agenda:")
+;;                              (_ "Recent Files:"))))
+;;         (when (re-search-forward section-regexp nil t)
+;;           (forward-line 1)
+;;           (beginning-of-line))))))
 
 ;; Remove the problematic hook that's causing the timer error
 ;; We'll use a simpler approach for dashboard navigation
 
 ;; Add a simple hook to ensure we can navigate the dashboard easily
-(defun my/dashboard-setup ()
-  "Set up dashboard with better defaults."
-  (when (get-buffer "*dashboard*")
-    (with-current-buffer "*dashboard*"
-      ;; Make sure we start at the beginning of the buffer
-      (goto-char (point-min))
-      ;; Add a small hint at the top for navigation
-      (setq-local header-line-format 
-                  " Dashboard: use n/p to navigate, RET to select"))))
+;; Dashboard setup functions disabled - using simple custom dashboard
+;; (defun my/dashboard-setup ()
+;;   "Set up dashboard with better defaults."
+;;   (when (get-buffer "*dashboard*")
+;;     (with-current-buffer "*dashboard*"
+;;       ;; Make sure we start at the beginning of the buffer
+;;       (goto-char (point-min))
+;;       ;; Add a small hint at the top for navigation
+;;       (setq-local header-line-format 
+;;                   " Dashboard: use n/p to navigate, RET to select"))))
 
-;; Add the simpler hook function to dashboard-mode-hook
-(add-hook 'dashboard-mode-hook #'my/dashboard-setup)
+;; Dashboard hook disabled
+;; (add-hook 'dashboard-mode-hook #'my/dashboard-setup)
 
-;; Define convenient keybinding for dashboard navigation
-(with-eval-after-load 'dashboard
-  ;; Add keybindings in dashboard mode (god-mode friendly)
-  (define-key dashboard-mode-map (kbd "n") 'dashboard-next-line)
-  (define-key dashboard-mode-map (kbd "p") 'dashboard-previous-line)
-  (define-key dashboard-mode-map (kbd "C-n") 'dashboard-next-section)
-  (define-key dashboard-mode-map (kbd "C-p") 'dashboard-previous-section)
-  (define-key dashboard-mode-map (kbd "RET") 'dashboard-return)
-  (define-key dashboard-mode-map [return] 'dashboard-return)
-  (define-key dashboard-mode-map [down-mouse-1] 'dashboard-mouse-1)
+;; Dashboard keybindings disabled - using simple custom dashboard
+;; (with-eval-after-load 'dashboard
+;;   ;; Add keybindings in dashboard mode (god-mode friendly)
+;;   (define-key dashboard-mode-map (kbd "n") 'dashboard-next-line)
+;;   (define-key dashboard-mode-map (kbd "p") 'dashboard-previous-line)
+;;   (define-key dashboard-mode-map (kbd "C-n") 'dashboard-next-section)
+;;   (define-key dashboard-mode-map (kbd "C-p") 'dashboard-previous-section)
+;;   (define-key dashboard-mode-map (kbd "RET") 'dashboard-return)
+;;   (define-key dashboard-mode-map [return] 'dashboard-return)
+;;   (define-key dashboard-mode-map [down-mouse-1] 'dashboard-mouse-1)
   
-  ;; Add keybindings for quick section navigation
-  (define-key dashboard-mode-map (kbd "r") (lambda () (interactive) (my/dashboard-goto-section "recent")))
-  (define-key dashboard-mode-map (kbd "b") (lambda () (interactive) (my/dashboard-goto-section "bookmarks")))
-  (define-key dashboard-mode-map (kbd "j") (lambda () (interactive) (my/dashboard-goto-section "projects")))
-  (define-key dashboard-mode-map (kbd "a") (lambda () (interactive) (my/dashboard-goto-section "agenda")))
+  ;; Dashboard keybindings disabled - using simple custom dashboard
+  ;; (define-key dashboard-mode-map (kbd "r") (lambda () (interactive) (my/dashboard-goto-section "recent")))
+  ;; (define-key dashboard-mode-map (kbd "b") (lambda () (interactive) (my/dashboard-goto-section "bookmarks")))
+  ;; (define-key dashboard-mode-map (kbd "j") (lambda () (interactive) (my/dashboard-goto-section "projects")))
+  ;; (define-key dashboard-mode-map (kbd "a") (lambda () (interactive) (my/dashboard-goto-section "agenda")))
   
-  ;; Add a header with key help
-  (setq dashboard-footer "Keys: [r]ecent [b]ookmarks pro[j]ects [a]genda [n/p] Navigate [RET] Select"))
+  ;; Dashboard footer disabled
+  ;; (setq dashboard-footer "Keys: [r]ecent [b]ookmarks pro[j]ects [a]genda [n/p] Navigate [RET] Select"))
 
 (provide 'init.appearance)
