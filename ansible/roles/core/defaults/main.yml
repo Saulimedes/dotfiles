@@ -27,7 +27,6 @@ packages:
   - yazi
   - sshpass
   - gopass
-  - fish
   - atuin
   - zip
   - unrar
