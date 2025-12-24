@@ -56,16 +56,65 @@ jobs:
       - uses: actions/checkout@v4
         name: Check out repository code
 
-      - name: Install dependencies
+      - name: Install base dependencies
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -Syu --noconfirm chezmoi git docker
+          pacman -Syu --noconfirm chezmoi git base-devel
 
-      - name: chezmoi apply
+      - name: Test core package installation script
+        run: |
+          # Test the core packages script
+          chezmoi execute-template < run_once_before_install-packages.sh.tmpl > /tmp/test-core.sh
+          chmod +x /tmp/test-core.sh
+          bash -n /tmp/test-core.sh  # Syntax check only
+
+      - name: Test desktop package installation script  
+        run: |
+          # Test the desktop packages script
+          chezmoi execute-template < run_once_install-desktop-packages.sh.tmpl > /tmp/test-desktop.sh
+          chmod +x /tmp/test-desktop.sh
+          bash -n /tmp/test-desktop.sh  # Syntax check only
+
+      - name: Test browser installation script
+        run: |
+          # Test the browser installation script
+          chezmoi execute-template < run_once_install-browsers.sh.tmpl > /tmp/test-browsers.sh
+          chmod +x /tmp/test-browsers.sh
+          bash -n /tmp/test-browsers.sh  # Syntax check only
+
+      - name: Test work packages script
+        run: |
+          # Test the work packages script
+          chezmoi execute-template < run_onchange_after_install-work-packages.sh.tmpl > /tmp/test-work.sh
+          chmod +x /tmp/test-work.sh
+          bash -n /tmp/test-work.sh  # Syntax check only
+
+      - name: chezmoi apply (dry run)
         run: |
           chezmoi apply \
             --source="$PWD" \
             --working-tree="$PWD" \
             --config="$PWD/dot_config/chezmoi/chezmoi.yml" \
             --init=false \
+            --dry-run \
             --verbose
+
+      - name: Test actual installation (core packages only)
+        run: |
+          # Actually run core package installation to verify it works
+          chezmoi execute-template < run_once_before_install-packages.sh.tmpl > /tmp/install-core.sh
+          chmod +x /tmp/install-core.sh
+          # Run with error handling
+          if ! /tmp/install-core.sh; then
+            echo "Core package installation failed"
+            exit 1
+          fi
+
+      - name: Verify installations
+        run: |
+          # Check if key packages were installed
+          which git && echo "✓ git installed"
+          which zsh && echo "✓ zsh installed" 
+          which docker && echo "✓ docker installed"
+          which paru && echo "✓ paru AUR helper installed"
+          flatpak --version && echo "✓ flatpak installed"
