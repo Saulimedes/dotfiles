@@ -1,6 +1,0 @@
----
-- name: Install emacs
-  become: true
-  community.general.pacman:
-    name: emacs
-    state: present

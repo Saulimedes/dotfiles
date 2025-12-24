@@ -54,7 +54,6 @@ return {
     'windwp/windline.nvim',
     dependencies = {
        "nvim-tree/nvim-web-devicons",
-       "f-person/git-blame.nvim",
         "lewis6991/gitsigns.nvim"
     },
   },
@@ -107,9 +106,32 @@ return {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
       "JoosepAlviste/nvim-ts-context-commentstring",
     },
+    config = function()
+      pcall(function()
+        require("nvim-treesitter.configs").setup({
+          ensure_installed = {"c", "python", "perl", "lua", "css", "html", "rust", "yaml", "markdown", "toml", "bash", "jq", "json", "javascript", "typescript" },
+          sync_install = false,
+          auto_install = true,
+          highlight = {
+            enable = true,
+            disable = { "markdown" },
+            additional_vim_regex_highlighting = false,
+          },
+          indent = { enable = true },
+          incremental_selection = {
+            enable = true,
+            keymaps = {
+              init_selection = "<CR>",
+              node_incremental = "<CR>",
+              scope_incremental = "<S-CR>",
+              node_decremental = "<BS>",
+            },
+          },
+        })
+      end)
+    end,
   },
 
   -- Utilities

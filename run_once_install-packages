@@ -1,4 +1,0 @@
-#!/bin/sh
-if ! command -v ansible >/dev/null 2>&1; then
-  sudo zypper install -y ansible
-fi
