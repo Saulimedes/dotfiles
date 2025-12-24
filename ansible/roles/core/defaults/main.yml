@@ -12,13 +12,13 @@ packages:
   - ansible
   - ripgrep
   - gzip
-  - gettext-tools
+  - gettext
   - pyenv
-  - 7zip
+  - p7zip
   - fastfetch
   - gzip
   - fzf
-  - fzf-tmux
+  # fzf-tmux is included with fzf package
   - fd
   - ansible-lint
   - tealdeer
@@ -31,7 +31,7 @@ packages:
   - zip
   - unrar
   - btop
-  - ShellCheck
+  - shellcheck
   - pwgen
   - gcc
   - make
@@ -41,12 +41,12 @@ packages:
   - zoxide
   - jq
   - yq
-  - telnet
+  - inetutils
   - net-tools
-  - gcc-c++
-  - bind-utils
+  - gcc
+  - bind
   - starship
-  - netcat-openbsd
+  - openbsd-netcat
   - hyperfine
   - nodejs
   - curl
