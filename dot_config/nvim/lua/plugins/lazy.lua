@@ -61,13 +61,20 @@ return {
   {
     "f-person/git-blame.nvim",
     config = function()
-      vim.g.gitblame_enabled = 1
+      vim.g.gitblame_enabled = 0  -- Start disabled
       vim.g.gitblame_display_virtual_text = 0
       vim.g.gitblame_message_when_not_committed = ''
       vim.g.gitblame_date_format = '%m/%d'
       vim.g.gitblame_message_template = '  <date> <author> ∙ <summary> '
-      -- Force git-blame to use bash instead of fish
-      vim.g.gitblame_shell = '/bin/bash'
+      
+      -- Override the shell command to force bash
+      vim.api.nvim_create_autocmd("VimEnter", {
+        callback = function()
+          if vim.fn.executable('git') == 1 then
+            vim.g.gitblame_enabled = 1
+          end
+        end,
+      })
     end,
   },
   -- File Explorer and Navigation
