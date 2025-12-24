@@ -54,28 +54,8 @@ return {
     'windwp/windline.nvim',
     dependencies = {
        "nvim-tree/nvim-web-devicons",
-       "f-person/git-blame.nvim",
         "lewis6991/gitsigns.nvim"
     },
-  },
-  {
-    "f-person/git-blame.nvim",
-    config = function()
-      vim.g.gitblame_enabled = 0  -- Start disabled
-      vim.g.gitblame_display_virtual_text = 0
-      vim.g.gitblame_message_when_not_committed = ''
-      vim.g.gitblame_date_format = '%m/%d'
-      vim.g.gitblame_message_template = '  <date> <author> ∙ <summary> '
-      
-      -- Override the shell command to force bash
-      vim.api.nvim_create_autocmd("VimEnter", {
-        callback = function()
-          if vim.fn.executable('git') == 1 then
-            vim.g.gitblame_enabled = 1
-          end
-        end,
-      })
-    end,
   },
   -- File Explorer and Navigation
   {
