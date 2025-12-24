@@ -1,18 +1,9 @@
 #!/bin/bash
 
 # Work-specific package installation for Arch Linux
-# This replaces the work role from Ansible and only runs when work packages change
+# These are work-related tools that can be useful on any machine
 
 set -euo pipefail
-
-# Work packages hash (change this to trigger re-installation)
-# work-packages-hash: {{ include "work-packages.yml" | sha256sum }}
-
-# Skip if not a work machine
-{{- if ne .chezmoi.hostname "work-laptop" }}
-echo "Skipping work packages on non-work machine"
-exit 0
-{{- end }}
 
 # Colors for output
 RED='\033[0;31m'
@@ -84,6 +75,22 @@ if ! command -v microsoft-edge-stable &> /dev/null; then
     fi
 else
     log_info "Microsoft Edge already installed"
+fi
+
+# Install Terraform Language Server (works with OpenTofu)
+if ! command -v terraform-ls &> /dev/null; then
+    log_info "Installing Terraform Language Server"
+    
+    # Install from AUR using paru/yay
+    if command -v paru &> /dev/null; then
+        paru -S --noconfirm terraform-ls
+    elif command -v yay &> /dev/null; then
+        yay -S --noconfirm terraform-ls
+    else
+        log_warn "No AUR helper found, skipping terraform-ls"
+    fi
+else
+    log_info "Terraform Language Server already installed"
 fi
 
 log_info "Work package installation completed"
