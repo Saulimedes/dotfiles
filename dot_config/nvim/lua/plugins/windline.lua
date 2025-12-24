@@ -5,22 +5,22 @@ local state = _G.WindLine.state
 local lsp_comps = require('windline.components.lsp')
 local git_comps = require('windline.components.git')
 
--- Git Blame setup with your specific configuration
-local git_blame = require('gitblame')
-vim.g.gitblame_display_virtual_text = 0
-vim.g.gitblame_message_when_not_committed = ''
-vim.g.gitblame_date_format = '%m/%d'
-vim.g.gitblame_message_template = '  <date> <author> ∙ <summary> '
-
--- Define the Git Blame component with white text
-local git_blame_component = {
-    text = function()
-        if git_blame.is_blame_text_available() then
-            return git_blame.get_current_blame_text()
+-- Git info component (replacing git blame for now)
+local git_info_component = {
+    text = function(bufnr)
+        -- Show git branch info instead - git_branch() returns a function that needs to be called
+        if git_comps.is_git(bufnr) then
+            local branch_func = git_comps.git_branch()
+            if type(branch_func) == 'function' then
+                local branch = branch_func()
+                if branch and branch ~= '' then
+                    return ' ' .. branch
+                end
+            end
         end
         return ''
     end,
-    hl_colors = { 'white', 'black' },  -- Git blame text color set to white
+    hl_colors = { 'white', 'black' },
 }
 
 
@@ -183,7 +183,7 @@ local default = {
         basic.square_mode,
         basic.vi_mode,
         basic.file,
-        git_blame_component,  -- Git blame added here with white color
+        git_info_component,  -- Git info component
         basic.divider,
         basic.lsp_name,
         basic.git,
