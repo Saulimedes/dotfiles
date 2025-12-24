@@ -7,11 +7,16 @@ local git_comps = require('windline.components.git')
 
 -- Git info component (replacing git blame for now)
 local git_info_component = {
-    text = function()
-        -- Show git branch info instead
-        local branch = git_comps.git_branch()
-        if branch and branch ~= '' then
-            return ' ' .. branch
+    text = function(bufnr)
+        -- Show git branch info instead - git_branch() returns a function that needs to be called
+        if git_comps.is_git(bufnr) then
+            local branch_func = git_comps.git_branch()
+            if type(branch_func) == 'function' then
+                local branch = branch_func()
+                if branch and branch ~= '' then
+                    return ' ' .. branch
+                end
+            end
         end
         return ''
     end,
