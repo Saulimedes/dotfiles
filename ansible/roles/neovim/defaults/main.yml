@@ -3,7 +3,7 @@ packages:
   - npm
   - go
   - neovim
-  - ruby-devel
+  - ruby
   - gzip
   - go
   - tree-sitter
