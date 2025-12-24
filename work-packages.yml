@@ -10,4 +10,8 @@ packages:
   - awscli
   - azure-cli
 
-version: 1.0
+aur_packages:
+  - google-cloud-cli
+  - microsoft-edge-stable-bin
+
+version: 1.1
