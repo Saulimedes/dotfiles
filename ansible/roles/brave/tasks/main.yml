@@ -1,8 +1,0 @@
----
-- name: Install Brave browser (AUR)
-  kewlfft.aur.aur:
-    name: brave-bin
-    state: present
-    use: makepkg
-  become: no
-  when: ansible_env.CI is not defined

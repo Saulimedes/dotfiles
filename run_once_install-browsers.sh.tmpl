@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Browser installation and configuration for Arch Linux
+# This replaces the Firefox and Brave roles from Ansible
+
+set -euo pipefail
+
+# Skip on headless systems
+{{- if eq .chezmoi.hostname "server" }}
+echo "Skipping browser installation on server system"
+exit 0
+{{- end }}
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+install_firefox() {
+    sudo pacman -S --needed --noconfirm firefox
+}
+
+install_brave() {
+    # Install from AUR if available, otherwise use flatpak
+    if command -v yay &> /dev/null; then
+        yay -S --noconfirm brave-bin
+    elif command -v paru &> /dev/null; then
+        paru -S --noconfirm brave-bin
+    else
+        log_warn "No AUR helper found, installing Brave via flatpak"
+        sudo flatpak install -y flathub com.brave.Browser
+    fi
+}
+
+# Install browsers
+log_info "Installing Firefox"
+install_firefox
+
+log_info "Installing Brave Browser"
+install_brave
+
+# Firefox profile setup (files are managed by chezmoi)
+log_info "Firefox profiles will be configured by chezmoi dotfiles"
+
+# Note: Firefox user.js and userChrome.css are now managed as chezmoi dotfiles
+# They will be applied when chezmoi applies the configuration
+
+log_info "Browser installation completed"
