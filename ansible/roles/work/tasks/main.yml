@@ -16,8 +16,9 @@
   kewlfft.aur.aur:
     name: google-chrome
     state: present
-  become: yes
-  become_user: "{{ ansible_user_id }}"
+    use: makepkg
+  become: no
+  when: ansible_env.CI is not defined
 
 # Mise repository - RPM specific, available in official Arch repos
 # - name: Add Mise repository
@@ -38,8 +39,9 @@
   kewlfft.aur.aur:
     name: microsoft-edge-stable-bin
     state: present
-  become: yes
-  become_user: "{{ ansible_user_id }}"
+    use: makepkg
+  become: no
+  when: ansible_env.CI is not defined
 
 # Google Cloud SDK repository - RPM specific, use AUR on Arch
 # - name: Add Google Cloud SDK repository
@@ -65,8 +67,9 @@
   kewlfft.aur.aur:
     name: google-cloud-cli
     state: present
-  become: yes
-  become_user: "{{ ansible_user_id }}"
+    use: makepkg
+  become: no
+  when: ansible_env.CI is not defined
 
 - name: Check if AWS CLI is already installed
   ansible.builtin.command: aws --version
