@@ -14,7 +14,7 @@
 
 ## About
 
-This repo is a collection of all my dotfiles managed by Ansible and chezmoi.
+This repo is a collection of all my dotfiles managed by chezmoi.
 
 ## Installation
 
