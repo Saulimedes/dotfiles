@@ -15,16 +15,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     container:
-      image: opensuse/tumbleweed
+      image: archlinux:latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Check out repository code
 
       - name: Install dependencies
         run: |
-          zypper --non-interactive refresh
-          zypper install -y ansible-lint ansible chezmoi
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -Syu --noconfirm ansible ansible-lint chezmoi git
 
       - name: Lint Ansible Playbook
         run: ansible-lint ansible/
@@ -43,17 +43,17 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     container:
-      image: opensuse/tumbleweed
+      image: archlinux:latest
     needs: test
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Check out repository code again
 
       - name: Install dependencies
         run: |
-          zypper --non-interactive refresh
-          zypper install -y ansible chezmoi
+          pacman -Sy --noconfirm archlinux-keyring
+          pacman -Syu --noconfirm ansible chezmoi git
 
       - name: chezmoi apply
         run: |
