@@ -103,6 +103,28 @@ if command -v flatpak &> /dev/null; then
     sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo || log_warn "Flathub might already be added"
 fi
 
+# Install paru AUR helper if not present
+if ! command -v paru &> /dev/null && ! command -v yay &> /dev/null; then
+    log_info "Installing paru AUR helper"
+    
+    # Install rust if not already installed (needed for paru)
+    if ! command -v rustc &> /dev/null; then
+        sudo pacman -S --needed --noconfirm rust
+    fi
+    
+    # Clone and build paru
+    cd /tmp
+    git clone https://aur.archlinux.org/paru.git
+    cd paru
+    makepkg -si --noconfirm
+    cd "$HOME"
+    rm -rf /tmp/paru
+    
+    log_info "paru AUR helper installed successfully"
+else
+    log_info "AUR helper already available"
+fi
+
 # Change shell to zsh if available
 if command -v zsh &> /dev/null; then
     current_shell=$(getent passwd "$USER" | cut -d: -f7)
