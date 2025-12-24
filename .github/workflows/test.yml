@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  ANSIBLE_FORCE_COLOR: true
+  CI: true
 
 jobs:
   test:
@@ -24,13 +24,16 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -Syu --noconfirm ansible ansible-lint chezmoi git python-requests
+          pacman -Syu --noconfirm chezmoi git shellcheck
 
-      - name: Install Ansible collections
-        run: ansible-galaxy install -r ansible/requirements.yml
+      - name: Lint shell scripts
+        run: |
+          find . -name "*.sh" -type f -exec shellcheck {} \;
+          find . -name "*.sh.tmpl" -type f -exec shellcheck -f gcc {} \;
 
-      - name: Lint Ansible Playbook
-        run: ansible-lint ansible/
+      - name: Validate chezmoi templates
+        run: |
+          chezmoi execute-template --init=false --source="$PWD" < /dev/null
 
       - name: chezmoi dry-run
         run: |
@@ -51,15 +54,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        name: Check out repository code again
+        name: Check out repository code
 
       - name: Install dependencies
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -Syu --noconfirm ansible chezmoi git python-requests
-
-      - name: Install Ansible collections
-        run: ansible-galaxy install -r ansible/requirements.yml
+          pacman -Syu --noconfirm chezmoi git docker
 
       - name: chezmoi apply
         run: |

@@ -1,9 +1,0 @@
----
-packages:
-  - npm
-  - go
-  - neovim
-  - ruby
-  - gzip
-  - go
-  - tree-sitter
