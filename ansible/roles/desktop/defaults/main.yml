@@ -1,22 +1,22 @@
 ---
 fonts:
-  - fontawesome-fonts
-  - google-roboto-fonts
-  - google-droid-fonts
+  - ttf-font-awesome
+  - ttf-roboto
+  - ttf-droid
 
 packages:
   - podman
   - podman-docker
-  - appimaged
-  - hplip-hpijs
+  # appimaged not available in official repos
+  - hplip
   - podman-compose
-  - NetworkManager-tui
-  - NetworkManager-vpnc
-  - NetworkManager-wwan
-  - NetworkManager-openconnect
-  - NetworkManager-openvpn
-  - NetworkManager-connection-editor
-  - NetworkManager-dns-dnsmasq
+  - networkmanager
+  - networkmanager-vpnc
+  - networkmanager-wwan
+  - networkmanager-openconnect
+  - networkmanager-openvpn
+  - nm-connection-editor
+  # networkmanager-dns-dnsmasq not needed on Arch
   - mpv
   - ghostty
   - xdg-user-dirs
