@@ -1,7 +1,7 @@
 ---
 - name: Install work packages
   become: true
-  community.general.zypper:
+  community.general.pacman:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
@@ -12,60 +12,61 @@
     state: present
     key: https://dl-ssl.google.com/linux/linux_signing_key.pub
 
-- name: Add Google Chrome repository
-  become: true
-  community.general.zypper_repository:
+- name: Install Google Chrome (AUR)
+  kewlfft.aur.aur:
     name: google-chrome
-    repo: 'http://dl.google.com/linux/chrome/rpm/stable/x86_64'
     state: present
-    autorefresh: true
+  become: yes
+  become_user: "{{ ansible_user_id }}"
 
-- name: Add Mise repository
-  become: true
-  community.general.zypper_repository:
-    name: mise
-    repo: 'https://mise.jdx.dev/rpm/mise.repo'
-    state: present
-    autorefresh: true
+# Mise repository - RPM specific, available in official Arch repos
+# - name: Add Mise repository
+#   become: true
+#   community.general.zypper_repository:
+#     name: mise
+#     repo: 'https://mise.jdx.dev/rpm/mise.repo'
+#     state: present
+#     autorefresh: true
 
 - name: Install mise
   become: true
-  package:
+  ansible.builtin.package:
     name: mise
     state: present
 
-- name: Add Microsoft Edge repository
-  become: true
-  community.general.zypper_repository:
-    name: microsoft-edge
-    repo: https://packages.microsoft.com/yumrepos/edge
+- name: Install Microsoft Edge (AUR)
+  kewlfft.aur.aur:
+    name: microsoft-edge-stable-bin
     state: present
-    autorefresh: true
+  become: yes
+  become_user: "{{ ansible_user_id }}"
 
-- name: Add Google Cloud SDK repository
-  community.general.zypper_repository:
-    name: google-cloud-sdk
-    repo: https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
-    state: present
-    auto_import_keys: yes
-    disable_gpg_check: no
-  become: true
+# Google Cloud SDK repository - RPM specific, use AUR on Arch
+# - name: Add Google Cloud SDK repository
+#   community.general.zypper_repository:
+#     name: google-cloud-sdk
+#     repo: https://packages.cloud.google.com/yum/repos/cloud-sdk-el7-x86_64
+#     state: present
+#     auto_import_keys: yes
+#     disable_gpg_check: no
+#   become: true
 
-- name: Import Google Cloud SDK GPG keys
-  ansible.builtin.rpm_key:
-    state: present
-    key: "{{ item }}"
-  loop:
-    - https://packages.cloud.google.com/yum/doc/yum-key.gpg
-    - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
-  become: true
+# Google Cloud SDK GPG keys - RPM specific
+# - name: Import Google Cloud SDK GPG keys
+#   ansible.builtin.rpm_key:
+#     state: present
+#     key: "{{ item }}"
+#   loop:
+#     - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+#     - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+#   become: true
 
-- name: Install Google Cloud SDK
-  become: true
-  community.general.zypper:
-    name: google-cloud-sdk
+- name: Install Google Cloud SDK (AUR)
+  kewlfft.aur.aur:
+    name: google-cloud-cli
     state: present
-    force: yes
+  become: yes
+  become_user: "{{ ansible_user_id }}"
 
 - name: Check if AWS CLI is already installed
   ansible.builtin.command: aws --version

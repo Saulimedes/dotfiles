@@ -1,45 +1,35 @@
 ---
 - name: Install fonts
   become: true
-  community.general.zypper:
+  community.general.pacman:
     name: "{{ item }}"
     state: present
   loop: "{{ fonts }}"
 
-- name: Add Packman repository
-  community.general.zypper_repository:
-    name: packman
-    description: Packman Tumbleweed
-    repo: https://packman.inode.at/suse/openSUSE_Tumbleweed/
-    auto_import_keys: true
-    disabled: no
-    runrefresh: true
+# Packman repository is openSUSE-specific, skipping for Arch Linux
+# - name: Add Packman repository
 
-- name: Perform dist-upgrade with vendor change allowed
-  community.general.zypper:
-    name: '*'
-    type: dist-upgrade
-    allow_vendor_change: true
-    force_resolution: true
+- name: Update all packages
+  become: true
+  community.general.pacman:
     update_cache: true
+    upgrade: true
 
-- name: Install multimedia packages (prefer Packman)
-  community.general.zypper:
+- name: Install multimedia packages
+  become: true
+  community.general.pacman:
     name:
       - ffmpeg
-      - gstreamer-plugins-good
-      - gstreamer-plugins-bad
-      - gstreamer-plugins-ugly
-      - gstreamer-plugins-libav
-      - libavcodec
-      - vlc-codecs
-    allow_vendor_change: true
-    force_resolution: true
-    update_cache: false
+      - gst-plugins-good
+      - gst-plugins-bad
+      - gst-plugins-ugly
+      - gst-libav
+      - vlc
+    state: present
 
 - name: Install desktop packages
   become: true
-  community.general.zypper:
+  community.general.pacman:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
@@ -60,7 +50,7 @@
 
 - name: Verify Flathub repository
   become: true
-  command: flatpak remote-list --system
+  ansible.builtin.command: flatpak remote-list --system
   register: remote_list
 
 - name: Install Flatpak packages

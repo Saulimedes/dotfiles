@@ -24,7 +24,10 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -Syu --noconfirm ansible ansible-lint chezmoi git
+          pacman -Syu --noconfirm ansible ansible-lint chezmoi git python-requests
+
+      - name: Install Ansible collections
+        run: ansible-galaxy install -r ansible/requirements.yml
 
       - name: Lint Ansible Playbook
         run: ansible-lint ansible/
@@ -53,7 +56,10 @@ jobs:
       - name: Install dependencies
         run: |
           pacman -Sy --noconfirm archlinux-keyring
-          pacman -Syu --noconfirm ansible chezmoi git
+          pacman -Syu --noconfirm ansible chezmoi git python-requests
+
+      - name: Install Ansible collections
+        run: ansible-galaxy install -r ansible/requirements.yml
 
       - name: chezmoi apply
         run: |

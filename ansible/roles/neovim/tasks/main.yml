@@ -1,7 +1,7 @@
 ---
 - name: Install neovim
   become: true
-  community.general.zypper:
+  community.general.pacman:
     name: "{{ item }}"
     state: present
   loop: "{{ packages }}"
