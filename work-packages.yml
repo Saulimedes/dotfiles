@@ -1,0 +1,13 @@
+# Work packages configuration
+# This file is used to track changes to work package requirements
+# Modify this file to trigger reinstallation of work packages
+
+packages:
+  - kubectl
+  - helm  
+  - opentofu
+  - vault
+  - awscli
+  - azure-cli
+
+version: 1.0

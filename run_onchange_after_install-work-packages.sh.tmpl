@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# Work-specific package installation for Arch Linux
+# This replaces the work role from Ansible and only runs when work packages change
+
+set -euo pipefail
+
+# Work packages hash (change this to trigger re-installation)
+# work-packages-hash: {{ include "work-packages.yml" | sha256sum }}
+
+# Skip if not a work machine
+{{- if ne .chezmoi.hostname "work-laptop" }}
+echo "Skipping work packages on non-work machine"
+exit 0
+{{- end }}
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+install_packages() {
+    local packages=("$@")
+    
+    sudo pacman -S --needed --noconfirm "${packages[@]}" || {
+        log_error "Failed to install some packages"
+        return 1
+    }
+}
+
+# Work-specific packages
+work_packages=(
+    kubectl
+    helm
+    opentofu
+    vault
+    awscli
+    azure-cli
+)
+
+log_info "Installing work-specific packages"
+install_packages "${work_packages[@]}"
+
+log_info "Work package installation completed"
