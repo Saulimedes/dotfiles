@@ -58,6 +58,13 @@ return {
         "lewis6991/gitsigns.nvim"
     },
   },
+  {
+    "f-person/git-blame.nvim",
+    config = function()
+      vim.g.gitblame_enabled = 0  -- Disable by default
+      vim.g.gitblame_display_virtual_text = 0  -- Don't show inline
+    end,
+  },
   -- File Explorer and Navigation
   {
     "nvim-neo-tree/neo-tree.nvim",
@@ -106,30 +113,32 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter-textobjects",
-      "JoosepAlviste/nvim-ts-context-commentstring",
+    main = "nvim-treesitter.configs",
+    opts = {
+      ensure_installed = {"c", "python", "perl", "lua", "css", "html", "rust", "yaml", "markdown", "toml", "bash", "fish", "jq", "json", "javascript", "typescript" },
+      sync_install = true,
+      highlight = {
+        enable = true,
+        disable = { "markdown" },
+        additional_vim_regex_highlighting = false,
+      },
+      indent = { enable = true },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = "<CR>",
+          node_incremental = "<CR>",
+          scope_incremental = "<S-CR>",
+          node_decremental = "<BS>",
+        },
+      },
     },
+  },
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
     config = function()
-      require("nvim-treesitter.configs").setup {
-        ensure_installed = {"c", "python", "perl", "lua", "css", "html", "rust", "yaml", "markdown", "toml", "bash", "fish", "jq", "json", "javascript", "typescript" },
-        sync_install = true,
-        ignore_install = { "" },
-        highlight = {
-          enable = true,
-          disable = { "markdown" },
-          additional_vim_regex_highlighting = false,
-        },
-        indent = { enable = true },
-        incremental_selection = {
-          enable = true,
-          keymaps = {
-            init_selection = "<CR>",
-            node_incremental = "<CR>",
-            scope_incremental = "<S-CR>",
-            node_decremental = "<BS>",
-          },
-        },
+      require("nvim-treesitter.configs").setup({
         textobjects = {
           select = {
             enable = true,
@@ -164,7 +173,7 @@ return {
             },
           },
         },
-      }
+      })
     end,
   },
 
