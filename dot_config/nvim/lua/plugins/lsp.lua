@@ -34,7 +34,8 @@ require('mason-lspconfig').setup({
     'lua_ls',
     'bashls',
     'dockerls',
-    'tflint',  -- Terraform/OpenTofu linter
+    'terraformls',  -- Terraform language server (works with OpenTofu)
+    'tflint',       -- Terraform/OpenTofu linter
     'pyright',
     'marksman',
     'yamlls'
@@ -63,19 +64,6 @@ vim.lsp.config.lua_ls = {
   }
 }
 
--- OpenTofu/Terraform language server setup
--- Check if terraform-ls is available (works with OpenTofu)
-if vim.fn.executable('terraform-ls') == 1 then
-  require('lspconfig').terraformls.setup({
-    cmd = { 'terraform-ls', 'serve' },
-    filetypes = { 'terraform', 'tf', 'terraform-vars' },
-    init_options = {
-      experimentalFeatures = {
-        validateOnSave = true,
-      },
-    },
-  })
-end
 
 -- nvim-cmp setup
 local cmp = require('cmp')

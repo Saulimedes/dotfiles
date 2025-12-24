@@ -38,18 +38,15 @@ work_packages=(
     helm
     opentofu
     vault
-    awscli
-    azure-cli
 )
 
 log_info "Installing work-specific packages"
 install_packages "${work_packages[@]}"
 
-# Install Google Cloud SDK
+# Install Google Cloud SDK (AUR)
 if ! command -v gcloud &> /dev/null; then
     log_info "Installing Google Cloud SDK"
     
-    # Install from AUR using paru/yay
     if command -v paru &> /dev/null; then
         paru -S --noconfirm google-cloud-cli
     elif command -v yay &> /dev/null; then
@@ -61,11 +58,10 @@ else
     log_info "Google Cloud SDK already installed"
 fi
 
-# Install Microsoft Edge browser
+# Install Microsoft Edge browser (AUR)
 if ! command -v microsoft-edge-stable &> /dev/null; then
     log_info "Installing Microsoft Edge browser"
     
-    # Install from AUR using paru/yay
     if command -v paru &> /dev/null; then
         paru -S --noconfirm microsoft-edge-stable-bin
     elif command -v yay &> /dev/null; then
@@ -75,22 +71,6 @@ if ! command -v microsoft-edge-stable &> /dev/null; then
     fi
 else
     log_info "Microsoft Edge already installed"
-fi
-
-# Install Terraform Language Server (works with OpenTofu)
-if ! command -v terraform-ls &> /dev/null; then
-    log_info "Installing Terraform Language Server"
-    
-    # Install from AUR using paru/yay
-    if command -v paru &> /dev/null; then
-        paru -S --noconfirm terraform-ls
-    elif command -v yay &> /dev/null; then
-        yay -S --noconfirm terraform-ls
-    else
-        log_warn "No AUR helper found, skipping terraform-ls"
-    fi
-else
-    log_info "Terraform Language Server already installed"
 fi
 
 log_info "Work package installation completed"
