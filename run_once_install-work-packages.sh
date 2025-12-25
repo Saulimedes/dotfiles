@@ -43,6 +43,36 @@ work_packages=(
 log_info "Installing work-specific packages"
 install_packages "${work_packages[@]}"
 
+# Install AWS CLI (AUR)
+if ! command -v aws &> /dev/null; then
+    log_info "Installing AWS CLI"
+    
+    if command -v paru &> /dev/null; then
+        paru -S --noconfirm aws-cli-v2
+    elif command -v yay &> /dev/null; then
+        yay -S --noconfirm aws-cli-v2
+    else
+        log_warn "No AUR helper found, skipping AWS CLI"
+    fi
+else
+    log_info "AWS CLI already installed"
+fi
+
+# Install Azure CLI (AUR)
+if ! command -v az &> /dev/null; then
+    log_info "Installing Azure CLI"
+    
+    if command -v paru &> /dev/null; then
+        paru -S --noconfirm azure-cli
+    elif command -v yay &> /dev/null; then
+        yay -S --noconfirm azure-cli
+    else
+        log_warn "No AUR helper found, skipping Azure CLI"
+    fi
+else
+    log_info "Azure CLI already installed"
+fi
+
 # Install Google Cloud SDK (AUR)
 if ! command -v gcloud &> /dev/null; then
     log_info "Installing Google Cloud SDK"
