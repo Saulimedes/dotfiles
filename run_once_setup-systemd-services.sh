@@ -5,10 +5,7 @@
 
 set -euo pipefail
 
-{{- if eq .chezmoi.hostname "server" }}
-echo "Skipping user systemd services on server"
-exit 0
-{{- end }}
+# (removed hostname check since only using Arch Linux)
 
 # Colors for output
 RED='\033[0;31m'
