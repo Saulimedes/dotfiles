@@ -6,10 +6,7 @@
 set -euo pipefail
 
 # Skip on headless systems
-{{- if eq .chezmoi.hostname "server" }}
-echo "Skipping browser installation on server system"
-exit 0
-{{- end }}
+# (removed hostname check since only using Arch Linux)
 
 # Colors for output
 RED='\033[0;31m'
