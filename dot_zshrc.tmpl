@@ -2,9 +2,8 @@
 ZDOTDIR=$HOME/.zsh
 ABBR_USER_ABBREVIATIONS_FILE=$ZDOTDIR/abbreviations
 ABBR_SET_EXPANSION_CURSOR=1
-zsh_plugins=${ZDOTDIR}/zsh_plugins
 source $ZDOTDIR/antidote/antidote.zsh
-antidote load
+antidote load $ZDOTDIR/zsh_plugins.txt
 
 # HISTORY
 setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS
