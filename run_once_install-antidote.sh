@@ -55,21 +55,6 @@ fi
 # Create completions directory
 mkdir -p "$ZDOTDIR/completions"
 
-# Update/install plugins if antidote is available
-if [[ -f "$ZDOTDIR/antidote/antidote.zsh" ]]; then
-    log_info "Loading antidote and updating plugins..."
-    
-    # Source antidote
-    source "$ZDOTDIR/antidote/antidote.zsh"
-    
-    # Update plugins if plugins file exists
-    if [[ -f "$ZDOTDIR/zsh_plugins.txt" ]]; then
-        log_info "Updating zsh plugins..."
-        antidote update || log_warn "Plugin update failed (this is usually not critical)"
-        log_info "Generating plugin bundle..."
-        antidote bundle < "$ZDOTDIR/zsh_plugins.txt" > "$ZDOTDIR/zsh_plugins.zsh"
-    fi
-fi
-
+# Update zshrc to handle plugin updates
 log_info "Antidote setup completed"
-log_info "Restart your shell or run 'source ~/.zshrc' to load antidote"
+log_info "Plugins will be automatically updated when you next start zsh"
