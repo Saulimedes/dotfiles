@@ -25,7 +25,7 @@ log_error() {
 
 install_packages() {
     local packages=("$@")
-    
+
     log_info "Installing packages on Arch Linux using pacman"
     sudo pacman -S --needed --noconfirm "${packages[@]}" || {
         log_error "Failed to install some packages"
@@ -41,6 +41,7 @@ core_packages=(
     nmon
     bottom
     socat
+    emacs
     bat
     bat-extras
     direnv
@@ -84,6 +85,7 @@ core_packages=(
     curl
     pandoc
     tmux
+    kitty
 )
 
 log_info "Starting package installation for Arch Linux"
@@ -106,12 +108,12 @@ fi
 # Install paru AUR helper if not present
 if ! command -v paru &> /dev/null && ! command -v yay &> /dev/null; then
     log_info "Installing paru AUR helper"
-    
+
     # Install rust if not already installed (needed for paru)
     if ! command -v rustc &> /dev/null; then
         sudo pacman -S --needed --noconfirm rust
     fi
-    
+
     # Clone and build paru
     cd /tmp
     git clone https://aur.archlinux.org/paru.git
@@ -119,7 +121,7 @@ if ! command -v paru &> /dev/null && ! command -v yay &> /dev/null; then
     makepkg -si --noconfirm
     cd "$HOME"
     rm -rf /tmp/paru
-    
+
     log_info "paru AUR helper installed successfully"
 else
     log_info "AUR helper already available"
@@ -129,7 +131,7 @@ fi
 if command -v zsh &> /dev/null; then
     current_shell=$(getent passwd "$USER" | cut -d: -f7)
     zsh_path=$(command -v zsh)
-    
+
     if [[ "$current_shell" != "$zsh_path" ]]; then
         log_info "Changing shell to zsh"
         sudo chsh -s "$zsh_path" "$USER" || log_warn "Failed to change shell to zsh"
