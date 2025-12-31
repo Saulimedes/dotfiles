@@ -28,7 +28,7 @@ log_error() {
 
 install_packages() {
     local packages=("$@")
-    
+
     sudo pacman -S --needed --noconfirm "${packages[@]}" || {
         log_error "Failed to install some packages"
         return 1
@@ -40,6 +40,9 @@ font_packages=(
     ttf-font-awesome
     ttf-roboto
     ttf-droid
+    ttf-liberation
+    ttf‑linux‑libertine
+    noto-fonts-emojinoto
 )
 
 # Desktop packages
