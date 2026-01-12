@@ -2,6 +2,8 @@
 .ollama/
 .claude/
 CLAUDE.md
+CLAUDE.md.bak
+CLAUDE_LOCAL.md
 .cursor/
 .cursorignore
 .opencode/

@@ -41,8 +41,8 @@ font_packages=(
     ttf-roboto
     ttf-droid
     ttf-liberation
-    ttf‑linux‑libertine
-    noto-fonts-emojinoto
+    ttf-linux-libertine
+    noto-fonts-emoji
 )
 
 # Desktop packages
