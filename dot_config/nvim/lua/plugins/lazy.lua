@@ -84,12 +84,15 @@ return {
   -- Language Support and LSP
   {
     'VonHeikemen/lsp-zero.nvim',
-    lazy = true,
+    lazy = false,
     branch = 'v3.x',
+    priority = 900,
     dependencies = {
       {'neovim/nvim-lspconfig'},
-      {'williamboman/mason.nvim', build = function() pcall(vim.api.nvim_command, 'MasonUpdate') end},
+      {'williamboman/mason.nvim', build = ':MasonUpdate'},
       {'williamboman/mason-lspconfig.nvim'},
+      {'WhoIsSethDaniel/mason-tool-installer.nvim'},
+      {'b0o/schemastore.nvim'},
       {'hrsh7th/nvim-cmp'},
       {'hrsh7th/cmp-nvim-lsp'},
       {'hrsh7th/cmp-buffer'},

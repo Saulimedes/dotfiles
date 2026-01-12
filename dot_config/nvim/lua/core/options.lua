@@ -47,7 +47,7 @@ opt.undodir = os.getenv("HOME") .. "/.vim/undodir"
 opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.winminwidth = 5 -- Minimum window width
 opt.wrap = true -- Enable line wrap
-opt.shell = "/bin/fish" -- Set shell
+opt.shell = vim.fn.executable("zsh") == 1 and "/bin/zsh" or vim.o.shell -- Set shell
 opt.title = true -- Set title
 opt.ff = "unix" -- Fileformat
 opt.fileencoding = "utf8" -- Set utf8

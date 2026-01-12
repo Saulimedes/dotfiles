@@ -16,12 +16,15 @@ setopt COMPLETE_IN_WORD ALWAYS_TO_END AUTOLIST
 fpath=(~/.zsh/completions $fpath)
 autoload -Uz compinit && compinit
 zstyle ':completion:*' special-dirs true
-zstyle ':completion:*' squeeze-slashes true
 zstyle ':completion:*' accept-exact-dirs true
 zstyle ':completion:*' menu select
 zstyle ':completion:*' insert-unambiguous yes
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[./]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*:default' list-prompt '%Sscroll: %p'
+
+# Fix SSH completion double-escaping - removed squeeze-slashes globally, only apply to non-ssh contexts
+zstyle ':completion:*:*:*:*:*' squeeze-slashes true
+zstyle ':completion:*:(ssh|scp|sftp|rsync):*' squeeze-slashes false
 
 # General Settings
 setopt NO_BEEP NO_BG_NICE CORRECT CORRECT_ALL GLOB_COMPLETE EXTENDED_GLOB INTERACTIVE_COMMENTS NO_BAD_PATTERN
@@ -97,20 +100,19 @@ alias "......"=".5"
 alias back="cd $OLDPWD"
 
 # kubernetes
-if command -v kubectl >/dev/null 2>&1; then
-  if [ -d "$HOME/.kube" ]; then
-    export KUBECONFIG=$(find "$HOME/.kube" -maxdepth 1 -type f | while IFS= read -r file; do
-        if grep -qm1 -e "apiVersion:" -e "kind:" -e "clusters:" -e "contexts:" -e "users:" "$file"; then
-            echo -n "$file:"
-        fi
-    done | sed 's/:$//')
-  fi
-fi
+alias kubectx="kubie ctx"
+alias kubens="kubie ns"
 
 # functions
 for file in ~/.zsh/functions/*.zsh; do
   [ -r "$file" ] && source "$file"
 done
+
+# Fix zsh-autopair breaking emacs keybindings (must be after plugins load)
+bindkey '^A' beginning-of-line
+bindkey '^E' end-of-line
+bindkey '^F' forward-char
+bindkey '^B' backward-char
 
 # Starship prompt
 if type starship &>/dev/null; then

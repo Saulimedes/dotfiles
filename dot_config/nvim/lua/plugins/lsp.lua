@@ -24,51 +24,246 @@ lsp_zero.on_attach(function(client, bufnr)
   map("i", "<C-h>", vim.lsp.buf.signature_help, opts)
 end)
 
--- Setup mason + LSP installations
-require('mason').setup()
-
-require('mason-lspconfig').setup({
-  ensure_installed = {
-    'ansiblels',
-    'docker_compose_language_service',
-    'lua_ls',
-    'bashls',
-    'dockerls',
-    'terraformls',  -- Terraform language server (works with OpenTofu)
-    'tflint',       -- Terraform/OpenTofu linter
-    'pyright',
-    'marksman',
-    'yamlls'
-  },
-  handlers = {
-    lsp_zero.default_setup,
+-- Setup mason with automatic installation
+require('mason').setup({
+  ui = {
+    border = "rounded",
+    icons = {
+      package_installed = "✓",
+      package_pending = "➜",
+      package_uninstalled = "✗"
+    }
   }
 })
 
--- Specific lua_ls config
-vim.lsp.config.lua_ls = {
-  cmd = { 'lua-language-server' },
-  settings = {
-    Lua = {
-      diagnostics = {
-        globals = { 'vim' }
-      },
-      workspace = {
-        library = vim.api.nvim_get_runtime_file("", true),
-        checkThirdParty = false
-      },
-      telemetry = {
-        enable = false,
-      },
-    }
+-- Setup mason-lspconfig with automatic server installation
+require('mason-lspconfig').setup({
+  ensure_installed = {
+    'ansiblels',
+    'bashls',
+    'cssls',
+    'docker_compose_language_service',
+    'dockerls',
+    'html',
+    'jsonls',
+    'lua_ls',
+    'marksman',
+    'pyright',
+    'rust_analyzer',
+    'terraformls',
+    'ts_ls',
+    'yamlls'
+  },
+  automatic_installation = true,
+  handlers = {
+    -- Default handler for all servers
+    lsp_zero.default_setup,
+
+    -- Specific lua_ls configuration
+    lua_ls = function()
+      require('lspconfig').lua_ls.setup({
+        settings = {
+          Lua = {
+            runtime = {
+              version = 'LuaJIT',
+            },
+            diagnostics = {
+              globals = { 'vim' }
+            },
+            workspace = {
+              library = vim.api.nvim_get_runtime_file("", true),
+              checkThirdParty = false
+            },
+            telemetry = {
+              enable = false,
+            },
+          }
+        }
+      })
+    end,
+
+    -- Ansible configuration (only for ansible files, not all yaml)
+    ansiblels = function()
+      require('lspconfig').ansiblels.setup({
+        settings = {
+          ansible = {
+            ansible = {
+              path = "ansible"
+            },
+            executionEnvironment = {
+              enabled = false
+            },
+            python = {
+              interpreterPath = "python3"
+            },
+            validation = {
+              enabled = true,
+              lint = {
+                enabled = true,
+                path = "ansible-lint"
+              }
+            }
+          }
+        },
+        filetypes = { "yaml.ansible" }
+      })
+    end,
+
+    -- YAML configuration
+    yamlls = function()
+      require('lspconfig').yamlls.setup({
+        settings = {
+          yaml = {
+            schemas = {
+              kubernetes = "/*.yaml",
+              ["http://json.schemastore.org/github-workflow"] = ".github/workflows/*",
+              ["http://json.schemastore.org/github-action"] = ".github/action.{yml,yaml}",
+              ["http://json.schemastore.org/ansible-stable-2.9"] = "roles/tasks/*.{yml,yaml}",
+              ["http://json.schemastore.org/prettierrc"] = ".prettierrc.{yml,yaml}",
+              ["http://json.schemastore.org/kustomization"] = "kustomization.{yml,yaml}",
+              ["http://json.schemastore.org/chart"] = "Chart.{yml,yaml}",
+              ["https://json.schemastore.org/dependabot-v2"] = ".github/dependabot.{yml,yaml}",
+              ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*docker-compose*.{yml,yaml}",
+            },
+            format = { enabled = true },
+            validate = true,
+            completion = true,
+            hover = true,
+          }
+        }
+      })
+    end,
+
+    -- Python configuration
+    pyright = function()
+      require('lspconfig').pyright.setup({
+        settings = {
+          python = {
+            analysis = {
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
+              diagnosticMode = "workspace"
+            }
+          }
+        }
+      })
+    end,
+
+    -- TypeScript/JavaScript configuration
+    ts_ls = function()
+      require('lspconfig').ts_ls.setup({
+        settings = {
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = 'all',
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            }
+          },
+          javascript = {
+            inlayHints = {
+              includeInlayParameterNameHints = 'all',
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            }
+          }
+        }
+      })
+    end,
+
+    -- JSON configuration
+    jsonls = function()
+      require('lspconfig').jsonls.setup({
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          }
+        }
+      })
+    end,
+
+    -- HTML configuration
+    html = function()
+      require('lspconfig').html.setup({
+        filetypes = { "html", "htmldjango" }
+      })
+    end,
+
+    -- CSS configuration
+    cssls = function()
+      require('lspconfig').cssls.setup({
+        settings = {
+          css = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore"
+            }
+          },
+          scss = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore"
+            }
+          },
+          less = {
+            validate = true,
+            lint = {
+              unknownAtRules = "ignore"
+            }
+          }
+        }
+      })
+    end,
+
+    -- Rust configuration
+    rust_analyzer = function()
+      require('lspconfig').rust_analyzer.setup({
+        settings = {
+          ['rust-analyzer'] = {
+            cargo = {
+              allFeatures = true,
+            },
+            checkOnSave = {
+              command = "clippy"
+            },
+          }
+        }
+      })
+    end,
   }
-}
+})
+
+-- Mason Tool Installer for non-LSP tools (formatters, linters, DAPs)
+require('mason-tool-installer').setup({
+  ensure_installed = {
+    'ansible-lint',
+    'prettier',
+    'stylua',
+    'shellcheck',
+    'shfmt',
+    'tflint',
+    'yamllint',
+    'black',
+    'isort',
+    'pylint',
+  },
+  auto_update = true,
+  run_on_start = true,
+})
 
 
 -- nvim-cmp setup
 local cmp = require('cmp')
 local luasnip = require('luasnip')
-local cmp_action = require('lsp-zero').cmp_action()
 
 cmp.setup({
   mapping = cmp.mapping.preset.insert({

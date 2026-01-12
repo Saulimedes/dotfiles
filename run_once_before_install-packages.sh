@@ -35,8 +35,10 @@ install_packages() {
 
 # Core packages
 core_packages=(
+    dosfstools
     git
     git-lfs
+    git-crypt
     chezmoi
     nmon
     bottom
