@@ -34,9 +34,6 @@
   auto = 256
 [clean]
   requireForce = false
-[branch]
-  autosetupmerge = true
-  autosetuprebase = always
 [tag]
   sort = version:refname
 [color "diff"]
@@ -74,7 +71,6 @@
   br = "branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate"
   branch-name = "!git for-each-ref --format='%(refname:short)' 'git symbolic-ref HEAD'"
   bx = "branch -D"
-  brancher = "!git-brancher"
   c = "clone"
   ck = "checkout"
   clean = "clean -fdx"
@@ -89,7 +85,7 @@
   m = "merge"
   me = "config user.name"
   mail = "config user.email"
-  open = "!git-open"
+  open = "!f() { url=$(git remote get-url ${1:-origin} | sed 's/git@\\([^:]*\\):/https:\\/\\/\\1\\//' | sed 's/\\.git$//'); xdg-open \"$url\"; }; f"
   origin-url = "url"
   original = "!git fetch origin && git reset --hard origin/master"
   panic = "!tar cvf ../git_panic.tar *"

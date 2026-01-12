@@ -1,3 +1,15 @@
+# LLM stuff
+.ollama/
+.claude/
+CLAUDE.md
+.cursor/
+.cursorignore
+.opencode/
+hf_cache/
+.github/copilot-instructions.md.bak
+copilot-chat-*.md
+.huggingface/
+
 # Compiled source
 *.com
 *.class
@@ -14,7 +26,6 @@
 # Temporary files
 *.swp
 *.swo
-*~
 *.tmp
 *.zwc
 .*history
@@ -26,6 +37,19 @@
 __pycache__/
 .envrc
 .python-version
+
+# emacs
+*.org~
+.org-id-locations
+*_archive
+.projectile
+*_flymake.*
+.calc-*.el
+*~
+\#*\#
+.\#*
+.#*
+*.elc
 
 # Packages
 *.7z

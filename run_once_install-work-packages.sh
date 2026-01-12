@@ -25,7 +25,7 @@ log_error() {
 
 install_packages() {
     local packages=("$@")
-    
+
     sudo pacman -S --needed --noconfirm "${packages[@]}" || {
         log_error "Failed to install some packages"
         return 1
@@ -35,6 +35,7 @@ install_packages() {
 # Work-specific packages
 work_packages=(
     kubectl
+    kubie
     helm
     opentofu
     vault
@@ -46,7 +47,7 @@ install_packages "${work_packages[@]}"
 # Install AWS CLI (AUR)
 if ! command -v aws &> /dev/null; then
     log_info "Installing AWS CLI"
-    
+
     if command -v paru &> /dev/null; then
         paru -S --noconfirm aws-cli-v2
     elif command -v yay &> /dev/null; then
@@ -61,7 +62,7 @@ fi
 # Install Azure CLI (AUR)
 if ! command -v az &> /dev/null; then
     log_info "Installing Azure CLI"
-    
+
     if command -v paru &> /dev/null; then
         paru -S --noconfirm azure-cli
     elif command -v yay &> /dev/null; then
@@ -76,7 +77,7 @@ fi
 # Install Google Cloud SDK (AUR)
 if ! command -v gcloud &> /dev/null; then
     log_info "Installing Google Cloud SDK"
-    
+
     if command -v paru &> /dev/null; then
         paru -S --noconfirm google-cloud-cli
     elif command -v yay &> /dev/null; then
@@ -91,7 +92,7 @@ fi
 # Install Microsoft Edge browser (AUR)
 if ! command -v microsoft-edge-stable &> /dev/null; then
     log_info "Installing Microsoft Edge browser"
-    
+
     if command -v paru &> /dev/null; then
         paru -S --noconfirm microsoft-edge-stable-bin
     elif command -v yay &> /dev/null; then
