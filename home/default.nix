@@ -26,7 +26,7 @@
   # Environment variables
   home.sessionVariables = {
     EDITOR = userConfig.editor;
-    VISUAL = userConfig.visual;
+    VISUAL = lib.mkForce userConfig.visual;  # Override neovim's default
     MANPAGER = userConfig.manpager;
   };
 
