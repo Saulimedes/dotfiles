@@ -43,12 +43,12 @@
   ];
 
   # Private fonts from git submodule
-  # Your fonts repo should be added as a submodule at ./fonts/
-  # git submodule add <your-fonts-repo-url> fonts
-  home.file.".local/share/fonts/private" = {
-    source = ../../fonts;
-    recursive = true;
-  };
+  # Uncomment after adding your fonts repo as submodule:
+  #   git submodule add <your-fonts-repo-url> fonts
+  # home.file.".local/share/fonts/private" = {
+  #   source = ../../fonts;
+  #   recursive = true;
+  # };
 
   # Enable fontconfig for user fonts
   fonts.fontconfig.enable = true;
