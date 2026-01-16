@@ -28,7 +28,7 @@
 
     # Icons and emoji
     font-awesome
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     material-design-icons
 
     # CJK (if needed)
