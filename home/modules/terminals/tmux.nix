@@ -103,7 +103,7 @@
       set -g status-justify centre
       set-window-option -g window-status-format "#[fg=cyan,bg=brightblack] #I #[fg=darkgrey]#W#[fg=colour5]#F #[bg=black]"
       set-window-option -g window-status-current-format "#[fg=black, bg=brightgreen] #I #[fg=brightwhite, bg=brightblack] #W#F #[bg=black]"
-      set -g status-right "#[fg=brightwhite,bg=brightblack]#(kubectl config current-context 2>/dev/null || echo '')#(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null | sed 's/^/ . /' || echo '') . %H:%M #{online_status}"
+      set -g status-right "#[fg=brightwhite,bg=brightblack]#(kubectl config current-context 2>/dev/null || echo '''')#(kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null | sed 's/^/ . /' || echo '''') . %H:%M #{online_status}"
 
       set-option -g pane-active-border-style fg=colour2
       set-option -g pane-border-style fg=colour238
