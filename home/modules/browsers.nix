@@ -170,7 +170,7 @@
       };
 
       # Extensions from NUR
-      extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+      extensions.packages = with pkgs.nur.repos.rycee.firefox-addons; [
         # Core
         ublock-origin
         bitwarden
