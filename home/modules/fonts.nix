@@ -15,7 +15,7 @@
     inter
     roboto
     source-sans
-    ubuntu_font_family
+    ubuntu-classic
 
     # Serif
     source-serif
