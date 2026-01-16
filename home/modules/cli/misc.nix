@@ -71,8 +71,8 @@
     # Clipboard
     wl-clipboard
     xclip
-  ];
 
-  # Pandoc for document conversion
-  home.packages = [ pkgs.pandoc ];
+    # Document conversion
+    pandoc
+  ];
 }
