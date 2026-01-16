@@ -38,11 +38,11 @@
     };
   };
 
-  # GPG agent for Git signing (if needed)
+  # GPG agent for Git signing and SSH support
   services.gpg-agent = {
     enable = true;
-    enableSshSupport = true;
-    pinentryPackage = pkgs.pinentry-gnome3;
+    enableSshSupport = true;  # Handles SSH keys - no need for fish-ssh-agent
+    pinentry.package = pkgs.pinentry-gnome3;
     defaultCacheTtl = 3600;
     maxCacheTtl = 86400;
   };

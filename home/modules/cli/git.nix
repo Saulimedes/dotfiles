@@ -4,56 +4,49 @@
 {
   programs.git = {
     enable = true;
-    userName = userConfig.fullName;
-    userEmail = userConfig.email;
 
-    # Delta for better diffs
-    delta = {
-      enable = true;
-      options = {
-        navigate = true;
-        light = false;
-        side-by-side = false;
-        line-numbers = true;
+    # Git settings (new format)
+    settings = {
+      user = {
+        name = userConfig.fullName;
+        email = userConfig.email;
       };
-    };
 
-    # Git aliases
-    aliases = {
-      A = "add -A .";
-      aa = "add --all";
-      amend = "commit --amend --no-edit";
-      br = "branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate";
-      branch-name = "!git for-each-ref --format='%(refname:short)' 'git symbolic-ref HEAD'";
-      bx = "branch -D";
-      c = "clone";
-      ck = "checkout";
-      clean = "clean -fdx";
-      done = "!git push origin HEAD";
-      force = "push --force";
-      harder = "reset --hard";
-      last = "log -1 HEAD --stat";
-      lg1 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)- %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative";
-      lg2 = "log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)- %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative";
-      lg3 = "!git --no-pager log -15 --reverse --oneline --decorate --all --pretty=tformat:'%C(bold blue)%h%C(reset) %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold yellow)- %cn%C(reset)'";
-      m = "merge";
-      me = "config user.name";
-      mail = "config user.email";
-      open = "!f() { url=$(git remote get-url \${1:-origin} | sed 's/git@\\([^:]*\\):/https:\\/\\/\\1\\//' | sed 's/\\.git$//'); xdg-open \"$url\"; }; f";
-      original = "!git fetch origin && git reset --hard origin/master";
-      panic = "!tar cvf ../git_panic.tar *";
-      publish = "push -u origin HEAD";
-      repo = "!git remote -v | grep fetch | awk '{print $2}'";
-      root = "rev-parse --show-toplevel";
-      rev = "log --format='%H' -n 1";
-      s = "status -sb .";
-      se = "!git rev-list --all | xargs git grep -F";
-      tags = "tag -l";
-      undo = "reset --soft HEAD";
-      yoda = "push --force-with-lease";
-    };
+      # Aliases
+      alias = {
+        A = "add -A .";
+        aa = "add --all";
+        amend = "commit --amend --no-edit";
+        br = "branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate";
+        branch-name = "!git for-each-ref --format='%(refname:short)' 'git symbolic-ref HEAD'";
+        bx = "branch -D";
+        c = "clone";
+        ck = "checkout";
+        clean = "clean -fdx";
+        done = "!git push origin HEAD";
+        force = "push --force";
+        harder = "reset --hard";
+        last = "log -1 HEAD --stat";
+        lg1 = "log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)- %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative";
+        lg2 = "log --graph --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold white)- %cn%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative";
+        lg3 = "!git --no-pager log -15 --reverse --oneline --decorate --all --pretty=tformat:'%C(bold blue)%h%C(reset) %C(bold green)(%cr)%C(reset) %C(white)%s%C(reset) %C(bold yellow)- %cn%C(reset)'";
+        m = "merge";
+        me = "config user.name";
+        mail = "config user.email";
+        open = "!f() { url=$(git remote get-url \${1:-origin} | sed 's/git@\\([^:]*\\):/https:\\/\\/\\1\\//' | sed 's/\\.git$//'); xdg-open \"$url\"; }; f";
+        original = "!git fetch origin && git reset --hard origin/master";
+        panic = "!tar cvf ../git_panic.tar *";
+        publish = "push -u origin HEAD";
+        repo = "!git remote -v | grep fetch | awk '{print $2}'";
+        root = "rev-parse --show-toplevel";
+        rev = "log --format='%H' -n 1";
+        s = "status -sb .";
+        se = "!git rev-list --all | xargs git grep -F";
+        tags = "tag -l";
+        undo = "reset --soft HEAD";
+        yoda = "push --force-with-lease";
+      };
 
-    extraConfig = {
       core = {
         whitespace = "fix,-indent-with-non-tab,trailing-space,cr-at-eol";
         quotepath = false;
@@ -150,12 +143,4 @@
     ];
   };
 
-  # GitHub CLI
-  programs.gh = {
-    enable = true;
-    settings = {
-      git_protocol = "ssh";
-      prompt = "enabled";
-    };
-  };
 }
