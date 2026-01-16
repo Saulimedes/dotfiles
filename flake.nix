@@ -58,6 +58,15 @@
         inherit system;
         specialArgs = { inherit inputs userConfig; };
         modules = [
+          # Apply overlays to nixpkgs
+          {
+            nixpkgs.overlays = [
+              inputs.emacs-overlay.overlays.default
+              inputs.nur.overlays.default
+              (import ./overlays)
+            ];
+            nixpkgs.config.allowUnfree = true;
+          }
           ./hosts/${hostname}
           ./system
           home-manager.nixosModules.home-manager
