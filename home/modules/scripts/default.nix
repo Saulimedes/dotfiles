@@ -25,7 +25,7 @@ let
           *.7z)        ${pkgs.p7zip}/bin/7z x "''${arg}"          ;;
           *.xz)        ${pkgs.xz}/bin/unxz "''${arg}"          ;;
           *.exe)       ${pkgs.cabextract}/bin/cabextract "''${arg}"    ;;
-          *)           echo "extract: '''${arg}' - unknown archive method" ;;
+          *)           echo "extract: ''${arg} - unknown archive method" ;;
         esac
       else
         echo "Error: ''${arg} - file does not exist"
