@@ -41,6 +41,9 @@
       # Disable greeting
       set fish_greeting ""
 
+      # Enable vi mode (replaces vfish plugin)
+      fish_vi_key_bindings
+
       # Fish features
       set -U fish_features stderr-nocaret qmark-noglob ampersand-nobg-in-token
 
