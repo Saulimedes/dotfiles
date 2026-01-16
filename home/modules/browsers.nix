@@ -5,11 +5,13 @@
   # Helium - Primary browser (Chromium-based, MV2 support)
   # Extensions need to be installed manually in Helium
   home.packages = [
-    pkgs.custom.helium
     pkgs.ungoogled-chromium
 
     # Zen Browser (Firefox-based, privacy focused)
     inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight
+
+    # Helium browser - uncomment when package is fixed
+    # pkgs.custom.helium
   ];
 
   # Brave - Secondary browser (MV2 support, with managed extensions)

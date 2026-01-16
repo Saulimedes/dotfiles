@@ -43,16 +43,7 @@
           sha256 = "sha256-e94Sd1GSUAxwLVVo5yR6msq0nnOpaIdjqJFtADWPQKA=";
         };
       }
-      # Vi mode enhancements
-      {
-        name = "vfish";
-        src = pkgs.fetchFromGitHub {
-          owner = "pymander";
-          repo = "vfish";
-          rev = "9ae5e6d6c67ba9cc41ada4d6c20d670a9bdf4cb7";
-          sha256 = "sha256-Lp2bmRnFzL8wLHcH8kWxfQWZWpWP3F0qzwkL+u/FKXE=";
-        };
-      }
+      # vfish - removed, repo unavailable
     ];
 
     # Shell initialization
