@@ -33,17 +33,7 @@
           sha256 = "sha256-OYiYTW+g71vD9NWOcX1i2/TaQfAg+c2dJZ5ohwWSDCc=";
         };
       }
-      # SSH agent management
-      {
-        name = "fish-ssh-agent";
-        src = pkgs.fetchFromGitHub {
-          owner = "danhper";
-          repo = "fish-ssh-agent";
-          rev = "fd70a2afdd03caf9bf609746571603f0a9d19a99";
-          sha256 = "sha256-e94Sd1GSUAxwLVVo5yR6msq0nnOpaIdjqJFtADWPQKA=";
-        };
-      }
-      # vfish - removed, repo unavailable
+      # fish-ssh-agent and vfish - removed, repos unavailable
     ];
 
     # Shell initialization
