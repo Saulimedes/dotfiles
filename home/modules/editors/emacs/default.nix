@@ -4,7 +4,7 @@
 {
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs29-pgtk; # GTK3 + native compilation
+    package = pkgs.emacs-pgtk; # GTK + native compilation
 
     extraPackages = epkgs: with epkgs; [
       # Essential packages
