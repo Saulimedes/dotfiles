@@ -41,7 +41,9 @@
       liberation_ttf
       fira-code
       fira-code-symbols
-      (nerdfonts.override { fonts = [ "JetBrainsMono" "Iosevka" "IosevkaTerm" ]; })
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.iosevka
+      nerd-fonts.iosevka-term
       inter
     ];
     fontconfig = {

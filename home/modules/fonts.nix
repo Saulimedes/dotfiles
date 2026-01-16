@@ -4,16 +4,12 @@
 {
   # Fonts from nixpkgs
   home.packages = with pkgs; [
-    # Nerd Fonts
-    (nerdfonts.override {
-      fonts = [
-        "JetBrainsMono"
-        "Iosevka"
-        "IosevkaTerm"
-        "FiraCode"
-        "Hack"
-      ];
-    })
+    # Nerd Fonts (new structure in nixpkgs)
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.iosevka
+    nerd-fonts.iosevka-term
+    nerd-fonts.fira-code
+    nerd-fonts.hack
 
     # Sans-serif
     inter
