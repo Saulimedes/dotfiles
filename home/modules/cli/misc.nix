@@ -50,7 +50,7 @@
     # Network tools
     bandwhich
     gping
-    dogdns
+    doggo  # DNS client (replaced dogdns)
 
     # Process management
     procs
