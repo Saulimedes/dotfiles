@@ -9,7 +9,7 @@
     pkgs.ungoogled-chromium
 
     # Zen Browser (Firefox-based, privacy focused)
-    inputs.zen-browser.packages.${pkgs.system}.twilight
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight
   ];
 
   # Brave - Secondary browser (MV2 support, with managed extensions)
