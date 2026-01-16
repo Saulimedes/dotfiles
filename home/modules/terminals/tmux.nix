@@ -25,23 +25,7 @@
           set -g @route_to_ping "1.1.1.1"
         '';
       }
-      {
-        # URL opening with fzf (wfxr/tmux-fzf-url)
-        plugin = pkgs.tmuxPlugins.mkTmuxPlugin {
-          pluginName = "tmux-fzf-url";
-          version = "unstable-2024-01-01";
-          src = pkgs.fetchFromGitHub {
-            owner = "wfxr";
-            repo = "tmux-fzf-url";
-            rev = "1241fc1b0967d39d6d5a19dca8f7e59664e46e5f";
-            sha256 = "sha256-UlrN4xM9VkBf2eHM7LoT3hKz+fJYU4H6eATRQGcP1Is=";
-          };
-        };
-        extraConfig = ''
-          set -g @fzf-url-fzf-options '-p 60%,30% --prompt="   " --border-label=" Open URL "'
-          set -g @fzf-url-history-limit '2000'
-        '';
-      }
+      # tmux-fzf-url - removed, repo commit unavailable
     ];
 
     extraConfig = ''
