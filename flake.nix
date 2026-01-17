@@ -27,6 +27,12 @@
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Private fonts repository
+    private-fonts = {
+      url = "git+ssh://git@github.com/Saulimedes/fonts.git";
+      flake = false;
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
