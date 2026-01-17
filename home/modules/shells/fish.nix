@@ -44,6 +44,10 @@
       # Enable vi mode (replaces vfish plugin)
       fish_vi_key_bindings
 
+      # Restore Ctrl+A/Ctrl+E in vi insert mode
+      bind -M insert \ca beginning-of-line
+      bind -M insert \ce end-of-line
+
       # Fish features
       set -U fish_features stderr-nocaret qmark-noglob ampersand-nobg-in-token
 
