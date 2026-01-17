@@ -2,10 +2,82 @@
 
 Personal NixOS + Home Manager configuration using Nix Flakes.
 
-## Documentation
+## Quick Start (New Machine)
 
-- **[Bootstrap Guide](docs/BOOTSTRAP.md)** - Complete guide for setting up a new NixOS machine
-- **[Quick Start](docs/QUICKSTART.md)** - Cheatsheet and common commands
+### 1. Boot NixOS installer and install minimal system
+
+```bash
+# Partition, format, mount as needed, then:
+nixos-generate-config --root /mnt
+nixos-install
+reboot
+```
+
+### 2. Clone this repository
+
+```bash
+nix-shell -p git
+git clone git@github.com:Saulimedes/nixos-config.git ~/nixos-config
+cd ~/nixos-config
+```
+
+### 3. Set up your host
+
+```bash
+# Copy your hardware configuration
+cp /etc/nixos/hardware-configuration.nix hosts/nitipa1/
+
+# Or create a new host:
+mkdir -p hosts/<your-hostname>
+nixos-generate-config --show-hardware-config > hosts/<your-hostname>/hardware-configuration.nix
+```
+
+If creating a new host, add it to `flake.nix`:
+```nix
+nixosConfigurations = {
+  nitipa1 = mkHost { hostname = "nitipa1"; };
+  <your-hostname> = mkHost { hostname = "<your-hostname>"; };
+};
+```
+
+### 4. Enable flakes (if not already)
+
+```bash
+# Temporarily enable flakes for first build
+export NIX_CONFIG="experimental-features = nix-command flakes"
+```
+
+### 5. Fetch private inputs and build
+
+```bash
+# Fetch private repos (fonts) as your user (has SSH keys)
+nix flake update private-fonts
+
+# Build and switch
+sudo nixos-rebuild switch --flake .#nitipa1
+```
+
+## Daily Usage
+
+```bash
+# Rebuild after changes
+sudo nixos-rebuild switch --flake .#nitipa1
+
+# Update all flake inputs
+nix flake update
+sudo nixos-rebuild switch --flake .#nitipa1
+
+# Update single input (e.g., fonts)
+nix flake update private-fonts
+sudo nixos-rebuild switch --flake .#nitipa1
+
+# Test build without activating
+nixos-rebuild build --flake .#nitipa1
+
+# Garbage collection
+sudo nix-collect-garbage -d
+nix-collect-garbage -d  # user store
+```
 
 ## Structure
 
@@ -14,106 +86,130 @@ Personal NixOS + Home Manager configuration using Nix Flakes.
 ├── flake.nix              # Main flake entry point
 ├── flake.lock             # Locked dependencies
 │
-├── hosts/                 # Per-machine NixOS configurations
-│   └── nixos/             # Default host (rename to your hostname)
-│       ├── default.nix
+├── hosts/                 # Per-machine configurations
+│   └── nitipa1/
+│       ├── default.nix    # Host-specific settings
 │       └── hardware-configuration.nix
 │
-├── system/                # NixOS system-level modules
-│   ├── default.nix        # Main system config
-│   ├── boot.nix           # Bootloader configuration
-│   ├── networking.nix     # Network settings
+├── system/                # NixOS system modules
+│   ├── default.nix        # Main config (locale, nix settings)
+│   ├── boot.nix           # Bootloader
+│   ├── networking.nix     # Network, SSH, firewall
 │   ├── users.nix          # User accounts
-│   ├── desktop.nix        # Desktop environment
-│   ├── audio.nix          # Audio (PipeWire)
-│   └── virtualisation.nix # Docker, Podman, VMs
+│   ├── desktop.nix        # XFCE, fonts, flatpak
+│   ├── audio.nix          # PipeWire, Bluetooth
+│   └── virtualisation.nix # Docker, Podman, libvirt
 │
 ├── home/                  # Home Manager configuration
-│   ├── default.nix        # Home entry point
+│   ├── default.nix        # Entry point
 │   └── modules/
-│       ├── shells/        # Fish, Bash configuration
+│       ├── shells/        # Fish (primary), Bash
 │       ├── editors/       # Neovim, Emacs
 │       ├── terminals/     # Kitty, Ghostty, Tmux
-│       ├── cli/           # CLI tools (git, fzf, etc.)
-│       ├── services/      # User services (syncthing)
-│       ├── scripts/       # Custom shell scripts
-│       └── fonts.nix      # Font configuration
+│       ├── cli/           # Git, fzf, starship, atuin, etc.
+│       ├── services/      # Syncthing, GPG agent
+│       ├── scripts/       # Custom scripts (extract, ydl, etc.)
+│       ├── browsers.nix   # Brave, Firefox, Zen, Chromium
+│       └── fonts.nix      # Fonts (nixpkgs + private)
 │
-├── fonts/                 # Private fonts (git submodule)
-└── files/                 # Static config files
-```
-
-## Quick Start
-
-### 1. Generate hardware configuration
-
-On your NixOS machine:
-
-```bash
-nixos-generate-config --show-hardware-config > hosts/nixos/hardware-configuration.nix
-```
-
-### 2. Update hostname
-
-Edit `hosts/nixos/default.nix` and `flake.nix` to match your hostname.
-
-### 3. Add fonts submodule (optional)
-
-```bash
-git submodule add <your-fonts-repo-url> fonts
-```
-
-### 4. Build and switch
-
-```bash
-# Build without activating (test)
-nixos-rebuild build --flake .#nixos
-
-# Build and activate
-sudo nixos-rebuild switch --flake .#nixos
-```
-
-## Commands
-
-```bash
-# Rebuild system
-sudo nixos-rebuild switch --flake .#nixos
-
-# Update flake inputs
-nix flake update
-
-# Update single input
-nix flake lock --update-input home-manager
-
-# Check flake
-nix flake check
-
-# Enter dev shell
-nix develop
-
-# Garbage collection
-sudo nix-collect-garbage -d
+├── pkgs/                  # Custom packages
+│   └── helium.nix         # Helium browser (disabled)
+│
+├── overlays/              # Nixpkgs overlays
+│
+└── fonts/                 # Private fonts (git submodule, fetched via flake input)
 ```
 
 ## Customization
 
-### Adding a new host
+### User Configuration
 
-1. Create `hosts/<hostname>/default.nix`
-2. Generate `hardware-configuration.nix` on the target machine
-3. Add to `flake.nix`:
+Edit `flake.nix`:
+```nix
+userConfig = {
+  username = "becker";
+  fullName = "Paul Becker";
+  email = "p@becker.kiwi";
+  editor = "nvim";
+  visual = "emacsclient -c -a emacs";
+  manpager = "less -R";
+};
+```
+
+### Adding a New Host
+
+1. Create host directory:
+   ```bash
+   mkdir -p hosts/<hostname>
+   ```
+
+2. Generate hardware config on target machine:
+   ```bash
+   nixos-generate-config --show-hardware-config > hosts/<hostname>/hardware-configuration.nix
+   ```
+
+3. Create `hosts/<hostname>/default.nix`:
+   ```nix
+   { config, pkgs, lib, ... }:
+   {
+     imports = [ ./hardware-configuration.nix ];
+     networking.hostName = "<hostname>";
+     system.stateVersion = "25.11";  # Set to your NixOS version
+   }
+   ```
+
+4. Add to `flake.nix`:
    ```nix
    nixosConfigurations.<hostname> = mkHost { hostname = "<hostname>"; };
    ```
 
-### User configuration
+### Private Fonts
 
-Edit `flake.nix` to update user details:
-```nix
-userConfig = {
-  username = "your-username";
-  fullName = "Your Name";
-  email = "your@email.com";
-  ...
-};
+Fonts are fetched from a private GitHub repo via SSH. To update:
+
+```bash
+# As regular user (has SSH keys)
+nix flake update private-fonts
+
+# Then rebuild
+sudo nixos-rebuild switch --flake .#nitipa1
+```
+
+Fonts are installed to `~/.local/share/fonts/private/`.
+
+## Flake Inputs
+
+| Input | Description |
+|-------|-------------|
+| nixpkgs | NixOS unstable |
+| home-manager | Home Manager |
+| emacs-overlay | Latest Emacs packages |
+| nur | Nix User Repository (Firefox extensions) |
+| zen-browser | Zen Browser (Firefox fork) |
+| private-fonts | Private fonts repository |
+
+## Troubleshooting
+
+### Permission denied fetching private repos
+
+Private repos (fonts) need SSH access. Run as your user first:
+```bash
+nix flake update private-fonts
+sudo nixos-rebuild switch --flake .#nitipa1
+```
+
+### Git permission errors
+
+If you see "insufficient permission for adding an object":
+```bash
+sudo chown -R $USER:users ~/nixos-config
+```
+
+### Dirty git tree warnings
+
+Commit or stash your changes:
+```bash
+git add -A && git commit -m "WIP"
+# or
+git stash
 ```
