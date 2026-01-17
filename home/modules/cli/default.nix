@@ -43,5 +43,8 @@
     gnused
     gawk
     gnumake
+
+    # Containers
+    distrobox
   ];
 }
