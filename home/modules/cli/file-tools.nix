@@ -59,10 +59,11 @@
     };
   };
 
-  # Zoxide - smarter cd
+  # Zoxide - smarter cd (replaces cd command)
   programs.zoxide = {
     enable = true;
     enableFishIntegration = true;
     enableBashIntegration = true;
+    options = [ "--cmd cd" ];
   };
 }

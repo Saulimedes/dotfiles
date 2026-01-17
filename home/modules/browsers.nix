@@ -1,17 +1,10 @@
 # Browser configuration
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
-  # Helium - Primary browser (Chromium-based, MV2 support)
-  # Extensions need to be installed manually in Helium
   home.packages = [
     pkgs.ungoogled-chromium
-
-    # Zen Browser (Firefox-based, privacy focused)
-    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.twilight
-
-    # Helium browser - uncomment when package is fixed
-    # pkgs.custom.helium
+    pkgs.tor-browser
   ];
 
   # Brave - Secondary browser (MV2 support, with managed extensions)
@@ -197,22 +190,16 @@
     };
   };
 
-  # Set Helium as default browser
+  # Set Brave as default browser
   xdg.mimeApps = {
     enable = true;
     defaultApplications = {
-      "text/html" = "helium.desktop";
-      "x-scheme-handler/http" = "helium.desktop";
-      "x-scheme-handler/https" = "helium.desktop";
-      "x-scheme-handler/about" = "helium.desktop";
-      "x-scheme-handler/unknown" = "helium.desktop";
+      "text/html" = "brave-browser.desktop";
+      "x-scheme-handler/http" = "brave-browser.desktop";
+      "x-scheme-handler/https" = "brave-browser.desktop";
+      "x-scheme-handler/about" = "brave-browser.desktop";
+      "x-scheme-handler/unknown" = "brave-browser.desktop";
     };
   };
 
-  # Ungoogled Chromium extensions (manual install):
-  # Install "ArkenfoxUC" or "chromium-web-store" helper first, then:
-  # - uBlock Origin: cjpalhdlnbpafiamejdnhcphjbkeiagm
-  # - Bitwarden: nngceckbapebfimnlniiiahkandclblb
-  # - FoxyProxy: gcknhkkoolaabfmlnjonogaaifnjlfnp
-  # - Floccus: fnaicdffflnofjppbagibeoednpnhbae
 }
