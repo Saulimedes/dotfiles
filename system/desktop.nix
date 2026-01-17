@@ -5,9 +5,11 @@
   # X11 / Wayland display server
   services.xserver = {
     enable = true;
+    # US layout with AltGr for German umlauts:
+    # AltGr + q/y/p/s = ä/ü/ö/ß (add Shift for uppercase)
     xkb = {
       layout = "us";
-      variant = "";
+      variant = "altgr-intl";
     };
   };
 
@@ -54,6 +56,12 @@
         emoji = [ "Noto Color Emoji" ];
       };
     };
+  };
+
+  # Printing support
+  services.printing = {
+    enable = true;
+    drivers = [ pkgs.hplip ];
   };
 
   # Flatpak support

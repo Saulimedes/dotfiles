@@ -51,15 +51,11 @@
       # Fish features
       set -U fish_features stderr-nocaret qmark-noglob ampersand-nobg-in-token
 
-      # Kubectl config aggregation
-      if type -q kubectl
-        if test -d ~/.kube
-          set -l configs (find ~/.kube -maxdepth 1 -type f -name '*.yaml' -o -name '*.yml' -o -name 'config' 2>/dev/null | tr '\n' ':' | sed 's/:$//')
-          if test -n "$configs"
-            set -gx KUBECONFIG $configs
-          end
-        end
-      end
+      # Abbreviations with cursor positioning (% = cursor position)
+      abbr --add kex --set-cursor 'kubectl exec -it % /bin/bash'
+      abbr --add kgw --set-cursor 'kubectl get pod % --watch'
+      abbr --add gc --set-cursor 'git commit -m "%"'
+      abbr --add "git c" --set-cursor 'git commit -m "%"'
     '';
 
     # Shell aliases
@@ -104,6 +100,10 @@
 
       # Kubernetes
       kwatch = "kubectl get po --all-namespaces";
+      kubectx = "kubie ctx";
+      kubens = "kubie ns";
+
+      # Git
       newtag = "git tag -a";
     };
 
@@ -117,8 +117,6 @@
       # Git
       g = "git";
       ga = "git add";
-      gb = "git brancher";
-      gc = "git commit -m";
       gdf = "git diff --name-only";
       gdc = "git diff --cached";
       gd = "git diff";

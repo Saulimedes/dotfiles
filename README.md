@@ -1,3 +1,15 @@
+![Build Status](https://github.com/Saulimedes/nixos-config/actions/workflows/nix.yml/badge.svg)
+![License: GPLv3](https://img.shields.io/badge/license-GPLv3-green.svg)
+![Saulimedes NixOS](https://img.shields.io/badge/saulimedes%20%20-nixos--config-blue?style=flat&logo=gnometerminal&logoColor=white.svg)
+![NixOS](https://img.shields.io/badge/distro-NixOS-5277C3?logo=nixos&logoColor=white)
+![Emacs](https://img.shields.io/badge/editor-emacs-7F5AB6?logo=gnuemacs&logoColor=white)
+![MonoLisa](https://img.shields.io/badge/font-MonoLisa-green)
+![fish](https://img.shields.io/badge/shell-fish-lightgreen?logo=fish&logoColor=white)
+
+<p align="center">
+  <img src="./.github/images/dotfile_image.png" alt="Banner" style="width:320px;"/>
+</p>
+
 # NixOS Configuration
 
 Personal NixOS + Home Manager configuration using Nix Flakes.
@@ -185,7 +197,6 @@ Fonts are installed to `~/.local/share/fonts/private/`.
 | home-manager | Home Manager |
 | emacs-overlay | Latest Emacs packages |
 | nur | Nix User Repository (Firefox extensions) |
-| zen-browser | Zen Browser (Firefox fork) |
 | private-fonts | Private fonts repository |
 
 ## Troubleshooting

@@ -9,7 +9,6 @@
     k9s
     kubie
     stern # Log tailing
-    kubectx # Context switching
   ];
 
   # K9s configuration

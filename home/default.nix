@@ -45,8 +45,18 @@
     userDirs = {
       enable = true;
       createDirectories = true;
+      extraConfig = {
+        XDG_PROJECTS_DIR = "${config.home.homeDirectory}/Projects";
+      };
     };
   };
+
+  # Create additional directories
+  systemd.user.tmpfiles.rules = [
+    "d %h/Projects 0755 - - -"
+    "d %h/Documents/org 0755 - - -"
+    "d %h/Pictures/tmp 0755 - - -"
+  ];
 
   # Cursor theme
   home.pointerCursor = {

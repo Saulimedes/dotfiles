@@ -22,12 +22,6 @@
     # Nix User Repository (for Firefox extensions, etc.)
     nur.url = "github:nix-community/NUR";
 
-    # Zen Browser (Firefox-based, privacy focused)
-    zen-browser = {
-      url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Private fonts repository
     # Fetch as user first: nix flake update private-fonts
     # Then sudo nixos-rebuild switch
