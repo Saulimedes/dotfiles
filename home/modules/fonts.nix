@@ -39,12 +39,13 @@
   ];
 
   # Private fonts from git submodule
-  # Uncomment after adding your fonts repo as submodule:
-  #   git submodule add <your-fonts-repo-url> fonts
-  # home.file.".local/share/fonts/private" = {
-  #   source = ../../fonts;
-  #   recursive = true;
-  # };
+  # Add submodule with: git submodule add <your-fonts-repo-url> fonts
+  home.file.".local/share/fonts/private" = {
+    source = ../../fonts;
+    recursive = true;
+    # onChange triggers fc-cache when fonts change
+    onChange = "${pkgs.fontconfig}/bin/fc-cache -f";
+  };
 
   # Enable fontconfig for user fonts
   fonts.fontconfig.enable = true;
