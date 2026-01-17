@@ -9,6 +9,7 @@
     ./modules/cli
     ./modules/services
     ./modules/scripts
+    ./modules/desktop
     ./modules/fonts.nix
     ./modules/browsers.nix
   ];
