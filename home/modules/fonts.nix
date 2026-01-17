@@ -1,5 +1,5 @@
 # Font configuration
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
   # Fonts from nixpkgs
@@ -38,10 +38,9 @@
     fontconfig
   ];
 
-  # Private fonts from git submodule
-  # Add submodule with: git submodule add <your-fonts-repo-url> fonts
+  # Private fonts from flake input
   home.file.".local/share/fonts/private" = {
-    source = ../../fonts;
+    source = inputs.private-fonts;
     recursive = true;
     # onChange triggers fc-cache when fonts change
     onChange = "${pkgs.fontconfig}/bin/fc-cache -f";
