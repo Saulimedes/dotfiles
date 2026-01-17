@@ -35,6 +35,9 @@
       url = "git+ssh://git@github.com/Saulimedes/fonts.git";
       flake = false;
     };
+
+    # XLibre (X.org community fork)
+    xlibre-overlay.url = "git+https://codeberg.org/takagemacoed/xlibre-overlay";
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs:
@@ -77,6 +80,9 @@
           }
           ./hosts/${hostname}
           ./system
+          # XLibre X server (replaces xorg.xorgserver)
+          inputs.xlibre-overlay.nixosModules.overlay-xlibre-xserver
+          inputs.xlibre-overlay.nixosModules.overlay-all-xlibre-drivers
           home-manager.nixosModules.home-manager
           {
             home-manager = {
