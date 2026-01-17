@@ -175,6 +175,17 @@
       fish_command_not_found = ''
         echo "fish: Unknown command: $argv[1]" >&2
       '';
+
+      # Toggle starship time display
+      prompt_time = ''
+        if set -q STARSHIP_CONFIG
+          set -e STARSHIP_CONFIG
+          echo "Time display: OFF"
+        else
+          set -gx STARSHIP_CONFIG ~/.config/starship-time.toml
+          echo "Time display: ON"
+        end
+      '';
     };
   };
 }
