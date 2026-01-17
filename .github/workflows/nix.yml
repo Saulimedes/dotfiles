@@ -31,14 +31,17 @@ jobs:
             experimental-features = nix-command flakes
             accept-flake-config = true
 
+      - name: Create dummy fonts directory for CI
+        run: mkdir -p .ci-fonts
+
       - name: Check flake
-        run: nix flake check --no-build
+        run: nix flake check --no-build --override-input private-fonts path:./.ci-fonts
 
       - name: Check flake metadata
-        run: nix flake metadata
+        run: nix flake metadata --override-input private-fonts path:./.ci-fonts
 
       - name: Show flake outputs
-        run: nix flake show
+        run: nix flake show --override-input private-fonts path:./.ci-fonts
 
   build:
     name: Build NixOS Configuration
@@ -63,14 +66,16 @@ jobs:
           sudo rm -rf /opt/ghc
           df -h
 
+      - name: Create dummy fonts directory for CI
+        run: mkdir -p .ci-fonts
+
       - name: Build NixOS configuration (dry-run)
         run: |
-          nix build .#nixosConfigurations.nitipa1.config.system.build.toplevel --dry-run
+          nix build .#nixosConfigurations.nitipa1.config.system.build.toplevel --dry-run --override-input private-fonts path:./.ci-fonts
 
       - name: Evaluate NixOS configuration
         run: |
-          nix eval .#nixosConfigurations.nitipa1.config.system.build.toplevel --raw 2>/dev/null || \
-          nix eval .#nixosConfigurations.nitipa1.config.system.build.toplevel.outPath
+          nix eval .#nixosConfigurations.nitipa1.config.system.build.toplevel.outPath --override-input private-fonts path:./.ci-fonts
 
   lint:
     name: Lint Nix Files
