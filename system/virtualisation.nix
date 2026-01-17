@@ -2,20 +2,16 @@
 { config, pkgs, lib, userConfig, ... }:
 
 {
-  # Docker
-  virtualisation.docker = {
+  # Podman (rootless containers)
+  virtualisation.podman = {
     enable = true;
+    dockerCompat = true;  # Provides 'docker' command alias
+    dockerSocket.enable = true;  # Provides /var/run/docker.sock compatibility
+    defaultNetwork.settings.dns_enabled = true;
     autoPrune = {
       enable = true;
       dates = "weekly";
     };
-  };
-
-  # Podman (alternative to Docker)
-  virtualisation.podman = {
-    enable = true;
-    dockerCompat = false; # Set to true if you want podman to act as docker
-    defaultNetwork.settings.dns_enabled = true;
   };
 
   # Libvirt for VMs
