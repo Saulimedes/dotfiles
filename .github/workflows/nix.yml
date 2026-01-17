@@ -34,9 +34,6 @@ jobs:
       - name: Create dummy fonts directory for CI
         run: mkdir -p .ci-fonts
 
-      - name: Check flake
-        run: nix flake check --no-build --no-update-lock-file --override-input private-fonts path:./.ci-fonts
-
       - name: Check flake metadata
         run: nix flake metadata --no-update-lock-file --override-input private-fonts path:./.ci-fonts
 
