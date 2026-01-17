@@ -1,6 +1,0 @@
-# Placeholder for fonts git submodule
-# Add your private fonts repo as a submodule:
-#   git submodule add <your-fonts-repo-url> fonts
-#
-# This directory will contain your private fonts (Berkeley Mono, etc.)
-# that get installed to ~/.local/share/fonts/private
