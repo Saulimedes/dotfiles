@@ -29,6 +29,8 @@
     };
 
     # Private fonts repository
+    # Fetch as user first: nix flake update private-fonts
+    # Then sudo nixos-rebuild switch
     private-fonts = {
       url = "git+ssh://git@github.com/Saulimedes/fonts.git";
       flake = false;
