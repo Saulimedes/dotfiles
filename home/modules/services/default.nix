@@ -42,7 +42,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;  # Handles SSH keys - no need for fish-ssh-agent
-    pinentry.package = pkgs.pinentry-gnome3;
+    pinentry.package = pkgs.pinentry-emacs;  # Integrates with Emacs, falls back to curses
     defaultCacheTtl = 3600;
     maxCacheTtl = 86400;
   };
