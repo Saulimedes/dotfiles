@@ -12,6 +12,7 @@
     ./kubernetes.nix
     ./development.nix
     ./misc.nix
+    ./btop.nix
   ];
 
   # Common CLI packages without specific configuration

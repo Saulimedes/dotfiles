@@ -19,6 +19,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Stylix for consistent theming
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Nix User Repository (for Firefox extensions, etc.)
     nur.url = "github:nix-community/NUR";
 
@@ -59,10 +65,18 @@
       };
 
       # Helper function for creating NixOS configurations
-      mkHost = { hostname, extraModules ? [ ] }: nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = { inherit inputs userConfig; };
-        modules = [
+      mkHost = { hostname, enableWork ? false, theme ? "nord-dark", extraModules ? [ ] }:
+        let
+          hostConfig = {
+            inherit hostname enableWork theme;
+          };
+          # Map theme name to profile path
+          themeModule = ./home/modules/profiles/themes/${theme}.nix;
+        in
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs userConfig hostConfig; };
+          modules = [
           # Apply overlays to nixpkgs
           {
             nixpkgs.overlays = [
@@ -74,9 +88,13 @@
           }
           ./hosts/${hostname}
           ./system
+          # Per-host theme (colors, cursor, polarity)
+          themeModule
           # XLibre X server (replaces xorg.xorgserver)
           inputs.xlibre-overlay.nixosModules.overlay-xlibre-xserver
           inputs.xlibre-overlay.nixosModules.overlay-all-xlibre-drivers
+          # Stylix theming
+          inputs.stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
@@ -84,7 +102,7 @@
               useUserPackages = true;
               backupFileExtension = "backup";
               users.${userConfig.username} = import ./home;
-              extraSpecialArgs = { inherit inputs userConfig; };
+              extraSpecialArgs = { inherit inputs userConfig hostConfig; };
             };
           }
         ] ++ extraModules;
@@ -93,7 +111,17 @@
     in
     {
       nixosConfigurations = {
-        nitipa1 = mkHost { hostname = "nitipa1"; };
+        # Each host can have a different theme
+        nitipa1 = mkHost {
+          hostname = "nitipa1";
+          theme = "nord-dark";  # Options: nord-dark, catppuccin-mocha, gruvbox-dark
+        };
+        # Example: another machine with different theme
+        # workstation = mkHost {
+        #   hostname = "workstation";
+        #   theme = "catppuccin-mocha";
+        #   enableWork = true;
+        # };
       };
 
       # Development shell for working with this flake

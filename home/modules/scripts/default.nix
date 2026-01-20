@@ -132,6 +132,29 @@ let
     ${pkgs.yt-dlp}/bin/yt-dlp --write-subs --sub-lang en "$VIDEO"
   '';
 
+  # Distrobox Ubuntu helper - creates and enters an Ubuntu container
+  ubuntuBoxScript = mkScript "ubuntu-box" ''
+    CONTAINER_NAME="ubuntu"
+    IMAGE="ubuntu:latest"
+
+    # Check if container exists
+    if ! ${pkgs.distrobox}/bin/distrobox list | grep -q "^$CONTAINER_NAME "; then
+      echo "Creating Ubuntu distrobox container..."
+      ${pkgs.distrobox}/bin/distrobox create \
+        --name "$CONTAINER_NAME" \
+        --image "$IMAGE" \
+        --additional-packages "fish curl git build-essential tmux ripgrep fd-find" \
+        --init-hooks "chsh -s /usr/bin/fish \$(whoami) && \
+          ln -sf /usr/bin/fdfind /usr/local/bin/fd && \
+          curl -fsSL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash && \
+          curl -fsSL https://setup.atuin.sh | bash" \
+        --yes
+    fi
+
+    # Enter the container with fish shell
+    ${pkgs.distrobox}/bin/distrobox enter "$CONTAINER_NAME" -- fish
+  '';
+
 in
 {
   home.packages = [
@@ -148,5 +171,8 @@ in
     ydlScript
     ydaScript
     ydlwScript
+    # Distrobox
+    pkgs.distrobox
+    ubuntuBoxScript
   ];
 }

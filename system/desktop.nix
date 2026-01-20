@@ -67,6 +67,13 @@
   # Flatpak support
   services.flatpak.enable = true;
 
+  # Qt theming (integrates with Stylix)
+  qt = {
+    enable = true;
+    platformTheme = "qtct";
+    style = "kvantum";
+  };
+
   # GNOME keyring for credential storage
   services.gnome.gnome-keyring.enable = true;
 

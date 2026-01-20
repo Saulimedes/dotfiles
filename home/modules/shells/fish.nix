@@ -41,12 +41,8 @@
       # Disable greeting
       set fish_greeting ""
 
-      # Enable vi mode (replaces vfish plugin)
-      fish_vi_key_bindings
-
-      # Restore Ctrl+A/Ctrl+E in vi insert mode
-      bind -M insert \ca beginning-of-line
-      bind -M insert \ce end-of-line
+      # Use emacs keybindings (default)
+      fish_default_key_bindings
 
       # Fish features
       set -U fish_features stderr-nocaret qmark-noglob ampersand-nobg-in-token
@@ -65,7 +61,6 @@
 
       # File operations
       cp = "cp -airv";
-      scp = "scp -r";
       cat = "bat";
       dd = "dd status=progress";
       mkdir = "mkdir -p";
@@ -111,6 +106,7 @@
     shellAbbrs = {
       # System
       s = "sudo";
+      scp = "rsync -av --progress";
       se = "sudo edit";
       sy = "sudo systemctl";
 
