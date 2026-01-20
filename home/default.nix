@@ -12,6 +12,7 @@
     ./modules/desktop
     ./modules/fonts.nix
     ./modules/browsers.nix
+    ./modules/profiles
   ];
 
   # Home Manager state version
@@ -58,24 +59,5 @@
     "d %h/Pictures/tmp 0755 - - -"
   ];
 
-  # Cursor theme
-  home.pointerCursor = {
-    gtk.enable = true;
-    package = pkgs.adwaita-icon-theme;
-    name = "Adwaita";
-    size = 24;
-  };
-
-  # GTK theming
-  gtk = {
-    enable = true;
-    theme = {
-      name = "Adwaita-dark";
-      package = pkgs.gnome-themes-extra;
-    };
-    iconTheme = {
-      name = "Adwaita";
-      package = pkgs.adwaita-icon-theme;
-    };
-  };
+  # GTK/cursor theming is handled by Stylix (see system/theme.nix)
 }

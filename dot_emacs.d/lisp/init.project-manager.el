@@ -118,10 +118,7 @@
     
     (message "Project created in %s" dir))
   
-  ;; Integrate with direnv for project-specific environments
-  (use-package direnv
-    :config
-    (direnv-mode))
+  ;; Direnv integration is handled separately in envrc section below
   
   ;; Create project command menu
   (defun projectile-project-command-menu ()
@@ -248,50 +245,147 @@
          (dir (completing-read "Project directory: " dirs)))
     (dired (expand-file-name dir root))))
 
-;; Integration with Evil mode
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    ;; Project navigation and management
-    (kbd "<leader>p") '(:ignore t :which-key "project")
-    (kbd "<leader>pf") 'projectile-find-file
-    (kbd "<leader>pd") 'projectile-find-project-dir
-    (kbd "<leader>pb") 'projectile-switch-to-buffer
-    (kbd "<leader>pp") 'projectile-switch-project
-    (kbd "<leader>pk") 'projectile-kill-buffers
-    
-    ;; Project commands
-    (kbd "<leader>pc") '(:ignore t :which-key "commands")
-    (kbd "<leader>pcc") 'projectile-compile-project
-    (kbd "<leader>pct") 'projectile-test-project
-    (kbd "<leader>pcr") 'projectile-run-project
-    (kbd "<leader>pcm") 'projectile-project-command-menu
-    
-    ;; Project org integration
-    (kbd "<leader>po") '(:ignore t :which-key "org")
-    (kbd "<leader>pof") 'projectile-open-project-org-file
-    (kbd "<leader>pon") 'projectile-create-project-note
-    (kbd "<leader>poa") 'projectile-project-agenda
-    (kbd "<leader>pot") 'org-capture) ; Will use "p" template for project tasks
-    
-    ;; Project configuration
-    (kbd "<leader>pv") 'project-edit-variables
-    (kbd "<leader>pn") 'projectile-create-project)
-  
-  ;; Update which-key descriptions
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC p" "project")
-    (which-key-add-key-based-replacements "SPC pc" "commands")
-    (which-key-add-key-based-replacements "SPC po" "org")))
-
-;; Direnv for automatic environment setup per project
-(use-package direnv
-  :config
-  (direnv-mode))
-
-;; Per-project envrc files
+;; ============================================================
+;; Direnv + Nix integration
+;; ============================================================
+;; envrc is preferred over direnv.el for better integration
 (use-package envrc
+  :diminish envrc-mode
+  :init
+  (setq envrc-show-summary-in-minibuffer t)
   :config
-  (envrc-global-mode))
+  (envrc-global-mode)
+  ;; Keybindings for envrc management
+  :bind-keymap ("C-c E" . envrc-command-map))
+
+;; ============================================================
+;; Nix-mode enhancements for project development
+;; ============================================================
+(use-package nix-mode
+  :mode "\\.nix\\'"
+  :hook (nix-mode . (lambda ()
+                      ;; Use nixd for LSP
+                      (when (fboundp 'eglot-ensure)
+                        (eglot-ensure))))
+  :config
+  ;; Nix formatting with nixfmt
+  (setq nix-nixfmt-bin "nixfmt"))
+
+;; ============================================================
+;; Nix project templates for .envrc
+;; ============================================================
+(defvar my/nix-envrc-templates
+  '(("flake" . "use flake")
+    ("flake-impure" . "use flake --impure")
+    ("nix-shell" . "use nix")
+    ("devenv" . "eval \"$(devenv shell-bash 2>/dev/null)\"")
+    ("lorri" . "eval \"$(lorri direnv)\""))
+  "Templates for .envrc files in Nix projects.")
+
+(defun my/create-project-envrc ()
+  "Create or update .envrc file for current project with Nix integration."
+  (interactive)
+  (let* ((root (or (projectile-project-root) (project-root (project-current t))))
+         (envrc-path (expand-file-name ".envrc" root))
+         (has-flake (file-exists-p (expand-file-name "flake.nix" root)))
+         (has-shell-nix (file-exists-p (expand-file-name "shell.nix" root)))
+         (has-default-nix (file-exists-p (expand-file-name "default.nix" root)))
+         (template-names (mapcar #'car my/nix-envrc-templates))
+         (recommended (cond
+                       (has-flake "flake")
+                       ((or has-shell-nix has-default-nix) "nix-shell")
+                       (t "flake")))
+         (choice (completing-read
+                  (format "Envrc template (recommended: %s): " recommended)
+                  template-names nil t nil nil recommended))
+         (template (cdr (assoc choice my/nix-envrc-templates))))
+    (with-temp-file envrc-path
+      (insert "# Auto-generated .envrc for Nix project\n")
+      (insert (format "# Template: %s\n\n" choice))
+      (insert template)
+      (insert "\n"))
+    (message "Created %s with template: %s" envrc-path choice)
+    ;; Reload envrc
+    (when (fboundp 'envrc-reload)
+      (envrc-reload))))
+
+;; ============================================================
+;; Project creation with Nix support
+;; ============================================================
+(defvar my/nix-flake-template
+  "
+{
+  description = \"%s - A Nix flake project\";
+
+  inputs = {
+    nixpkgs.url = \"github:NixOS/nixpkgs/nixos-unstable\";
+    flake-utils.url = \"github:numtide/flake-utils\";
+  };
+
+  outputs = { self, nixpkgs, flake-utils }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          buildInputs = with pkgs; [
+            # Add your development dependencies here
+          ];
+
+          shellHook = ''
+            echo \"Entering %s development environment\"
+          '';
+        };
+      });
+}
+"
+  "Template for flake.nix files.")
+
+(defun my/create-nix-project (dir)
+  "Create a new Nix-based project in DIR with flake and envrc."
+  (interactive "DCreate Nix project in: ")
+  (unless (file-exists-p dir)
+    (make-directory dir t))
+  (let* ((name (file-name-nondirectory (directory-file-name dir)))
+         (flake-path (expand-file-name "flake.nix" dir))
+         (envrc-path (expand-file-name ".envrc" dir))
+         (gitignore-path (expand-file-name ".gitignore" dir)))
+    ;; Create flake.nix
+    (unless (file-exists-p flake-path)
+      (with-temp-file flake-path
+        (insert (format my/nix-flake-template name name))))
+    ;; Create .envrc
+    (unless (file-exists-p envrc-path)
+      (with-temp-file envrc-path
+        (insert "use flake\n")))
+    ;; Create .gitignore
+    (unless (file-exists-p gitignore-path)
+      (with-temp-file gitignore-path
+        (insert "# Nix\n")
+        (insert "result\n")
+        (insert "result-*\n")
+        (insert "\n# direnv\n")
+        (insert ".direnv/\n")))
+    ;; Initialize git if not already
+    (let ((default-directory dir))
+      (unless (file-exists-p (expand-file-name ".git" dir))
+        (shell-command "git init")))
+    ;; Add to projectile
+    (when (fboundp 'projectile-add-known-project)
+      (projectile-add-known-project dir))
+    (message "Created Nix project in %s" dir)
+    (find-file flake-path)))
+
+;; Add to project command menu
+(with-eval-after-load 'projectile
+  (defun projectile-create-envrc ()
+    "Create .envrc for current project."
+    (interactive)
+    (my/create-project-envrc))
+
+  ;; Bind to projectile map
+  (define-key projectile-command-map (kbd "E") 'projectile-create-envrc))
 
 ;; Persist project-specific variables
 (defun save-project-variables ()

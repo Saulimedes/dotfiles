@@ -9,6 +9,7 @@
     ./desktop.nix
     ./audio.nix
     ./virtualisation.nix
+    ./theme.nix
   ];
 
   # Nix settings

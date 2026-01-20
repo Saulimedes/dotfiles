@@ -6,6 +6,7 @@
     enable = true;
     enableFishIntegration = true;
     enableBashIntegration = true;
+    flags = [ "--disable-up-arrow" ];  # Up arrow = normal history, Ctrl+R = atuin
 
     settings = {
       search_mode = "skim";

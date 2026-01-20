@@ -2,7 +2,8 @@
 (use-package f)
 (use-package org
   :hook ((org-mode . org-indent-mode)
-         (org-mode . visual-line-mode))
+         (org-mode . visual-line-mode)
+         (org-mode . flyspell-mode))
   :custom
   (org-directory "~/Documents/org")
   (org-default-notes-file (concat org-directory "/notes.org"))
@@ -92,16 +93,13 @@
                  :scheduled future)))
   (org-super-agenda-mode))
 
-;; Add org-mode Evil key bindings
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    (kbd "<leader>oa") 'org-agenda
-    (kbd "<leader>oc") 'org-capture
-    (kbd "<leader>ol") 'org-store-link
-    (kbd "<leader>ob") 'org-switchb)
-  
-  ;; Update which-key descriptions for project commands
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC o" "org")))
+;; Org-mode keybindings (Meow compatible)
+(global-set-key (kbd "C-c o a") 'org-agenda)
+(global-set-key (kbd "C-c o c") 'org-capture)
+(global-set-key (kbd "C-c o l") 'org-store-link)
+(global-set-key (kbd "C-c o b") 'org-switchb)
+
+;; Flyspell for prose (comments in prog-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 (provide 'init.org)
