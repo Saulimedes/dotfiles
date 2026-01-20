@@ -1,18 +1,21 @@
 return {
   -- UI and Appearance
+  -- Colorscheme managed by Stylix (base16)
   {
-    'shaunsingh/nord.nvim',
+    'RRethy/nvim-base16',
     priority = 1000,
     config = function()
-      vim.g.nord_contrast = true
-      vim.g.nord_borders = false
-      vim.g.nord_disable_background = true
-      vim.g.nord_italic = false
-      vim.g.nord_uniform_diff_background = true
-      vim.g.nord_bold = false
+      -- Load Stylix-generated colorscheme if available
+      local stylix_theme = vim.fn.expand("~/.config/nvim/colors/base16-stylix.lua")
+      if vim.fn.filereadable(stylix_theme) == 1 then
+        vim.cmd("colorscheme base16-stylix")
+      else
+        -- Fallback to nord-inspired base16 if Stylix not available
+        vim.cmd("colorscheme base16-nord")
+      end
 
+      -- Transparent background
       vim.cmd([[
-        colorscheme nord
         highlight Normal guibg=NONE ctermbg=NONE
         highlight NormalFloat guibg=NONE ctermbg=NONE
       ]])

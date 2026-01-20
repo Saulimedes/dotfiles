@@ -37,7 +37,20 @@
                '((python-mode python-ts-mode) . ("pyright-langserver" "--stdio")))
   
   (add-to-list 'eglot-server-programs
-               '((rust-mode rust-ts-mode) . ("rust-analyzer"))))
+               '((rust-mode rust-ts-mode) . ("rust-analyzer")))
+
+  ;; Nix language server
+  (add-to-list 'eglot-server-programs
+               '(nix-mode . ("nixd")))
+
+  ;; Bash/Shell language server
+  (add-to-list 'eglot-server-programs
+               '((sh-mode bash-ts-mode) . ("bash-language-server" "start"))))
+
+;; Nix mode
+(use-package nix-mode
+  :mode "\\.nix\\'"
+  :hook (nix-mode . eglot-ensure))
 
 ;; Enhanced error checking
 (use-package flymake

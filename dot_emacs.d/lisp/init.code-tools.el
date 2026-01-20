@@ -73,35 +73,19 @@
   (("M-<up>" . move-text-up)
    ("M-<down>" . move-text-down)))
 
-;; Integration with evil mode
-(with-eval-after-load 'evil
-  ;; Define evil mode keybindings for code tools
-  (evil-define-key 'normal 'global
-    ;; Code folding with origami
-    (kbd "<leader>zf") 'origami-close-node
-    (kbd "<leader>zo") 'origami-open-node
-    (kbd "<leader>zr") 'origami-open-all-nodes
-    (kbd "<leader>zm") 'origami-close-all-nodes
-    (kbd "<leader>zt") 'origami-toggle-node
-    
-    ;; Code navigation
-    (kbd "<leader>cd") 'xref-find-definitions
-    (kbd "<leader>cr") 'xref-find-references
-    (kbd "<leader>ci") 'imenu-list-smart-toggle
-    
-    ;; Code editing
-    (kbd "<leader>ce") 'iedit-mode
-    (kbd "<leader>cf") 'format-all-buffer
-    
-    ;; Code evaluation - using "x" prefix for execute/eval
-    (kbd "<leader>xe") 'eval-last-sexp
-    (kbd "<leader>xb") 'eval-buffer
-    (kbd "<leader>xf") 'eval-defun)
-  
-  ;; Update which-key descriptions
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC z" "folding")
-    (which-key-add-key-based-replacements "SPC c" "code")
-    (which-key-add-key-based-replacements "SPC e" "eval")))
+;; Keybindings for code tools (Meow compatible)
+(global-set-key (kbd "C-c z f") 'origami-close-node)
+(global-set-key (kbd "C-c z o") 'origami-open-node)
+(global-set-key (kbd "C-c z r") 'origami-open-all-nodes)
+(global-set-key (kbd "C-c z m") 'origami-close-all-nodes)
+(global-set-key (kbd "C-c z t") 'origami-toggle-node)
+(global-set-key (kbd "C-c c d") 'xref-find-definitions)
+(global-set-key (kbd "C-c c r") 'xref-find-references)
+(global-set-key (kbd "C-c c i") 'imenu-list-smart-toggle)
+(global-set-key (kbd "C-c c e") 'iedit-mode)
+(global-set-key (kbd "C-c c f") 'format-all-buffer)
+(global-set-key (kbd "C-c x e") 'eval-last-sexp)
+(global-set-key (kbd "C-c x b") 'eval-buffer)
+(global-set-key (kbd "C-c x f") 'eval-defun)
 
 (provide 'init.code-tools)

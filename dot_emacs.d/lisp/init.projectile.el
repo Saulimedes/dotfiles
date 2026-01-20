@@ -32,18 +32,4 @@
   (setq treemacs-position 'left
         treemacs-width 35))
 
-;; Add project management keybindings to Evil
-(with-eval-after-load 'evil
-  (evil-define-key 'normal 'global
-    (kbd "<leader>pp") 'projectile-switch-project
-    (kbd "<leader>pf") 'projectile-find-file
-    (kbd "<leader>pb") 'projectile-switch-to-buffer
-    (kbd "<leader>pd") 'projectile-find-dir
-    (kbd "<leader>ps") 'projectile-ripgrep
-    (kbd "<leader>pt") 'treemacs-projectile)
-  
-  ;; Update which-key descriptions for project commands
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC p" "project")))
-
 (provide 'init.projectile)

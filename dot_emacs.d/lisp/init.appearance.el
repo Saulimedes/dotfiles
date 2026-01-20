@@ -29,62 +29,65 @@
 (setq-default line-spacing 1)
 (setq auto-composition-mode nil)
 
-;; Nano Themes - Elegant and minimal themes
-(use-package nano-theme
-  :config
-  (load-theme 'nano-dark t))
-
-;; Alternative theme fallbacks
+;; Modus Themes - highly accessible, customizable themes (built into Emacs 28+)
 (use-package modus-themes
-  :defer t
+  :ensure nil
+  :demand t
   :init
-  ;; Configure modus-vivendi colors for true black background
-  (setq modus-themes-mode-line '(accented borderless)
-        modus-themes-bold-constructs t
+  ;; Configure before loading
+  (setq modus-themes-bold-constructs t
         modus-themes-italic-constructs t
-        modus-themes-fringes 'subtle
-        modus-themes-tabs-accented t
-        modus-themes-paren-match '(bold intense)
-        modus-themes-prompts '(bold intense)
-        ;; Updated completions setting format
+        modus-themes-mixed-fonts t
+        modus-themes-prompts '(bold)
         modus-themes-completions '((matches . (extrabold))
-                                  (selection . (semibold accented))
-                                  (popup . (accented)))
-        modus-themes-org-blocks 'greyscale
-        modus-themes-scale-headings t
-        modus-themes-region '(bg-only)
-        ;; Make background pure black instead of dark grey
-        modus-themes-common-palette-overrides
+                                   (selection . (semibold accented))
+                                   (popup . (accented)))
+        modus-themes-org-blocks 'gray-background
+        modus-themes-headings '((1 . (rainbow overline 1.4))
+                                (2 . (rainbow 1.3))
+                                (3 . (rainbow 1.2))
+                                (t . (rainbow 1.1))))
+
+  ;; Pitch black background overrides
+  (setq modus-vivendi-palette-overrides
         '((bg-main "#000000")
-          (bg-dim "#050505")
-          (bg-alt "#121212"))))
+          (bg-dim "#0a0a0a")
+          (bg-alt "#111111")
+          (bg-active "#222222")
+          (bg-inactive "#080808")
+          ;; Slightly warmer comments
+          (comment fg-dim)
+          ;; More vibrant strings
+          (string green-cooler)))
+  :config
+  (load-theme 'modus-vivendi t))
 
-(use-package catppuccin-theme
-  :defer t)
+;; Alternative themes (deferred)
+(use-package nano-theme :defer t)
 
-(use-package ef-themes
-  :defer t)
+(use-package catppuccin-theme :defer t)
+(use-package ef-themes :defer t)
 
-;; Function to cycle between my favorite themes
+;; Quick toggle between light/dark modus
+(defun my/modus-toggle ()
+  "Toggle between modus-vivendi (dark) and modus-operandi (light)."
+  (interactive)
+  (modus-themes-toggle))
+
+;; Cycle between favorite themes
 (defun my/cycle-theme ()
   "Cycle between favorite themes."
   (interactive)
-  (let ((themes '(nano-dark nano-light catppuccin-mocha ef-dark modus-vivendi))
-        (current-theme (car custom-enabled-themes))
-        (next-theme nil))
-    (if (not current-theme)
-        (load-theme (car themes) t)
-      (setq next-theme
-            (or (cadr (member current-theme themes))
-                (car themes)))
-      (mapc #'disable-theme custom-enabled-themes)
-      (load-theme next-theme t)
-      ;; Special handling for nano themes
-      (when (string-match "nano-" (symbol-name next-theme))
-        (if (eq next-theme 'nano-dark)
-            (nano-dark)
-          (nano-light))))
-    (message "Loaded theme: %s" (car custom-enabled-themes))))
+  (let* ((themes '(modus-vivendi modus-operandi ef-dark ef-light catppuccin-mocha))
+         (current-theme (car custom-enabled-themes))
+         (next-theme (or (cadr (member current-theme themes))
+                         (car themes))))
+    (mapc #'disable-theme custom-enabled-themes)
+    (load-theme next-theme t)
+    (message "Theme: %s" next-theme)))
+
+(global-set-key (kbd "<f5>") #'my/modus-toggle)
+(global-set-key (kbd "<f6>") #'my/cycle-theme)
 
 ;; Highlight matching parentheses with better color
 (use-package paren
@@ -99,7 +102,7 @@
   :ensure nil
   :hook (after-init . global-hl-line-mode))
 
-;; pulsar - enhanced visual feedback
+;; pulsar - pulse line on jump (highlights whole line)
 (use-package pulsar
   :init
   (setq pulsar-pulse t
@@ -108,6 +111,24 @@
         pulsar-face 'pulsar-cyan)
   :config
   (pulsar-global-mode 1))
+
+;; beacon - cursor trail effect (like shell cursor trail)
+(use-package beacon
+  :diminish beacon-mode
+  :init
+  (setq beacon-size 40              ; Size of the beacon
+        beacon-color "#5e81ac"      ; Nord-ish blue, change to your theme
+        beacon-blink-duration 0.3   ; How long the trail lasts
+        beacon-blink-delay 0.1      ; Delay before blinking
+        beacon-blink-when-window-scrolls t
+        beacon-blink-when-window-changes t
+        beacon-blink-when-point-moves-vertically 3) ; Only on big jumps (3+ lines)
+  :config
+  (beacon-mode 1)
+  ;; Don't beacon in these modes
+  (add-to-list 'beacon-dont-blink-major-modes 'vterm-mode)
+  (add-to-list 'beacon-dont-blink-major-modes 'eshell-mode)
+  (add-to-list 'beacon-dont-blink-major-modes 'term-mode))
 
 ;; line numbers with better performance
 (use-package display-line-numbers
@@ -124,113 +145,67 @@
   (highlight-indent-guides-responsive 'top)
   (highlight-indent-guides-delay 0.1))
 
-;; Custom modeline with git branch and blame information
-(use-package mood-line
+;; ============================================================
+;; Doom Modeline - modern, polished modeline (VSCode-like)
+;; ============================================================
+(use-package doom-modeline
+  :init
+  (setq doom-modeline-height 28
+        doom-modeline-bar-width 4
+        doom-modeline-hud nil
+        doom-modeline-window-width-limit 85
+        doom-modeline-project-detection 'auto
+        doom-modeline-buffer-file-name-style 'truncate-upto-project
+        doom-modeline-icon t
+        doom-modeline-major-mode-icon t
+        doom-modeline-major-mode-color-icon t
+        doom-modeline-buffer-state-icon t
+        doom-modeline-buffer-modification-icon t
+        doom-modeline-lsp-icon t
+        doom-modeline-time nil
+        doom-modeline-battery nil
+        doom-modeline-env-version t
+        doom-modeline-vcs-max-length 20
+        doom-modeline-persp-name nil
+        doom-modeline-modal t
+        doom-modeline-modal-icon t
+        doom-modeline-modal-modern-icon t)
   :config
-  ;; Add git branch indicator to mood-line
-  (defvar-local my/git-current-branch nil)
-  (defvar-local my/git-last-blame-info nil)
-  
-  ;; Update git branch info
-  (defun my/update-git-branch-info ()
-    "Update the git branch information for the current buffer."
-    (when (and buffer-file-name
-               (file-exists-p buffer-file-name)
-               (not (file-remote-p buffer-file-name)))
-      (let* ((branch (magit-get-current-branch))
-             (default-branch (or (magit-get "init.defaultBranch") "main")))
-        (setq my/git-current-branch 
-              (if (and branch (not (string= branch default-branch)) (not (string= branch "master")))
-                  (format " ⎇ %s" branch)
-                nil)))))
-  
-  ;; Update git blame for current line
-  (defun my/update-git-blame-info ()
-    "Update git blame info for current line."
-    (when (and buffer-file-name
-               (file-exists-p buffer-file-name)
-               (not (file-remote-p buffer-file-name))
-               (vc-git-root buffer-file-name))
-      (let* ((line-number (line-number-at-pos (point)))
-             (file-name (buffer-file-name))
-             (git-cmd (format "git blame -L %d,%d --porcelain %s" 
-                              line-number line-number file-name))
-             (git-output (with-temp-buffer
-                           (call-process-shell-command git-cmd nil t nil)
-                           (buffer-string))))
-        (if (string-match "^\\([^ ]+\\) \\([^(]*\\)(\\(.*\\)) \\([0-9]+\\) \\([0-9]+\\).*\n.*\nsummary \\(.*\\)" git-output)
-            (let ((commit-hash (match-string 1 git-output))
-                  (author (match-string 3 git-output))
-                  (timestamp (match-string 2 git-output))
-                  (summary (match-string 6 git-output)))
-              (when (not (string= commit-hash "0000000000000000000000000000000000000000"))
-                (setq my/git-last-blame-info
-                      (format " ✎ %s: %s" author (truncate-string-to-width summary 25 nil nil "...")))))
-          (setq my/git-last-blame-info nil)))))
-  
-  ;; Add git info segment to mood-line
-  (defun my/mood-line-segment-git-info ()
-    "Display git branch and blame info in the modeline."
-    (let ((branch my/git-current-branch)
-          (blame my/git-last-blame-info))
-      (when (or branch blame)
-        (concat
-         (if branch branch "")
-         (if blame blame "")))))
-  
-  ;; Add idle timer to update blame info
-  (defvar my/git-blame-timer nil)
-  (defun my/setup-git-blame-timer ()
-    "Set up timer to update git blame info."
-    (when my/git-blame-timer
-      (cancel-timer my/git-blame-timer))
-    (setq my/git-blame-timer
-          (run-with-idle-timer 0.5 t #'my/update-git-blame-info)))
-  
-  ;; Add hooks to update git info
-  (add-hook 'find-file-hook #'my/update-git-branch-info)
-  (add-hook 'after-save-hook #'my/update-git-branch-info)
-  (add-hook 'magit-refresh-buffer-hook #'my/update-git-branch-info)
-  (add-hook 'find-file-hook #'my/setup-git-blame-timer)
-  
-  ;; Customize mood-line-segments-left and mood-line-segments-right to include the git info
-  ;; Redefine mood-line functions to include our git info
-  (defun mood-line--update-segment-forms ()
-    "Update the segment forms based on the segment functions."
-    (setq mood-line--segment-forms
-          (list :left `(,@(mapcar #'funcall mood-line-segments-left)
-                              ,(my/mood-line-segment-git-info))
-                :right (mapcar #'funcall mood-line-segments-right))))
-  
-  ;; Activate mood-line
-  (mood-line-mode)
-  
-  ;; Customize mood-line
-  (setq mood-line-show-encoding-information nil  ; Don't show encoding
-        mood-line-show-eol-style nil             ; Don't show EOL style
-        mood-line-show-cursor-point t            ; Show cursor position
-        mood-line-show-indentation-style t))     ; Show indentation style
+  (doom-modeline-mode 1))
 
-;; Alternative: Even more minimal mode line
-(use-package mini-modeline
-  :defer t
+;; ============================================================
+;; Solaire-mode - dim non-file buffers (VSCode-like)
+;; ============================================================
+(use-package solaire-mode
   :config
-  (mini-modeline-mode t)
-  (setq mini-modeline-r-format
-        '("%e"
-          mode-line-front-space
-          (:eval (if (doom-modeline--active)
-                     (concat " " (doom-modeline-buffer-file-name))
-                   (concat " " (buffer-name))))
-          " "
-          (:eval (mood-line-segment-modified))
-          " "
-          (:eval (mood-line-segment-position))
-          " "
-          (:eval (mood-line-segment-major-mode))
-          " "
-          (:eval (mood-line-segment-process))
-          mode-line-end-spaces)))
+  (solaire-global-mode +1))
+
+;; ============================================================
+;; Git blame on-demand
+;; ============================================================
+(defun my/show-git-blame ()
+  "Show git blame info for current line in minibuffer."
+  (interactive)
+  (when (and buffer-file-name
+             (file-exists-p buffer-file-name)
+             (not (file-remote-p buffer-file-name))
+             (vc-git-root buffer-file-name))
+    (let* ((line-number (line-number-at-pos (point)))
+           (file-name (buffer-file-name))
+           (git-cmd (format "git blame -L %d,%d --porcelain %s"
+                            line-number line-number file-name))
+           (git-output (with-temp-buffer
+                         (call-process-shell-command git-cmd nil t nil)
+                         (buffer-string))))
+      (if (string-match "^\\([^ ]+\\) \\([^(]*\\)(\\(.*\\)) \\([0-9]+\\) \\([0-9]+\\).*\n.*\nsummary \\(.*\\)" git-output)
+          (let ((commit-hash (match-string 1 git-output))
+                (author (match-string 3 git-output))
+                (summary (match-string 6 git-output)))
+            (unless (string= commit-hash "0000000000000000000000000000000000000000")
+              (message "Blame: %s - %s (%s)" author summary (substring commit-hash 0 8))))
+        (message "No git blame info for this line")))))
+
+(global-set-key (kbd "C-c g b") 'my/show-git-blame)
 
 ;; ligatures with better setup
 (use-package ligature
@@ -263,97 +238,78 @@
 (use-package page-break-lines
   :if (display-graphic-p))
 
-;; Dashboard package disabled - using custom simple dashboard from init.dashboard.el
-;; (use-package dashboard
-;;   :after all-the-icons page-break-lines
-;;   :custom
-;;   ;; Set the banner
-;;   (dashboard-startup-banner
-;;    (if (display-graphic-p)
-;;        (expand-file-name "dashboard/banner.png" user-emacs-directory)
-;;      (expand-file-name "dashboard/banner.txt" user-emacs-directory)))
-;;   ;; Dashboard layout/appearance
-;;   (dashboard-center-content t)
-;;   (dashboard-set-heading-icons t)
-;;   (dashboard-banner-logo-title "Welcome to Emacs")
-;;   (dashboard-set-init-info nil)
-;;   (dashboard-set-file-icons t)
-;;   (dashboard-footer-icon "")
-;;   (dashboard-footer-messages '("Don't try to solve serious matters in the middle of the night."))
-;;   ;; Content settings
-;;   (dashboard-items '((recents . 5)
-;;                      (bookmarks . 5)
-;;                      (projects . 5)
-;;                      (agenda . 5)
-;;                      (registers . 5)))
-;;   ;; Navigate with vi keys
-;;   (dashboard-set-navigator t)
-;;   (dashboard-navigator-buttons
-;;    `(((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
-;;         "GitHub" "Browse GitHub"
-;;         (lambda (&rest _) (browse-url "https://github.com")))
-;;       (,(all-the-icons-fileicon "emacs" :height 1.1 :v-adjust 0.0)
-;;         "Config" "Open config folder"
-;;         (lambda (&rest _) (find-file user-emacs-directory))))))
-;;   ;; Make sure dashboard works with emacsclient
-;;   (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-;;   :config
-;;   (dashboard-setup-startup-hook)
-;;   (add-hook 'dashboard-mode-hook 'page-break-lines-mode))
+;; ============================================================
+;; Centaur Tabs - VSCode-like tab bar
+;; ============================================================
+(use-package centaur-tabs
+  :demand t
+  :init
+  (setq centaur-tabs-style "bar"
+        centaur-tabs-height 32
+        centaur-tabs-set-icons t
+        centaur-tabs-icon-type 'nerd-icons
+        centaur-tabs-set-bar 'under
+        x-underline-at-descent-line t
+        centaur-tabs-set-close-button t
+        centaur-tabs-close-button "×"
+        centaur-tabs-set-modified-marker t
+        centaur-tabs-modified-marker "●"
+        centaur-tabs-cycle-scope 'tabs
+        centaur-tabs-show-new-tab-button nil
+        centaur-tabs-show-navigation-buttons nil
+        centaur-tabs-show-count nil)
+  :config
+  (centaur-tabs-mode t)
+  (centaur-tabs-headline-match)
+  ;; Group by project
+  (centaur-tabs-group-by-projectile-project)
+  ;; Hide tabs for special buffers
+  (defun centaur-tabs-hide-tab (x)
+    "Hide tab for buffer X if it's special."
+    (let ((name (format "%s" x)))
+      (or
+       (string-prefix-p "*" name)
+       (string-prefix-p " *" name)
+       (and (string-prefix-p "magit" name)
+            (not (file-name-extension name))))))
+  :bind
+  ("M-h" . centaur-tabs-backward)
+  ("M-l" . centaur-tabs-forward)
+  ("C-c t k" . centaur-tabs-kill-other-buffers-in-current-group)
+  ("C-c t c" . centaur-tabs-close-tab))
 
-;; Dashboard navigation functions disabled - using simple custom dashboard
-;; (defun my/dashboard-goto-section (section)
-;;   "Jump to the specified SECTION in the dashboard."
-;;   (interactive "sSection (recent, bookmarks, projects, agenda): ")
-;;   (when (get-buffer "*dashboard*")
-;;     (with-current-buffer "*dashboard*"
-;;       (goto-char (point-min))
-;;       (let ((section-regexp (pcase section
-;;                              ("recent" "Recent Files:")
-;;                              ("bookmarks" "Bookmarks:")
-;;                              ("projects" "Projects:")
-;;                              ("agenda" "Agenda:")
-;;                              (_ "Recent Files:"))))
-;;         (when (re-search-forward section-regexp nil t)
-;;           (forward-line 1)
-;;           (beginning-of-line))))))
+;; ============================================================
+;; Breadcrumb - VSCode-like file path in header
+;; ============================================================
+(use-package breadcrumb
+  :config
+  (breadcrumb-mode 1))
 
-;; Remove the problematic hook that's causing the timer error
-;; We'll use a simpler approach for dashboard navigation
+;; ============================================================
+;; Symbol overlay - highlight symbol at point (like VSCode)
+;; ============================================================
+(use-package symbol-overlay
+  :hook (prog-mode . symbol-overlay-mode)
+  :bind (:map symbol-overlay-mode-map
+              ("M-i" . symbol-overlay-put)
+              ("M-n" . symbol-overlay-switch-forward)
+              ("M-p" . symbol-overlay-switch-backward)
+              ("M-c" . symbol-overlay-remove-all)))
 
-;; Add a simple hook to ensure we can navigate the dashboard easily
-;; Dashboard setup functions disabled - using simple custom dashboard
-;; (defun my/dashboard-setup ()
-;;   "Set up dashboard with better defaults."
-;;   (when (get-buffer "*dashboard*")
-;;     (with-current-buffer "*dashboard*"
-;;       ;; Make sure we start at the beginning of the buffer
-;;       (goto-char (point-min))
-;;       ;; Add a small hint at the top for navigation
-;;       (setq-local header-line-format 
-;;                   " Dashboard: use n/p to navigate, RET to select"))))
+;; ============================================================
+;; Rainbow mode - colorize color strings
+;; ============================================================
+(use-package rainbow-mode
+  :diminish
+  :hook ((css-mode scss-mode html-mode web-mode) . rainbow-mode))
 
-;; Dashboard hook disabled
-;; (add-hook 'dashboard-mode-hook #'my/dashboard-setup)
-
-;; Dashboard keybindings disabled - using simple custom dashboard
-;; (with-eval-after-load 'dashboard
-;;   ;; Add keybindings in dashboard mode (god-mode friendly)
-;;   (define-key dashboard-mode-map (kbd "n") 'dashboard-next-line)
-;;   (define-key dashboard-mode-map (kbd "p") 'dashboard-previous-line)
-;;   (define-key dashboard-mode-map (kbd "C-n") 'dashboard-next-section)
-;;   (define-key dashboard-mode-map (kbd "C-p") 'dashboard-previous-section)
-;;   (define-key dashboard-mode-map (kbd "RET") 'dashboard-return)
-;;   (define-key dashboard-mode-map [return] 'dashboard-return)
-;;   (define-key dashboard-mode-map [down-mouse-1] 'dashboard-mouse-1)
-  
-  ;; Dashboard keybindings disabled - using simple custom dashboard
-  ;; (define-key dashboard-mode-map (kbd "r") (lambda () (interactive) (my/dashboard-goto-section "recent")))
-  ;; (define-key dashboard-mode-map (kbd "b") (lambda () (interactive) (my/dashboard-goto-section "bookmarks")))
-  ;; (define-key dashboard-mode-map (kbd "j") (lambda () (interactive) (my/dashboard-goto-section "projects")))
-  ;; (define-key dashboard-mode-map (kbd "a") (lambda () (interactive) (my/dashboard-goto-section "agenda")))
-  
-  ;; Dashboard footer disabled
-  ;; (setq dashboard-footer "Keys: [r]ecent [b]ookmarks pro[j]ects [a]genda [n/p] Navigate [RET] Select"))
+;; ============================================================
+;; Visual fill column - soft wrap at fill-column (nice for prose)
+;; ============================================================
+(use-package visual-fill-column
+  :hook (visual-line-mode . visual-fill-column-mode)
+  :custom
+  (visual-fill-column-center-text t)
+  (visual-fill-column-width 100))
 
 (provide 'init.appearance)
