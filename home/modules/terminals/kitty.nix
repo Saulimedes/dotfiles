@@ -5,10 +5,7 @@
   programs.kitty = {
     enable = true;
 
-    font = {
-      name = "MonoLisaVariable Nerd Font";
-      size = 10;
-    };
+    # Font managed by Stylix (see system/theme.nix fonts.sizes.terminal)
 
     settings = {
       # Performance
