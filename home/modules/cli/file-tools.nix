@@ -6,7 +6,7 @@
   programs.bat = {
     enable = true;
     config = {
-      theme = "Nord";
+      # theme managed by Stylix
       style = "numbers,changes,header";
       pager = "less -FR";
     };
