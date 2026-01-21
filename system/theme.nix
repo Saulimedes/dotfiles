@@ -14,8 +14,10 @@
     # Fonts (shared across all hosts)
     fonts = {
       monospace = {
-        package = pkgs.jetbrains-mono;
-        name = "JetBrains Mono";
+        # MonoLisa installed via private-fonts in home/modules/fonts.nix
+        # Using null package since font is already installed via home.file
+        package = pkgs.emptyDirectory;
+        name = "MonoLisaVariable Nerd Font";
       };
       sansSerif = {
         package = pkgs.inter;
@@ -33,7 +35,7 @@
         applications = 11;
         desktop = 11;
         popups = 11;
-        terminal = 12;
+        terminal = 13;
       };
     };
 
