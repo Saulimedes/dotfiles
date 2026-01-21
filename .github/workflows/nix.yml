@@ -35,10 +35,10 @@ jobs:
         run: mkdir -p .ci-fonts
 
       - name: Check flake metadata
-        run: nix flake metadata --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+        run: nix flake metadata --impure --no-update-lock-file --override-input private-fonts path:./.ci-fonts
 
       - name: Show flake outputs
-        run: nix flake show --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+        run: nix flake show --impure --no-update-lock-file --override-input private-fonts path:./.ci-fonts
 
   build:
     name: Build NixOS Configuration
@@ -68,11 +68,11 @@ jobs:
 
       - name: Build NixOS configuration (dry-run)
         run: |
-          nix build .#nixosConfigurations.nitipa1.config.system.build.toplevel --dry-run --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+          nix build .#nixosConfigurations.nitipa1.config.system.build.toplevel --impure --dry-run --no-update-lock-file --override-input private-fonts path:./.ci-fonts
 
       - name: Evaluate NixOS configuration
         run: |
-          nix eval .#nixosConfigurations.nitipa1.config.system.build.toplevel.outPath --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+          nix eval .#nixosConfigurations.nitipa1.config.system.build.toplevel.outPath --impure --no-update-lock-file --override-input private-fonts path:./.ci-fonts
 
   lint:
     name: Lint Nix Files

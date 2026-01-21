@@ -6,7 +6,7 @@
   programs.btop = {
     enable = true;
     settings = {
-      color_theme = "nord";
+      # color_theme managed by Stylix
       theme_background = false;
       vim_keys = true;
       rounded_corners = true;
