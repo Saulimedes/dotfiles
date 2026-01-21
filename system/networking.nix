@@ -9,6 +9,7 @@
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [
+      22    # SSH
       22000 # Syncthing
     ];
     allowedUDPPorts = [
