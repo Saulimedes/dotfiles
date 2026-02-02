@@ -1,6 +1,6 @@
 alias e="$EDITOR"
 alias cp="cp -airv"
-alias scp="scp -r"
+abbr scp "rsync -av --progress"
 alias cat="bat"
 alias dd="dd status=progress"
 alias mkdir="mkdir -p"

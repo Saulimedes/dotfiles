@@ -24,7 +24,7 @@
 (global-set-key (kbd "C-c w n") 'tab-bar-new-tab)
 (global-set-key (kbd "C-c w k") 'tab-bar-close-tab)
 (global-set-key (kbd "C-c w p") 'tab-bar-switch-to-prev-tab)
-(global-set-key (kbd "C-c w n") 'tab-bar-switch-to-next-tab)
+(global-set-key (kbd "C-c w ]") 'tab-bar-switch-to-next-tab)
 
 ;; Desktop save mode - Save session state
 (use-package desktop
@@ -52,41 +52,22 @@
   :config
   (winum-mode))
 
-;; Window management keybindings
-(with-eval-after-load 'evil
-  ;; Evil keys for window navigation enhanced with winum
-  (evil-define-key 'normal 'global
-    (kbd "<leader>w1") 'winum-select-window-1
-    (kbd "<leader>w2") 'winum-select-window-2
-    (kbd "<leader>w3") 'winum-select-window-3
-    (kbd "<leader>w4") 'winum-select-window-4
-    (kbd "<leader>w5") 'winum-select-window-5
-    
-    ;; Tab bar workspace management
-    (kbd "<leader>wt") '(:ignore t :which-key "tabs")
-    (kbd "<leader>wtr") 'tab-bar-rename-tab
-    (kbd "<leader>wtn") 'tab-bar-new-tab
-    (kbd "<leader>wtx") 'tab-bar-close-tab
-    (kbd "<leader>wts") 'tab-bar-select-tab-by-name
-    (kbd "<leader>wtp") 'tab-bar-switch-to-prev-tab
-    (kbd "<leader>wtn") 'tab-bar-switch-to-next-tab
-    
-    ;; Window history with winner-mode
-    (kbd "<leader>wu") 'winner-undo
-    (kbd "<leader>wr") 'winner-redo
-    
-    ;; Window splits
-    (kbd "<leader>wv") 'split-window-right
-    (kbd "<leader>ws") 'split-window-below
-    (kbd "<leader>wd") 'delete-window
-    (kbd "<leader>wo") 'delete-other-windows
-    
-    ;; Balance windows
-    (kbd "<leader>w=") 'balance-windows)
-  
-  ;; Update which-key descriptions for workspace commands
-  (with-eval-after-load 'which-key
-    (which-key-add-key-based-replacements "SPC w" "windows/workspaces")
-    (which-key-add-key-based-replacements "SPC wt" "tabs")))
+;; Window management keybindings (Meow compatible)
+(global-set-key (kbd "M-1") 'winum-select-window-1)
+(global-set-key (kbd "M-2") 'winum-select-window-2)
+(global-set-key (kbd "M-3") 'winum-select-window-3)
+(global-set-key (kbd "M-4") 'winum-select-window-4)
+(global-set-key (kbd "M-5") 'winum-select-window-5)
+(global-set-key (kbd "C-c w u") 'winner-undo)
+(global-set-key (kbd "C-c w R") 'winner-redo)
+(global-set-key (kbd "C-c w v") 'split-window-right)
+(global-set-key (kbd "C-c w s") 'split-window-below)
+(global-set-key (kbd "C-c w d") 'delete-window)
+(global-set-key (kbd "C-c w o") 'delete-other-windows)
+(global-set-key (kbd "C-c w =") 'balance-windows)
+(global-set-key (kbd "C-c w t r") 'tab-bar-rename-tab)
+(global-set-key (kbd "C-c w t n") 'tab-bar-new-tab)
+(global-set-key (kbd "C-c w t x") 'tab-bar-close-tab)
+(global-set-key (kbd "C-c w t s") 'tab-bar-select-tab-by-name)
 
 (provide 'init.workspace)

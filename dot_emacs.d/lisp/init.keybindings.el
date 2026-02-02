@@ -1,17 +1,25 @@
-;; Meow - Modal editing for Emacs
+;; -*- lexical-binding: t; -*-
+;; Keybindings: Meow modal editing + Leader keys
+
+;; ============================================================
+;; Meow - Native Emacs Modal Editing
+;; ============================================================
+
 (use-package meow
+  :demand t
   :config
   (defun meow-setup ()
     (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+
+    ;; Motion state (for special modes)
     (meow-motion-overwrite-define-key
      '("j" . meow-next)
      '("k" . meow-prev)
      '("<escape>" . ignore))
+
+    ;; Leader key (SPC)
     (meow-leader-define-key
-     ;; SPC j/k will run the original command in MOTION state.
-     '("j" . "H-j")
-     '("k" . "H-k")
-     ;; Use SPC (0-9) for digit arguments.
+     ;; Digit arguments
      '("1" . meow-digit-argument)
      '("2" . meow-digit-argument)
      '("3" . meow-digit-argument)
@@ -22,8 +30,142 @@
      '("8" . meow-digit-argument)
      '("9" . meow-digit-argument)
      '("0" . meow-digit-argument)
-     '("/" . meow-keypad-describe-key)
-     '("?" . meow-cheatsheet))
+
+     ;; Top-level
+     '("SPC" . execute-extended-command)
+     '("." . find-file)
+     '("," . consult-buffer)
+     '("/" . consult-ripgrep)
+     '("?" . meow-cheatsheet)
+     '(";" . eval-expression)
+     '("'" . vertico-repeat)
+     '("u" . universal-argument)
+
+     ;; Files
+     '("f" . (keymap))
+     '("ff" . find-file)
+     '("fr" . consult-recent-file)
+     '("fs" . save-buffer)
+     '("fS" . write-file)
+     '("fd" . dired)
+     '("fD" . dired-jump)
+     '("fy" . my/copy-file-path)
+
+     ;; Buffers
+     '("b" . (keymap))
+     '("bb" . consult-buffer)
+     '("bd" . kill-current-buffer)
+     '("bD" . kill-buffer-and-window)
+     '("bn" . next-buffer)
+     '("bp" . previous-buffer)
+     '("br" . revert-buffer-quick)
+     '("bs" . save-buffer)
+     '("bS" . save-some-buffers)
+     '("bm" . consult-bookmark)
+
+     ;; Windows
+     '("w" . (keymap))
+     '("ws" . split-window-below)
+     '("wv" . split-window-right)
+     '("wd" . delete-window)
+     '("wD" . delete-other-windows)
+     '("ww" . other-window)
+     '("wh" . windmove-left)
+     '("wj" . windmove-down)
+     '("wk" . windmove-up)
+     '("wl" . windmove-right)
+     '("w=" . balance-windows)
+     '("wu" . winner-undo)
+     '("wr" . winner-redo)
+
+     ;; Search
+     '("s" . (keymap))
+     '("ss" . consult-line)
+     '("sS" . consult-line-multi)
+     '("sp" . consult-ripgrep)
+     '("sd" . consult-find)
+     '("si" . consult-imenu)
+     '("sI" . consult-imenu-multi)
+     '("so" . consult-outline)
+     '("sm" . consult-mark)
+     '("sr" . query-replace)
+     '("sR" . query-replace-regexp)
+
+     ;; Project
+     '("p" . (keymap))
+     '("pp" . project-switch-project)
+     '("pf" . project-find-file)
+     '("pb" . consult-project-buffer)
+     '("ps" . consult-ripgrep)
+     '("pd" . project-dired)
+     '("pk" . project-kill-buffers)
+     '("pc" . project-compile)
+     '("pe" . project-eshell)
+
+     ;; Code/LSP
+     '("c" . (keymap))
+     '("cd" . xref-find-definitions)
+     '("cD" . xref-find-definitions-other-window)
+     '("cr" . xref-find-references)
+     '("cs" . consult-eglot-symbols)
+     '("ca" . eglot-code-actions)
+     '("cf" . eglot-format-buffer)
+     '("cR" . eglot-rename)
+     '("cn" . flymake-goto-next-error)
+     '("cp" . flymake-goto-prev-error)
+     '("ci" . consult-imenu)
+
+     ;; Git
+     '("g" . (keymap))
+     '("gg" . magit-status)
+     '("gs" . magit-status)
+     '("gb" . magit-blame)
+     '("gl" . magit-log-current)
+     '("gL" . magit-log-buffer-file)
+     '("gd" . magit-diff-unstaged)
+     '("gD" . magit-diff-staged)
+     '("gc" . magit-commit)
+     '("gp" . magit-push)
+     '("gf" . magit-fetch)
+     '("gF" . magit-pull)
+
+     ;; Toggle
+     '("t" . (keymap))
+     '("tt" . consult-theme)
+     '("tl" . display-line-numbers-mode)
+     '("tw" . visual-line-mode)
+     '("th" . hl-line-mode)
+     '("tf" . flymake-mode)
+     '("ti" . highlight-indent-guides-mode)
+     '("tz" . delete-trailing-whitespace)
+
+     ;; Help
+     '("h" . (keymap))
+     '("hf" . helpful-callable)
+     '("hv" . helpful-variable)
+     '("hk" . helpful-key)
+     '("hm" . describe-mode)
+     '("hp" . helpful-at-point)
+     '("hi" . info)
+     '("hb" . embark-bindings)
+
+     ;; Apps/Open
+     '("o" . (keymap))
+     '("oe" . eshell)
+     '("oE" . eshell-here)
+     '("ot" . vterm)
+     '("od" . dired-jump)
+     '("oa" . org-agenda)
+     '("oc" . org-capture)
+     '("of" . make-frame)
+
+     ;; Quit/Session
+     '("q" . (keymap))
+     '("qq" . save-buffers-kill-terminal)
+     '("qr" . restart-emacs)
+     '("qd" . my/show-dashboard))
+
+    ;; Normal state keys
     (meow-normal-define-key
      '("0" . meow-expand-0)
      '("9" . meow-expand-9)
@@ -75,7 +217,7 @@
      '("s" . meow-kill)
      '("t" . meow-till)
      '("u" . meow-undo)
-     '("U" . meow-undo-in-selection)
+     '("U" . undo-redo)
      '("v" . meow-visit)
      '("w" . meow-mark-word)
      '("W" . meow-mark-symbol)
@@ -85,182 +227,129 @@
      '("Y" . meow-sync-grab)
      '("z" . meow-pop-selection)
      '("'" . repeat)
+     '("/" . consult-line)
      '("<escape>" . ignore)))
 
   (meow-setup)
-  (meow-global-mode 1))
+  (meow-global-mode 1)
 
-;; General.el integration with Meow
-(condition-case general-err
-    (use-package general
-      :after meow
-  :config
-  ;; Create a leader key definer for Meow mode
-  (general-create-definer my/leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix "SPC"
-    :global-prefix "C-SPC")
-  
-  ;; Create a local leader key definer (for major mode specific commands)
-  (general-create-definer my/local-leader-keys
-    :states '(normal insert visual emacs)
-    :keymaps 'override
-    :prefix ","
-    :global-prefix "C-,")
-  
-  ;; Define global leader key bindings
-  (my/leader-keys
-    ;; Top level commands
-    "SPC" '(execute-extended-command :which-key "M-x")
-    ";" '(eval-expression :which-key "eval expression")
-    ":" '(eval-expression :which-key "eval expression")
-    "." '(find-file :which-key "find file")
-    
-    ;; File operations
-    "f"  '(:ignore t :which-key "files")
-    "ff" '(find-file :which-key "find file")
-    "fs" '(save-buffer :which-key "save file")
-    "fS" '(write-file :which-key "save as")
-    "fr" '(helm-recentf :which-key "recent files")
-    "fd" '(dired :which-key "dired")
-    
-    ;; Buffer operations
-    "b"  '(:ignore t :which-key "buffers")
-    "bb" '(helm-mini :which-key "switch buffer")
-    "bd" '(kill-current-buffer :which-key "kill buffer")
-    "bD" '(kill-buffer-and-window :which-key "kill buffer and window")
-    "bn" '(next-buffer :which-key "next buffer")
-    "bp" '(previous-buffer :which-key "previous buffer")
-    "br" '(revert-buffer :which-key "revert buffer")
-    "bs" '(basic-save-buffer :which-key "save buffer")
-    
-    ;; Window operations
-    "w"  '(:ignore t :which-key "windows")
-    "ws" '(split-window-below :which-key "split window below")
-    "wv" '(split-window-right :which-key "split window right")
-    "ww" '(other-window :which-key "other window")
-    "wd" '(delete-window :which-key "delete window")
-    "wm" '(delete-other-windows :which-key "maximize window")
-    "wh" '(windmove-left :which-key "window left")
-    "wj" '(windmove-down :which-key "window down")
-    "wk" '(windmove-up :which-key "window up")
-    "wl" '(windmove-right :which-key "window right")
-    
-    ;; Search operations
-    "s"  '(:ignore t :which-key "search")
-    "ss" '(helm-swoop :which-key "search in buffer")
-    "sp" '(helm-projectile-rg :which-key "search in project")
-    "sd" '(helm-find :which-key "find files")
-    
-    ;; Project operations
-    "p"  '(:ignore t :which-key "projects")
-    "pf" '(helm-projectile-find-file :which-key "find file in project")
-    "pp" '(project-switch-project :which-key "switch project")
-    "pb" '(project-switch-to-buffer :which-key "switch to project buffer")
-    "pK" '(project-kill-buffers :which-key "kill project buffers") ; Changed from "pk" to "pK"
-    "ps" '(helm-projectile-rg :which-key "search in project")
-    
-    ;; Code operations
-    "c"  '(:ignore t :which-key "code")
-    "cd" '(xref-find-definitions :which-key "find definition")
-    "cD" '(xref-find-definitions-other-window :which-key "find definition other window")
-    "cr" '(xref-find-references :which-key "find references")
-    "cn" '(flymake-goto-next-error :which-key "next error")
-    "cp" '(flymake-goto-prev-error :which-key "previous error")
-    "cf" '(eglot-format-buffer :which-key "format buffer")
-    "ca" '(eglot-code-actions :which-key "code actions")
-    "cR" '(eglot-rename :which-key "rename symbol")
-    
-    ;; Toggle operations
-    "t"  '(:ignore t :which-key "toggles")
-    "tt" '(visual-line-mode :which-key "toggle line wrap")
-    "tn" '(display-line-numbers-mode :which-key "toggle line numbers")
-    "tw" '(whitespace-mode :which-key "toggle whitespace")
-    "th" '(hl-line-mode :which-key "toggle highlight line")
-    
-    ;; Help
-    "h"  '(:ignore t :which-key "help")
-    "hf" '(helpful-callable :which-key "describe function")
-    "hv" '(helpful-variable :which-key "describe variable")
-    "hk" '(helpful-key :which-key "describe key")
-    "hm" '(helpful-macro :which-key "describe macro")
-    "hp" '(helpful-at-point :which-key "help at point")
-    "hi" '(info :which-key "info")
-    
-    ;; Application shortcuts
-    "a"  '(:ignore t :which-key "apps")
-    "ad" '(dired :which-key "dired")
-    "at" '(vterm :which-key "terminal")
-    "ag" '(magit-status :which-key "magit")
-    "ao" '(org-agenda :which-key "org agenda")
-    "ac" '(calc :which-key "calculator")
-    "ar" '(recentf-open-files :which-key "recent files")
-    
-    ;; Git operations
-    "g"  '(:ignore t :which-key "git")
-    "gs" '(magit-status :which-key "magit status")
-    "gb" '(magit-blame :which-key "magit blame")
-    "gl" '(magit-log :which-key "magit log")
-    "gd" '(magit-diff-unstaged :which-key "magit diff")
-    "gc" '(magit-commit :which-key "magit commit")
-    "gp" '(magit-push :which-key "magit push")
-    "gf" '(magit-fetch :which-key "magit fetch")))
-  (error (message "General package not available: %s" (error-message-string general-err))))
+  ;; Cursor styles per state
+  (setq meow-cursor-type-normal 'box
+        meow-cursor-type-insert '(bar . 2)
+        meow-cursor-type-motion 'hollow)
 
-;; Which-Key for discoverability
-(condition-case which-key-err
-    (use-package which-key
-      :init
-      (which-key-mode)
-      :config
-      (setq which-key-idle-delay 0.3)
-      (which-key-setup-side-window-bottom))
-  (error (message "Which-Key package not available: %s" (error-message-string which-key-err))))
-
-;; Additional Meow keybindings
-(with-eval-after-load 'meow
-  ;; Use escape to quit various prompts
-  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-  
-  ;; Better window navigation
-  (global-set-key (kbd "C-h") 'windmove-left)
-  (global-set-key (kbd "C-j") 'windmove-down)
-  (global-set-key (kbd "C-k") 'windmove-up)
-  (global-set-key (kbd "C-l") 'windmove-right)
-  
-  ;; Use insert state in modes that benefit from it
-  (dolist (mode '(custom-mode
-                  eshell-mode
+  ;; Use insert state for these modes
+  (dolist (mode '(eshell-mode
+                  vterm-mode
+                  term-mode
                   git-rebase-mode
-                  erc-mode
-                  circe-server-mode
-                  circe-chat-mode
-                  circe-query-mode
-                  sauron-mode
-                  term-mode))
+                  magit-log-edit-mode))
     (add-to-list 'meow-mode-state-list (cons mode 'insert))))
 
-;; Useful global keybindings that work well with Evil
+;; ============================================================
+;; Which-Key - Keybinding hints
+;; ============================================================
+
+(use-package which-key
+  :demand t
+  :custom
+  (which-key-idle-delay 0.3)
+  (which-key-idle-secondary-delay 0.05)
+  (which-key-popup-type 'side-window)
+  (which-key-side-window-location 'bottom)
+  (which-key-side-window-max-height 0.25)
+  (which-key-add-column-padding 1)
+  (which-key-separator " → ")
+  :config
+  (which-key-mode)
+  ;; Better descriptions
+  (which-key-add-key-based-replacements
+    "SPC f" "files"
+    "SPC b" "buffers"
+    "SPC w" "windows"
+    "SPC s" "search"
+    "SPC p" "project"
+    "SPC c" "code"
+    "SPC g" "git"
+    "SPC t" "toggle"
+    "SPC h" "help"
+    "SPC o" "open"
+    "SPC q" "quit"))
+
+;; ============================================================
+;; Global Keybindings
+;; ============================================================
+
+;; Escape quits everything
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
+;; Text scaling
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
-(global-set-key (kbd "C-0") 'text-scale-set)
+(global-set-key (kbd "C-0") (lambda () (interactive) (text-scale-set 0)))
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 
-;; Custom functions
+;; Window navigation (also works in insert mode)
+(global-set-key (kbd "M-h") 'windmove-left)
+(global-set-key (kbd "M-j") 'windmove-down)
+(global-set-key (kbd "M-k") 'windmove-up)
+(global-set-key (kbd "M-l") 'windmove-right)
+
+;; Buffer navigation
+(global-set-key (kbd "M-[") 'previous-buffer)
+(global-set-key (kbd "M-]") 'next-buffer)
+
+;; Date/time insertion
+(global-set-key (kbd "M-S-d") 'my/insert-current-date)
+(global-set-key (kbd "M-S-t") 'my/insert-current-time)
+
+;; ============================================================
+;; Utility Functions
+;; ============================================================
+
+(defun my/copy-file-path ()
+  "Copy the current buffer's file path to clipboard."
+  (interactive)
+  (if-let ((path (or (buffer-file-name) default-directory)))
+      (progn
+        (kill-new path)
+        (message "Copied: %s" path))
+    (message "No file path")))
+
+(defun my/insert-current-date ()
+  "Insert current date in German format (DD.MM.YYYY)."
+  (interactive)
+  (insert (format-time-string "%d.%m.%Y")))
+
+(defun my/insert-current-time ()
+  "Insert current time (HH:MM)."
+  (interactive)
+  (insert (format-time-string "%H:%M")))
+
 (defun duplicate-line ()
   "Duplicate the current line."
   (interactive)
-  (let ((col (current-column))
-        (text (buffer-substring (line-beginning-position) (line-end-position))))
-    (forward-line)
-    (insert text "\n")
-    (forward-line -1)
+  (let ((col (current-column)))
+    (save-excursion
+      (move-beginning-of-line 1)
+      (kill-line)
+      (yank)
+      (newline)
+      (yank))
     (move-to-column col)))
 
-;; Add duplicate line to meow normal mode
-(with-eval-after-load 'meow
-  (define-key meow-normal-state-keymap (kbd "gy") 'duplicate-line))
+(defun eshell-here ()
+  "Open eshell in current directory."
+  (interactive)
+  (let ((dir (if (buffer-file-name)
+                 (file-name-directory (buffer-file-name))
+               default-directory)))
+    (eshell 'new)
+    (eshell/cd dir)
+    (eshell-send-input)))
+
+;; Winner mode for window undo/redo
+(winner-mode 1)
 
 (provide 'init.keybindings)
