@@ -1,11 +1,11 @@
 #!/bin/bash
-export PATH="$HOME/.local/bin:$PATH"
+MISE="$HOME/.local/bin/mise"
 
-if ! command -v mise >/dev/null 2>&1; then
+if ! command -v mise >/dev/null 2>&1 && [[ ! -x "$MISE" ]]; then
   echo "mise not found – installing..."
   curl https://mise.run | sh
 else
   echo "mise already installed – skipping installation."
 fi
 
-mise install -y
+"$MISE" install -y
