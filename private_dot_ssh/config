@@ -1,21 +1,21 @@
 ControlMaster auto
 ControlPath ~/.ssh/%h_%p_%r
-AddKeysToAgent yes
 ControlPersist 1h
+AddKeysToAgent yes
 Compression yes
 VerifyHostKeyDNS yes
-StrictHostKeyChecking no
+
+# ask = prompts for new hosts AND key changes
+# accept-new = auto-accept new hosts, warn on key changes
+StrictHostKeyChecking accept-new
 
 # Keep Alive
 TCPKeepAlive yes
-ForwardAgent yes
 ServerAliveCountMax 10
 ServerAliveInterval 300
-UseRoaming No
 
-HostkeyAlgorithms +ssh-rsa
-PubkeyAcceptedKeyTypes +ssh-rsa
-
-# hardening
+# Hardening
 MACs hmac-sha2-512,hmac-sha2-256
-Ciphers chacha20-poly1305@openssh.com,aes128-ctr,aes192-ctr,aes256-ctr
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+HostKeyAlgorithms ssh-ed25519,rsa-sha2-512,rsa-sha2-256
+PubkeyAcceptedAlgorithms ssh-ed25519,rsa-sha2-512,rsa-sha2-256

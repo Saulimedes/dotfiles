@@ -67,12 +67,11 @@ setup_portage() {
 app-shells/atuin ~amd64
 app-shells/starship ~amd64
 app-shells/zoxide ~amd64
-app-misc/yazi ~amd64
 app-misc/eza ~amd64
 app-misc/fastfetch ~amd64
 
 # Browsers
-www-client/librewolf ~amd64
+www-client/librewolf-bin ~amd64
 www-client/brave-bin ~amd64
 www-client/helium-bin ~amd64
 
@@ -122,7 +121,6 @@ install_base() {
         app-misc/eza
         sys-apps/fd
         sys-apps/ripgrep
-        app-misc/yazi
         app-shells/zoxide
         app-shells/fzf
         app-shells/direnv
@@ -190,7 +188,7 @@ install_desktop() {
         x11-misc/lightdm
         x11-misc/lightdm-gtk-greeter
         xfce-extra/thunar-archive-plugin
-        xfce-extra/thunar-volman
+        xfce-base/thunar-volman
         xfce-extra/xfce4-notifyd
         xfce-extra/xfce4-screenshooter
         xfce-extra/xfce4-pulseaudio-plugin
@@ -245,7 +243,7 @@ install_desktop() {
 
     # Fonts
     local fonts=(
-        media-fonts/nerd-fonts
+        media-fonts/nerdfonts
         media-fonts/noto
         media-fonts/noto-emoji
         media-fonts/roboto
@@ -296,7 +294,7 @@ install_dev() {
         dev-python/pip
         dev-lang/go
         dev-lang/rust
-        dev-lang/deno
+        dev-lang/deno-bin
 
         # Build
         dev-build/cmake
@@ -382,7 +380,7 @@ install_browsers() {
     section "Browsers"
 
     local packages=(
-        www-client/librewolf
+        www-client/librewolf-bin
         www-client/brave-bin
         www-client/helium-bin
     )
@@ -409,28 +407,21 @@ install_virt() {
         app-containers/skopeo
         app-containers/crun
         app-containers/slirp4netns
-        app-containers/fuse-overlayfs
+        sys-fs/fuse-overlayfs
         app-containers/netavark
         app-containers/aardvark-dns
 
-        # libvirt
-        app-emulation/libvirt
-        app-emulation/qemu
-        app-emulation/virt-manager
     )
 
     log "Installing virt packages..."
     emerge_install "${packages[@]}" || warn "Some packages may have failed"
 
-    # Groups
-    sudo usermod -aG libvirt,kvm,qemu "$USER"
+    # Groups for podman
+    sudo usermod -aG kvm "$USER" 2>/dev/null || true
 
     # Rootless podman
     grep -q "^$USER:" /etc/subuid || echo "$USER:100000:65536" | sudo tee -a /etc/subuid
     grep -q "^$USER:" /etc/subgid || echo "$USER:100000:65536" | sudo tee -a /etc/subgid
-
-    # Services
-    sudo rc-update add libvirtd default 2>/dev/null || true
 
     log "Virtualisation installed"
 }

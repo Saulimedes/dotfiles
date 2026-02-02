@@ -5,9 +5,6 @@ LICENSE
 # Setup script (not a dotfile)
 setup.sh
 
-# Yazi plugins (managed separately)
-dot_config/yazi/plugins/
-
 # Temporary files
 tmp/
 *.tmp
