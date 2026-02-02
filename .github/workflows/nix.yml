@@ -1,0 +1,106 @@
+---
+name: NixOS Config Validation
+
+on:
+  push:
+    branches:
+      - main
+      - feat/nix-home-manager
+    paths:
+      - '**.nix'
+      - 'flake.lock'
+  pull_request:
+    paths:
+      - '**.nix'
+      - 'flake.lock'
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Validate Nix Flake
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Create dummy fonts directory for CI
+        run: mkdir -p .ci-fonts
+
+      - name: Check flake metadata
+        run: nix flake metadata --impure --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+
+      - name: Show flake outputs
+        run: nix flake show --impure --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+
+  build:
+    name: Build NixOS Configuration
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          df -h
+
+      - name: Create dummy fonts directory for CI
+        run: mkdir -p .ci-fonts
+
+      - name: Build NixOS configuration (dry-run)
+        run: |
+          nix build .#nixosConfigurations.nitipa1.config.system.build.toplevel --impure --dry-run --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+
+      - name: Evaluate NixOS configuration
+        run: |
+          nix eval .#nixosConfigurations.nitipa1.config.system.build.toplevel.outPath --impure --no-update-lock-file --override-input private-fonts path:./.ci-fonts
+
+  lint:
+    name: Lint Nix Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Install linters
+        run: |
+          nix profile install nixpkgs#statix nixpkgs#deadnix nixpkgs#nixpkgs-fmt
+
+      - name: Run statix (nix linter)
+        run: statix check .
+        continue-on-error: true
+
+      - name: Run deadnix (dead code finder)
+        run: deadnix --fail .
+        continue-on-error: true
+
+      - name: Check formatting with nixpkgs-fmt
+        run: |
+          nixpkgs-fmt --check .
+        continue-on-error: true

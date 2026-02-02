@@ -17,4 +17,4 @@
 best[ext=mp4][height<=1080][format_id!*=VR][format_id!*=3D]/best[height<=1080][format_id!*=VR][format_id!*=3D]/best[height<=1080]/best
 --mark-watched
 --cookies-from-browser
-brave
+firefox

@@ -1,3 +1,6 @@
 [submodule "dot_local/share/fonts"]
 	path = dot_local/share/fonts
 	url = git@github.com:Saulimedes/fonts.git
+[submodule "fonts"]
+	path = fonts
+	url = git@github.com:Saulimedes/fonts.git

@@ -1,3 +1,4 @@
+ctrl_n_shortcuts = false
 search_mode = "skim"
 filter_mode = "global"
 style = "compact"
