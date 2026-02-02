@@ -7,4 +7,3 @@ olets/zsh-abbr
 hlissner/zsh-autopair
 mafredri/zsh-async
 chrishrb/zsh-kubectl
-raisedadead/zsh-awsssh

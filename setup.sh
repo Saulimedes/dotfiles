@@ -54,9 +54,6 @@ setup_portage() {
     log "Enabling guru overlay..."
     sudo eselect repository enable guru 2>/dev/null || true
 
-    log "Enabling xlibre overlay..."
-    sudo eselect repository enable xlibre 2>/dev/null || true
-
     log "Syncing repositories..."
     sudo emaint sync -a
 
@@ -74,9 +71,6 @@ app-misc/fastfetch ~amd64
 www-client/librewolf-bin ~amd64
 www-client/brave-bin ~amd64
 www-client/helium-bin ~amd64
-
-# Xlibre
-*/*::xlibre ~amd64
 
 # Kubernetes tools
 dev-util/k9s ~amd64
