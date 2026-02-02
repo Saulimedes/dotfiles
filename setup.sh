@@ -54,6 +54,9 @@ setup_portage() {
     log "Enabling guru overlay..."
     sudo eselect repository enable guru 2>/dev/null || true
 
+    log "Enabling librewolf overlay..."
+    sudo eselect repository enable librewolf 2>/dev/null || true
+
     log "Syncing repositories..."
     sudo emaint sync -a
 
@@ -64,12 +67,12 @@ setup_portage() {
 app-shells/atuin ~amd64
 app-shells/starship ~amd64
 app-shells/zoxide ~amd64
-sys-apps/eza ~amd64
 app-misc/fastfetch ~amd64
 
 # Browsers
 dev-util/github-cli ~amd64
 media-fonts/nerdfonts ~amd64
+www-client/librewolf-bin ~amd64
 www-client/brave-bin ~amd64
 www-client/helium-bin ~amd64
 
@@ -120,7 +123,6 @@ install_base() {
 
         # Modern CLI
         sys-apps/bat
-        sys-apps/eza
         sys-apps/fd
         sys-apps/ripgrep
         app-shells/zoxide
@@ -331,6 +333,12 @@ install_dev() {
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y || warn "Rustup install failed"
     fi
 
+    # eza (not in Gentoo repos)
+    if ! command -v eza >/dev/null 2>&1; then
+        log "Installing eza via cargo..."
+        ~/.cargo/bin/cargo install eza || warn "eza install failed"
+    fi
+
     log "Development tools installed"
 }
 
@@ -382,7 +390,7 @@ install_browsers() {
     section "Browsers"
 
     local packages=(
-        www-client/firefox-bin
+        www-client/librewolf-bin
         www-client/brave-bin
         www-client/helium-bin
     )
