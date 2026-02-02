@@ -26,8 +26,12 @@ zstyle ':completion:*:default' list-prompt '%Sscroll: %p'
 zstyle ':completion:*:*:*:*:*' squeeze-slashes true
 zstyle ':completion:*:(ssh|scp|sftp|rsync):*' squeeze-slashes false
 
+# Fix double-escaping of spaces in remote paths (scp, rsync, sftp)
+zstyle ':completion:*:(scp|rsync|sftp):*' completer _complete
+zstyle ':completion:*:(scp|rsync|sftp):*:files' quoting off
+
 # General Settings
-setopt NO_BEEP NO_BG_NICE CORRECT CORRECT_ALL GLOB_COMPLETE EXTENDED_GLOB INTERACTIVE_COMMENTS NO_BAD_PATTERN
+setopt NO_BEEP NO_BG_NICE CORRECT GLOB_COMPLETE EXTENDED_GLOB INTERACTIVE_COMMENTS NO_BAD_PATTERN
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
 typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)

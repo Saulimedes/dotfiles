@@ -1,226 +1,119 @@
-![Build Status](https://github.com/Saulimedes/nixos-config/actions/workflows/nix.yml/badge.svg)
 ![License: GPLv3](https://img.shields.io/badge/license-GPLv3-green.svg)
-![Saulimedes NixOS](https://img.shields.io/badge/saulimedes%20%20-nixos--config-blue?style=flat&logo=gnometerminal&logoColor=white.svg)
-![NixOS](https://img.shields.io/badge/distro-NixOS-5277C3?logo=nixos&logoColor=white)
+![Gentoo](https://img.shields.io/badge/distro-Gentoo-54487A?logo=gentoo&logoColor=white)
 ![Emacs](https://img.shields.io/badge/editor-emacs-7F5AB6?logo=gnuemacs&logoColor=white)
-![MonoLisa](https://img.shields.io/badge/font-MonoLisa-green)
-![fish](https://img.shields.io/badge/shell-fish-lightgreen?logo=fish&logoColor=white)
+![Zsh](https://img.shields.io/badge/shell-zsh-green?logo=zsh&logoColor=white)
 
-<p align="center">
-  <img src="./.github/images/dotfile_image.png" alt="Banner" style="width:320px;"/>
-</p>
+# Gentoo Dotfiles
 
-# NixOS Configuration
+Personal Gentoo Linux configuration with shell script for system setup and chezmoi for dotfiles.
 
-Personal NixOS + Home Manager configuration using Nix Flakes.
+## Features
 
-## Quick Start (New Machine)
+- **Setup Script**: Simple bash script for package installation
+- **Dotfiles**: Managed with chezmoi
+- **Overlays**: guru and xlibre
+- **X Server**: Xlibre (community fork of Xorg)
+- **Browsers**: Librewolf, Brave, Helium
+- **Development**: Node.js, Python, Go, Rust
+- **Kubernetes**: kubectl, helm, k9s, kubie, stern
+- **Containers**: Podman (rootless), libvirt/QEMU
 
-### 1. Boot NixOS installer and install minimal system
-
-```bash
-# Partition, format, mount as needed, then:
-nixos-generate-config --root /mnt
-nixos-install
-reboot
-```
-
-### 2. Clone this repository
+## Quick Start
 
 ```bash
-nix-shell -p git
-git clone git@github.com:Saulimedes/nixos-config.git ~/nixos-config
-cd ~/nixos-config
+# 1. Bootstrap chezmoi and dotfiles
+sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Saulimedes/dotfiles
+
+# 2. Run setup script
+cd ~/.local/share/chezmoi
+./setup.sh all
+
+# 3. Reboot and enjoy
 ```
 
-### 3. Set up your host
+## Selective Installation
 
 ```bash
-# Copy your hardware configuration
-cp /etc/nixos/hardware-configuration.nix hosts/nitipa1/
-
-# Or create a new host:
-mkdir -p hosts/<your-hostname>
-nixos-generate-config --show-hardware-config > hosts/<your-hostname>/hardware-configuration.nix
-```
-
-If creating a new host, add it to `flake.nix`:
-```nix
-nixosConfigurations = {
-  nitipa1 = mkHost { hostname = "nitipa1"; };
-  <your-hostname> = mkHost { hostname = "<your-hostname>"; };
-};
-```
-
-### 4. Enable flakes (if not already)
-
-```bash
-# Temporarily enable flakes for first build
-export NIX_CONFIG="experimental-features = nix-command flakes"
-```
-
-### 5. Fetch private inputs and build
-
-```bash
-# Fetch private repos (fonts) as your user (has SSH keys)
-nix flake update private-fonts
-
-# Build and switch
-sudo nixos-rebuild switch --flake .#nitipa1
-```
-
-## Daily Usage
-
-```bash
-# Rebuild after changes
-sudo nixos-rebuild switch --flake .#nitipa1
-
-# Update all flake inputs
-nix flake update
-sudo nixos-rebuild switch --flake .#nitipa1
-
-# Update single input (e.g., fonts)
-nix flake update private-fonts
-sudo nixos-rebuild switch --flake .#nitipa1
-
-# Test build without activating
-nixos-rebuild build --flake .#nitipa1
-
-# Garbage collection
-sudo nix-collect-garbage -d
-nix-collect-garbage -d  # user store
+./setup.sh portage base     # Minimal: overlays + CLI tools
+./setup.sh desktop          # Desktop environment, fonts, audio
+./setup.sh dev              # Development tools
+./setup.sh work             # Kubernetes/cloud
+./setup.sh browsers         # Librewolf, Brave, Helium
+./setup.sh virt             # Podman, libvirt
+./setup.sh services         # Systemd user services
 ```
 
 ## Structure
 
 ```
 .
-├── flake.nix              # Main flake entry point
-├── flake.lock             # Locked dependencies
+├── setup.sh                    # System setup script
 │
-├── hosts/                 # Per-machine configurations
-│   └── nitipa1/
-│       ├── default.nix    # Host-specific settings
-│       └── hardware-configuration.nix
+├── dot_config/                 # Application configs
+│   ├── nvim/                   # Neovim
+│   ├── kitty/                  # Kitty terminal
+│   ├── yazi/                   # File manager
+│   ├── starship.toml           # Prompt
+│   └── atuin/                  # Shell history
 │
-├── system/                # NixOS system modules
-│   ├── default.nix        # Main config (locale, nix settings)
-│   ├── boot.nix           # Bootloader
-│   ├── networking.nix     # Network, SSH, firewall
-│   ├── users.nix          # User accounts
-│   ├── desktop.nix        # XFCE, fonts, flatpak
-│   ├── audio.nix          # PipeWire, Bluetooth
-│   └── virtualisation.nix # Docker, Podman, libvirt
+├── dot_emacs.d/                # Emacs configuration
+│   ├── init.el
+│   ├── early-init.el
+│   └── lisp/
 │
-├── home/                  # Home Manager configuration
-│   ├── default.nix        # Entry point
-│   └── modules/
-│       ├── shells/        # Fish (primary), Bash
-│       ├── editors/       # Neovim, Emacs
-│       ├── terminals/     # Kitty, Ghostty, Tmux
-│       ├── cli/           # Git, fzf, starship, atuin, etc.
-│       ├── services/      # Syncthing, GPG agent
-│       ├── scripts/       # Custom scripts (extract, ydl, etc.)
-│       ├── browsers.nix   # Brave, Firefox, Zen, Chromium
-│       └── fonts.nix      # Fonts (nixpkgs + private)
-│
-├── pkgs/                  # Custom packages
-│   └── helium.nix         # Helium browser (disabled)
-│
-├── overlays/              # Nixpkgs overlays
-│
-└── fonts/                 # Private fonts (git submodule, fetched via flake input)
+├── dot_zsh/                    # Zsh plugins
+├── dot_zshrc.tmpl              # Zsh config
+├── dot_gitconfig.tmpl          # Git config
+└── dot_tmux.conf               # Tmux config
 ```
 
-## Customization
+## Setup Commands
 
-### User Configuration
+| Command | Description |
+|---------|-------------|
+| `portage` | Configure overlays (guru, xlibre) |
+| `base` | Core CLI tools (zsh, bat, eza, fzf, etc.) |
+| `desktop` | Desktop environment, Xlibre, fonts, PipeWire, media |
+| `dev` | Languages and build tools |
+| `work` | Kubernetes and cloud tools |
+| `browsers` | Librewolf, Brave, Helium |
+| `virt` | Podman, libvirt/QEMU |
+| `services` | Systemd user services |
+| `kernel` | Kernel build dependencies |
+| `all` | Everything |
 
-Edit `flake.nix`:
-```nix
-userConfig = {
-  username = "becker";
-  fullName = "Paul Becker";
-  email = "p@becker.kiwi";
-  editor = "nvim";
-  visual = "emacsclient -c -a emacs";
-  manpager = "less -R";
-};
-```
+## Xlibre
 
-### Adding a New Host
+Uses [Xlibre](https://wiki.gentoo.org/wiki/Xlibre), a community fork of Xorg.
 
-1. Create host directory:
-   ```bash
-   mkdir -p hosts/<hostname>
-   ```
+**Note**: Nvidia proprietary drivers are incompatible with Xlibre. Use nouveau or AMD/Intel drivers.
 
-2. Generate hardware config on target machine:
-   ```bash
-   nixos-generate-config --show-hardware-config > hosts/<hostname>/hardware-configuration.nix
-   ```
+## Browsers
 
-3. Create `hosts/<hostname>/default.nix`:
-   ```nix
-   { config, pkgs, lib, ... }:
-   {
-     imports = [ ./hardware-configuration.nix ];
-     networking.hostName = "<hostname>";
-     system.stateVersion = "25.11";  # Set to your NixOS version
-   }
-   ```
-
-4. Add to `flake.nix`:
-   ```nix
-   nixosConfigurations.<hostname> = mkHost { hostname = "<hostname>"; };
-   ```
-
-### Private Fonts
-
-Fonts are fetched from a private GitHub repo via SSH. To update:
-
-```bash
-# As regular user (has SSH keys)
-nix flake update private-fonts
-
-# Then rebuild
-sudo nixos-rebuild switch --flake .#nitipa1
-```
-
-Fonts are installed to `~/.local/share/fonts/private/`.
-
-## Flake Inputs
-
-| Input | Description |
-|-------|-------------|
-| nixpkgs | NixOS unstable |
-| home-manager | Home Manager |
-| emacs-overlay | Latest Emacs packages |
-| nur | Nix User Repository (Firefox extensions) |
-| private-fonts | Private fonts repository |
+- **Librewolf**: Privacy-focused Firefox fork (default)
+- **Brave**: Chromium-based with ad blocking
+- **Helium**: Privacy-focused Chromium fork (from guru overlay)
 
 ## Troubleshooting
 
-### Permission denied fetching private repos
-
-Private repos (fonts) need SSH access. Run as your user first:
+### Overlay issues
 ```bash
-nix flake update private-fonts
-sudo nixos-rebuild switch --flake .#nitipa1
+sudo eselect repository enable guru
+sudo eselect repository enable xlibre
+sudo emaint sync -a
 ```
 
-### Git permission errors
-
-If you see "insufficient permission for adding an object":
+### Package masked
 ```bash
-sudo chown -R $USER:users ~/nixos-config
+echo "category/package ~amd64" | sudo tee -a /etc/portage/package.accept_keywords/custom
 ```
 
-### Dirty git tree warnings
-
-Commit or stash your changes:
+### Rootless podman
 ```bash
-git add -A && git commit -m "WIP"
-# or
-git stash
+echo "$USER:100000:65536" | sudo tee -a /etc/subuid
+echo "$USER:100000:65536" | sudo tee -a /etc/subgid
 ```
+
+## License
+
+GPLv3

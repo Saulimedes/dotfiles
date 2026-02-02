@@ -1,4 +1,22 @@
 README.md
-ansible.cfg
+LICENSE
+.github/
+
+# Setup script (not a dotfile)
+setup.sh
+
+# Yazi plugins (managed separately)
 dot_config/yazi/plugins/
-run_install_fish_plugins
+
+# Temporary files
+tmp/
+*.tmp
+*.bak
+
+# Editor files
+*.swp
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

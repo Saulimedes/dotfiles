@@ -300,6 +300,10 @@
 (global-set-key (kbd "M-[") 'previous-buffer)
 (global-set-key (kbd "M-]") 'next-buffer)
 
+;; Date/time insertion
+(global-set-key (kbd "M-S-d") 'my/insert-current-date)
+(global-set-key (kbd "M-S-t") 'my/insert-current-time)
+
 ;; ============================================================
 ;; Utility Functions
 ;; ============================================================
@@ -312,6 +316,16 @@
         (kill-new path)
         (message "Copied: %s" path))
     (message "No file path")))
+
+(defun my/insert-current-date ()
+  "Insert current date in German format (DD.MM.YYYY)."
+  (interactive)
+  (insert (format-time-string "%d.%m.%Y")))
+
+(defun my/insert-current-time ()
+  "Insert current time (HH:MM)."
+  (interactive)
+  (insert (format-time-string "%H:%M")))
 
 (defun duplicate-line ()
   "Duplicate the current line."
