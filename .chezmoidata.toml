@@ -1,0 +1,4 @@
+[data]
+editor = "emacs"
+visual = "emacs"
+manpager = "emacs +Man!"
