@@ -64,16 +64,24 @@ setup_portage() {
 app-shells/atuin ~amd64
 app-shells/starship ~amd64
 app-shells/zoxide ~amd64
-app-misc/eza ~amd64
+sys-apps/eza ~amd64
 app-misc/fastfetch ~amd64
 
 # Browsers
-www-client/librewolf-bin ~amd64
+dev-util/github-cli ~amd64
+media-fonts/nerdfonts ~amd64
 www-client/brave-bin ~amd64
 www-client/helium-bin ~amd64
 
 # Kubernetes tools
 dev-util/k9s ~amd64
+EOF
+
+    log "Configuring package.use..."
+    sudo mkdir -p /etc/portage/package.use
+    sudo tee /etc/portage/package.use/custom > /dev/null << 'EOF'
+# Required for podman
+net-firewall/iptables nftables
 EOF
 
     log "Portage configured"
@@ -112,7 +120,7 @@ install_base() {
 
         # Modern CLI
         sys-apps/bat
-        app-misc/eza
+        sys-apps/eza
         sys-apps/fd
         sys-apps/ripgrep
         app-shells/zoxide
@@ -190,8 +198,8 @@ install_desktop() {
         # GTK/Wayland
         x11-libs/gtk+:3
         dev-libs/wayland
-        gui-libs/xdg-desktop-portal
-        gui-libs/xdg-desktop-portal-gtk
+        sys-apps/xdg-desktop-portal
+        sys-apps/xdg-desktop-portal-gtk
 
         # Audio
         media-video/pipewire
@@ -303,7 +311,7 @@ install_dev() {
         app-admin/terraform
 
         # Tools
-        dev-vcs/gh
+        dev-util/github-cli
         dev-util/shellcheck
         dev-util/shfmt
     )
@@ -374,7 +382,7 @@ install_browsers() {
     section "Browsers"
 
     local packages=(
-        www-client/librewolf-bin
+        www-client/firefox-bin
         www-client/brave-bin
         www-client/helium-bin
     )
