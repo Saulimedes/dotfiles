@@ -52,7 +52,6 @@ cd ~/.local/share/chezmoi
 ├── dot_config/                 # Application configs
 │   ├── nvim/                   # Neovim
 │   ├── kitty/                  # Kitty terminal
-│   ├── yazi/                   # File manager
 │   ├── starship.toml           # Prompt
 │   └── atuin/                  # Shell history
 │

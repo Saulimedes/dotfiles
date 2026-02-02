@@ -1,7 +1,0 @@
-[flavor]
-use = "nord"
-dark = "nord"
-
-[status]
-sep_left = { open = "", close = "" }
-sep_right = { open = "", close = "" }
