@@ -6,14 +6,18 @@ on:
     paths:
       - '**.sh'
       - '**.tmpl'
+      - '**.el'
       - 'packages.txt'
       - 'dot_zsh/**'
+      - 'dot_emacs.d/**'
   pull_request:
     paths:
       - '**.sh'
       - '**.tmpl'
+      - '**.el'
       - 'packages.txt'
       - 'dot_zsh/**'
+      - 'dot_emacs.d/**'
   workflow_dispatch:
 
 jobs:
@@ -47,6 +51,34 @@ jobs:
       - name: Check shell formatting
         run: |
           shfmt -d -i 4 -ci run_once_*.sh run_onchange_*.sh || true
+
+  elisp:
+    name: Emacs Lisp
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Emacs
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y emacs-nox
+
+      - name: Byte-compile elisp files
+        run: |
+          emacs --batch \
+            --eval "(setq byte-compile-error-on-warn nil)" \
+            --eval "(setq load-path (cons \"${{ github.workspace }}/dot_emacs.d/lisp\" load-path))" \
+            -f batch-byte-compile dot_emacs.d/init.el dot_emacs.d/early-init.el || true
+
+      - name: Check for common issues
+        run: |
+          echo "Checking for common elisp issues..."
+          # Check for tabs (elisp convention is spaces)
+          if grep -r $'\t' dot_emacs.d/*.el 2>/dev/null; then
+            echo "Warning: Found tabs in elisp files (convention is spaces)"
+          fi
+          echo "Elisp check complete!"
 
   packages:
     name: Validate Packages
