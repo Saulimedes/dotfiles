@@ -3,21 +3,7 @@ name: Lint
 on:
   push:
     branches: [main]
-    paths:
-      - '**.sh'
-      - '**.tmpl'
-      - '**.el'
-      - 'packages.txt'
-      - 'dot_zsh/**'
-      - 'dot_emacs.d/**'
   pull_request:
-    paths:
-      - '**.sh'
-      - '**.tmpl'
-      - '**.el'
-      - 'packages.txt'
-      - 'dot_zsh/**'
-      - 'dot_emacs.d/**'
   workflow_dispatch:
 
 jobs:
