@@ -49,6 +49,7 @@ app-arch/unrar
 # Version control
 dev-vcs/git
 dev-vcs/git-lfs
+dev-vcs/git-crypt
 
 # Network
 net-misc/curl

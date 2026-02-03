@@ -61,10 +61,10 @@ jobs:
 
       - name: Validate templates
         run: |
-          $HOME/.local/bin/chezmoi execute-template < dot_zshrc.tmpl > /dev/null
-          $HOME/.local/bin/chezmoi execute-template < dot_gitconfig.tmpl > /dev/null
-        env:
-          CHEZMOI_SOURCE_DIR: ${{ github.workspace }}
+          # Initialize chezmoi with source dir to load .chezmoidata.toml
+          $HOME/.local/bin/chezmoi init --source=${{ github.workspace }} --no-tty
+          $HOME/.local/bin/chezmoi execute-template --source=${{ github.workspace }} < dot_zshrc.tmpl > /dev/null
+          $HOME/.local/bin/chezmoi execute-template --source=${{ github.workspace }} < dot_gitconfig.tmpl > /dev/null
 
   packages:
     name: Validate Packages
