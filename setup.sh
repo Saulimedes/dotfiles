@@ -67,6 +67,7 @@ setup_portage() {
 app-shells/atuin ~amd64
 app-shells/starship ~amd64
 app-shells/zoxide ~amd64
+app-shells/direnv ~amd64
 app-misc/fastfetch ~amd64
 
 # Browsers
@@ -483,6 +484,7 @@ EOF
     systemctl --user daemon-reload
     systemctl --user enable --now syncthing.service 2>/dev/null || true
     systemctl --user enable --now podman-cleanup.timer 2>/dev/null || true
+    systemctl --user enable --now emacs.service 2>/dev/null || true
 
     log "Services configured"
 }
