@@ -52,6 +52,13 @@ dev-vcs/git-lfs
 dev-vcs/git-crypt
 
 # Network
+gnome-extra/nm-applet
+net-vpn/networkmanager-vpnc
+net-vpn/networkmanager-sstp
+net-vpn/networkmanager-openvpn
+net-vpn/networkmanager-pptp
+net-vpn/networkmanager-l2tp
+net-vpn/networkmanager-fortisslvpn
 net-misc/curl
 net-misc/wget
 net-misc/rsync
