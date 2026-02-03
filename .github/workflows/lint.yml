@@ -1,0 +1,86 @@
+name: Lint
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**.sh'
+      - '**.tmpl'
+      - 'packages.txt'
+      - 'dot_zsh/**'
+  pull_request:
+    paths:
+      - '**.sh'
+      - '**.tmpl'
+      - 'packages.txt'
+      - 'dot_zsh/**'
+  workflow_dispatch:
+
+jobs:
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: '.'
+          severity: warning
+          ignore_paths: 'dot_emacs.d'
+
+  shfmt:
+    name: Shell Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install shfmt
+        run: |
+          curl -sS https://webi.sh/shfmt | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Check shell formatting
+        run: |
+          shfmt -d -i 4 -ci run_once_*.sh run_onchange_*.sh || true
+
+  validate-chezmoi:
+    name: Validate Chezmoi
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
+
+      - name: Validate templates
+        run: |
+          $HOME/.local/bin/chezmoi execute-template < dot_zshrc.tmpl > /dev/null
+          $HOME/.local/bin/chezmoi execute-template < dot_gitconfig.tmpl > /dev/null
+        env:
+          CHEZMOI_SOURCE_DIR: ${{ github.workspace }}
+
+  packages:
+    name: Validate Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check packages.txt format
+        run: |
+          echo "Checking packages.txt..."
+          # Check for empty lines between packages (comments allowed)
+          # Check format: category/package
+          grep -v '^#' packages.txt | grep -v '^$' | while read -r pkg; do
+            if ! echo "$pkg" | grep -qE '^[a-z0-9-]+/[a-zA-Z0-9._-]+$'; then
+              echo "Invalid package format: $pkg"
+              exit 1
+            fi
+          done
+          echo "All packages valid!"

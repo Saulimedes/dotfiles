@@ -69,19 +69,32 @@ app-crypt/gnupg
 # VPN
 net-vpn/mullvadvpn-app
 
+# Fonts
+media-fonts/noto
+media-fonts/noto-emoji
+media-fonts/liberation-fonts
+media-fonts/fira-code
+media-fonts/jetbrains-mono
+
 # Media
 media-video/mpv
 media-video/ffmpeg
-media-gfx/krita
 
 # Browser
 www-client/librewolf-bin
 www-client/helium-bin
-www-client/zen-browser-bin
+www-client/zen-bin
 
 # Messaging
 net-im/telegram-desktop-bin
 net-im/session-desktop-bin
+
+# Sync
+net-p2p/syncthing
+
+# XDG
+x11-misc/xdg-user-dirs
+x11-misc/xdg-utils
 
 # Utils
 app-text/tree
