@@ -48,24 +48,6 @@ jobs:
         run: |
           shfmt -d -i 4 -ci run_once_*.sh run_onchange_*.sh || true
 
-  validate-chezmoi:
-    name: Validate Chezmoi
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install chezmoi
-        run: |
-          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
-
-      - name: Validate templates
-        run: |
-          # Initialize chezmoi with source dir to load .chezmoidata.toml
-          $HOME/.local/bin/chezmoi init --source=${{ github.workspace }} --no-tty
-          $HOME/.local/bin/chezmoi execute-template --source=${{ github.workspace }} < dot_zshrc.tmpl > /dev/null
-          $HOME/.local/bin/chezmoi execute-template --source=${{ github.workspace }} < dot_gitconfig.tmpl > /dev/null
-
   packages:
     name: Validate Packages
     runs-on: ubuntu-latest

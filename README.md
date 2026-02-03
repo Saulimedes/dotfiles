@@ -3,11 +3,14 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Saulimedes/dotfiles/actions/workflows/lint.yml">
+    <img src="https://github.com/Saulimedes/dotfiles/actions/workflows/lint.yml/badge.svg" alt="Lint">
+  </a>
   <img src="https://img.shields.io/badge/license-GPLv3-green.svg" alt="License">
   <img src="https://img.shields.io/badge/distro-Gentoo-54487A?logo=gentoo&logoColor=white" alt="Gentoo">
   <img src="https://img.shields.io/badge/editor-emacs-7F5AB6?logo=gnuemacs&logoColor=white" alt="Emacs">
-  <img src="https://img.shields.io/badge/shell-zsh-green?logo=zsh&logoColor=white" alt="Zsh">
-  <img src="https://img.shields.io/badge/dotfiles-chezmoi-blue" alt="chezmoi">
+  <img src="https://img.shields.io/badge/shell-zsh-F15A24?logo=iterm2&logoColor=white" alt="Zsh">
+  <img src="https://img.shields.io/badge/dotfiles-chezmoi-285577?logo=files&logoColor=white" alt="chezmoi">
 </p>
 
 # Dotfiles
