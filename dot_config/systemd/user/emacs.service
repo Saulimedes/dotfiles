@@ -1,0 +1,13 @@
+[Unit]
+Description=Emacs daemon
+Documentation=man:emacs(1)
+
+[Service]
+Type=notify
+ExecStart=/usr/bin/emacs --fg-daemon
+ExecStop=/usr/bin/emacsclient --eval "(kill-emacs)"
+Restart=on-failure
+Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
+
+[Install]
+WantedBy=default.target

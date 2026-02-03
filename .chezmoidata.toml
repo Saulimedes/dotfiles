@@ -1,4 +1,4 @@
 [data]
-editor = "emacs"
-visual = "emacs"
-manpager = "emacs +Man!"
+editor = "emacsclient -t"
+visual = "emacsclient -c"
+manpager = "emacsclient -t +Man!"
