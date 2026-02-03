@@ -29,7 +29,8 @@ jobs:
         with:
           scandir: '.'
           severity: warning
-          ignore_paths: 'dot_emacs.d'
+          ignore_paths: 'dot_emacs.d dot_zsh dot_local/bin'
+          ignore_names: '*.zsh'
 
   shfmt:
     name: Shell Formatting
