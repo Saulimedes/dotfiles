@@ -1,4 +1,5 @@
 [tools]
+# Languages
 bun = "latest"
 deno = "latest"
 go = "latest"
@@ -6,5 +7,34 @@ java = "lts"
 node = "lts"
 python = "latest"
 rust = "latest"
-terraform = "latest"
+zig = "latest"
+
+# Kubernetes
+helm = "latest"
+kubectl = "latest"
+kustomize = "latest"
+k9s = "latest"
+kubie = "latest"
+stern = "latest"
+k3s = "latest"
+
+# IaC / Cloud
 opentofu = "latest"
+vault = "latest"
+ansible = "latest"
+gcloud = "latest"
+azure-cli = "latest"
+
+# Dev tools
+direnv = "latest"
+github-cli = "latest"
+yarn = "latest"
+opencode = "latest"
+jq = "latest"
+yq = "latest"
+shellcheck = "latest"
+shfmt = "latest"
+pipx = "latest"
+pipenv = "latest"
+cookiecutter = "latest"
+yt-dlp = "latest"

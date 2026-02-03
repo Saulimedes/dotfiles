@@ -1,0 +1,91 @@
+# Gentoo packages - managed by chezmoi
+# Changes to this file trigger automatic installation
+
+# Shells
+app-shells/zsh
+app-shells/zsh-completions
+app-shells/bash-completion
+
+# Modern CLI
+app-shells/zoxide
+app-shells/atuin
+app-shells/starship
+app-shells/fzf
+sys-apps/bat
+sys-apps/eza
+sys-apps/fd
+sys-apps/ripgrep
+
+# Terminals
+x11-terms/kitty
+app-misc/tmux
+
+# Editors
+app-editors/emacs
+
+# Monitoring
+sys-process/btop
+sys-process/htop
+app-misc/fastfetch
+sys-fs/ncdu
+sys-fs/duf
+
+# Filesystem tools
+sys-fs/btrfs-progs
+sys-fs/dosfstools
+sys-fs/e2fsprogs
+sys-fs/exfatprogs
+sys-fs/f2fs-tools
+sys-fs/ntfs3g
+sys-fs/squashfs-tools
+sys-fs/xfsprogs
+
+# Archives
+app-arch/zip
+app-arch/unzip
+app-arch/p7zip
+app-arch/unrar
+
+# Version control
+dev-vcs/git
+dev-vcs/git-lfs
+
+# Network
+net-misc/curl
+net-misc/wget
+net-misc/rsync
+net-dns/bind-tools
+net-analyzer/nmap
+net-analyzer/mtr
+net-analyzer/tcpdump
+net-misc/socat
+net-analyzer/netcat
+net-misc/whois
+net-misc/iperf
+
+# Security
+app-crypt/gnupg
+
+# VPN
+net-vpn/mullvadvpn-app
+
+# Media
+media-video/mpv
+media-video/ffmpeg
+media-gfx/krita
+
+# Browser
+www-client/librewolf-bin
+www-client/helium-bin
+www-client/zen-browser-bin
+
+# Messaging
+net-im/telegram-desktop-bin
+net-im/session-desktop-bin
+
+# Utils
+app-text/tree
+app-misc/tealdeer
+app-portage/genlop
+app-portage/eix
+# jq, yq managed by mise
