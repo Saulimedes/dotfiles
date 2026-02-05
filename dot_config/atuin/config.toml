@@ -5,6 +5,7 @@ style = "compact"
 auto_sync = true
 case_sensitive = false
 tore_success_only = true
+sync_address = "https://atuin.lan.becker.kiwi"
 sync_frequency = "6h"
 history_format = "plain"
 secrets_filter = true
