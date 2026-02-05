@@ -1,0 +1,46 @@
+#!/bin/bash
+# Deploy user.js and chrome/ to Firefox default profile
+# user.js hash: {{ include "dot_mozilla/firefox/user.js" | sha256sum }}
+# chrome hash: {{ glob (joinPath .chezmoi.sourceDir "dot_mozilla/firefox/chrome/*") | join "\n" | sha256sum }}
+
+set -euo pipefail
+
+PROFILES_INI="$HOME/.mozilla/firefox/profiles.ini"
+
+if [[ ! -f "$PROFILES_INI" ]]; then
+    echo "Firefox profiles.ini not found — skipping user.js setup"
+    exit 0
+fi
+
+# Find the default profile directory
+PROFILE_DIR=""
+while IFS='=' read -r key value; do
+    case "$key" in
+        Path) PROFILE_DIR="$value" ;;
+        Default)
+            [[ "$value" == "1" ]] && break
+            PROFILE_DIR=""
+            ;;
+    esac
+done < "$PROFILES_INI"
+
+if [[ -z "$PROFILE_DIR" ]]; then
+    echo "No default Firefox profile found — skipping"
+    exit 0
+fi
+
+PROFILE_PATH="$HOME/.mozilla/firefox/$PROFILE_DIR"
+
+if [[ ! -d "$PROFILE_PATH" ]]; then
+    echo "Profile directory $PROFILE_PATH does not exist — skipping"
+    exit 0
+fi
+
+cp "$HOME/.mozilla/firefox/user.js" "$PROFILE_PATH/user.js"
+
+# Copy chrome directory (userChrome.css, userContent.css, etc.)
+CHROME_SRC="$HOME/.mozilla/firefox/chrome"
+if [[ -d "$CHROME_SRC" ]]; then
+    mkdir -p "$PROFILE_PATH/chrome"
+    cp -r "$CHROME_SRC/." "$PROFILE_PATH/chrome/"
+fi
