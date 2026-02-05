@@ -1,9 +1,56 @@
+// =============================================================================
+// DISABLE AI FEATURES
+// =============================================================================
+user_pref("browser.ml.enable", false);
+user_pref("browser.ai.control.default", "blocked");
+user_pref("browser.ai.control.sidebarChatbot", "blocked");
+user_pref("browser.ai.control.linkPreviewKeyPoints", "blocked");
+user_pref("browser.ai.control.smartTabGroups", "blocked");
+user_pref("browser.ai.control.translations", "blocked");
+user_pref("browser.ai.control.pdfjsAltText", "blocked");
+user_pref("browser.ml.chat.enabled", false);
+user_pref("browser.ml.chat.sidebar", false);
+user_pref("browser.ml.chat.shortcuts", false);
+user_pref("browser.ml.chat.menu", false);
+user_pref("browser.ml.chat.page", false);
+user_pref("browser.ml.chat.page.footerBadge", false);
+user_pref("browser.ml.chat.page.menuBadge", false);
+user_pref("browser.ml.linkPreview.enabled", false);
+user_pref("browser.ml.pageAssist.enabled", false);
+user_pref("browser.ml.smartAssist.enabled", false);
+user_pref("browser.tabs.groups.smart.enabled", false);
+user_pref("browser.tabs.groups.smart.userEnabled", false);
+user_pref("extensions.ml.enabled", false);
+user_pref("pdfjs.enableAltTextModelDownload", false);
+user_pref("pdfjs.enableGuessAltText", false);
+
+// Disable translations
+user_pref("browser.translations.enable", false);
+
+// Disable screenshots
+user_pref("extensions.screenshots.disabled", true);
+user_pref("extensions.screenshots.upload-disabled", true);
+user_pref("screenshots.browser.component.enabled", false);
+
+// Disable PiP entirely
+user_pref("media.videocontrols.picture-in-picture.enabled", false);
+
+// Disable web compat reporter
+user_pref("extensions.webcompat-reporter.enabled", false);
+
+// =============================================================================
+// PERFORMANCE & NETWORK
+// =============================================================================
 user_pref("browser.sessionstore.restore_pinned_tabs_on_demand", true);
 user_pref("network.http.speculative-parallel-limit", 0);
 user_pref("browser.urlbar.speculativeConnect.enabled", true);
 user_pref("browser.places.speculativeConnect.enabled", true);
 user_pref("network.prefetch-next", true);
 user_pref("network.http.max-persistent-connections-per-server", 20); // increase download connections
+user_pref("network.http.max-connections", 1800);
+user_pref("network.http.max-urgent-start-excessive-connections-per-host", 5);
+user_pref("network.http.pacing.requests.enabled", false);
+user_pref("network.ssl_tokens_cache_capacity", 10240); // SSL session cache
 user_pref("privacy.trackingprotection.allow_list.convenience.enabled", false); // disable Strict allowlist of convenience features
 user_pref("signon.rememberSignons", false); // disable password manager
 user_pref("extensions.formautofill.addresses.enabled", false); // disable address manager
@@ -54,14 +101,103 @@ user_pref("browser.tabs.loadBookmarksInTabs", true); // force bookmarks to open 
 user_pref("ui.key.menuAccessKey", 0); // remove underlined characters from various settings
 user_pref("general.autoScroll", false); // disable unintentional behavior for middle click
 user_pref("ui.SpellCheckerUnderlineStyle", 1); // [HIDDEN] dots for spell check errors
-user_pref("media.videocontrols.picture-in-picture.display-text-tracks.size", "small"); // PiP
-user_pref("media.videocontrols.picture-in-picture.urlbar-button.enabled", false); // PiP in address bar
 user_pref("reader.parse-on-load.enabled", false); // disable reader mode
 user_pref("network.trr.mode", 2); // enable TRR (with System fallback)
 user_pref("network.trr.max-fails", 5); // lower max attempts to use DoH
 user_pref("geo.provider.use_geoclue", false); // [LINUX]
 user_pref("pdfjs.defaultZoomValue", "page-width"); // PDF zoom level
+// =============================================================================
+// SIDEBAR & VERTICAL TABS
+// =============================================================================
 user_pref("sidebar.revamp", true);
 user_pref("sidebar.visibility", "hide-sidebar");
 user_pref("sidebar.main.tools", "history");
 user_pref("sidebar.verticalTabs", true);
+
+// =============================================================================
+// PRIVACY EXTRAS
+// =============================================================================
+// Disable Pocket
+user_pref("extensions.pocket.enabled", false);
+
+// Disable telemetry
+user_pref("toolkit.telemetry.enabled", false);
+user_pref("toolkit.telemetry.unified", false);
+user_pref("toolkit.telemetry.archive.enabled", false);
+user_pref("datareporting.healthreport.uploadEnabled", false);
+user_pref("datareporting.policy.dataSubmissionEnabled", false);
+user_pref("browser.ping-centre.telemetry", false);
+user_pref("browser.newtabpage.activity-stream.feeds.telemetry", false);
+user_pref("browser.newtabpage.activity-stream.telemetry", false);
+
+// Disable studies and experiments
+user_pref("app.shield.optoutstudies.enabled", false);
+user_pref("app.normandy.enabled", false);
+user_pref("app.normandy.api_url", "");
+
+// Disable crash reporter sending
+user_pref("breakpad.reportURL", "");
+user_pref("browser.tabs.crashReporting.sendReport", false);
+user_pref("browser.crashReports.unsubmittedCheck.autoSubmit2", false);
+
+// Disable extension recommendations
+user_pref("browser.messaging-system.whatsNewPanel.enabled", false);
+user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);
+user_pref("browser.urlbar.suggest.quicksuggest.sponsored", false);
+
+// Enable userChrome.css
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("svg.context-properties.content.enabled", true);
+user_pref("layout.css.backdrop-filter.enabled", true);
+
+// GPU acceleration
+user_pref("layers.acceleration.force-enabled", true);
+user_pref("gfx.webrender.all", true);
+user_pref("gfx.webrender.enabled", true);
+user_pref("gfx.canvas.accelerated", true);
+user_pref("gfx.canvas.accelerated.cache-items", 4096);
+user_pref("gfx.canvas.accelerated.cache-size", 512);
+user_pref("gfx.content.skia-font-cache-size", 20);
+user_pref("media.ffmpeg.vaapi.enabled", true); // hardware video decode on Linux
+user_pref("media.hardware-video-decoding.force-enabled", true);
+
+// Compact mode option
+user_pref("browser.compactmode.show", true);
+
+// Resist fingerprinting lite (breaks fewer sites than full RFP)
+user_pref("privacy.resistFingerprinting.letterboxing", false);
+user_pref("webgl.disabled", false); // keep webgl for compatibility
+
+// HTTPS-only mode
+user_pref("dom.security.https_only_mode", true);
+user_pref("dom.security.https_only_mode_send_http_background_request", false);
+
+// Disable prefetching (saves bandwidth, slight privacy gain)
+user_pref("network.dns.disablePrefetch", true);
+user_pref("network.dns.disablePrefetchFromHTTPS", true);
+
+// =============================================================================
+// PERFORMANCE TWEAKS
+// =============================================================================
+// Faster session restore
+user_pref("browser.sessionstore.interval", 30000); // save session every 30s instead of 15s
+user_pref("browser.sessionstore.max_tabs_undo", 10);
+user_pref("browser.sessionhistory.max_entries", 25); // fewer back/forward entries
+
+// Memory
+user_pref("browser.cache.disk.enable", true);
+user_pref("browser.cache.memory.capacity", 524288); // 512MB memory cache
+user_pref("browser.cache.disk.smart_size.enabled", false);
+user_pref("browser.cache.disk.capacity", 1048576); // 1GB disk cache
+
+// Image/media
+user_pref("image.mem.decode_bytes_at_a_time", 131072); // faster image decode
+user_pref("media.memory_cache_max_size", 131072);
+
+// Rendering
+user_pref("nglayout.initialpaint.delay", 0);
+user_pref("nglayout.initialpaint.delay_in_oopif", 0);
+user_pref("content.notify.interval", 100000);
+
+// Tab unloading (memory saver for many tabs)
+user_pref("browser.tabs.unloadOnLowMemory", true);
