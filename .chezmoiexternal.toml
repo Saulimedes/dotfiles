@@ -1,0 +1,6 @@
+[".local/share/fonts"]
+    type = "git-repo"
+    url = "git@github.com:Saulimedes/fonts.git"
+    refreshPeriod = "168h"
+    clone.args = ["--depth", "1"]
+    pull.args = ["--ff-only"]
