@@ -27,7 +27,6 @@ fi
 # Enable overlays
 log "Enabling overlays..."
 sudo eselect repository enable guru 2>/dev/null || true
-sudo eselect repository enable librewolf 2>/dev/null || true
 
 # Sync repositories
 log "Syncing repositories..."
