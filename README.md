@@ -1,5 +1,5 @@
 <p align="center">
-  <img src=".github/images/dotfile_image.png" alt="Dotfiles" width="600">
+  <img src=".github/images/dotfile_image.svg" alt="Dotfiles" width="600">
 </p>
 
 <p align="center">
