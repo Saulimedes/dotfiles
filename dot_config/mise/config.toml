@@ -1,3 +1,6 @@
+[settings]
+experimental = true
+
 [tools]
 # Languages
 bun = "latest"
@@ -17,11 +20,18 @@ k9s = "latest"
 kubie = "latest"
 stern = "latest"
 k3s = "latest"
+flux2 = "latest"
+cilium-cli = "latest"
+argocd = "latest"
+kubeseal = "latest"
+krew = "latest"
 
 # IaC / Cloud
 opentofu = "latest"
 vault = "latest"
 ansible = "latest"
+packer = "latest"
+age = "latest"
 gcloud = "latest"
 azure-cli = "latest"
 
@@ -38,3 +48,5 @@ pipx = "latest"
 pipenv = "latest"
 cookiecutter = "latest"
 yt-dlp = "latest"
+actionlint = "latest"
+hugo = "latest"

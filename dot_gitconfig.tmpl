@@ -7,20 +7,17 @@
   sshCommand = ssh
   quotepath = false
   autocrlf = input
-  fileMode = false
   editor = {{ .editor | quote }}
   ignorecase = false
-  excludesfile = ~/.gitignore
   excludesfile = ~/.config/git/ignore
   attributesfile = ~/.gitattributes
   precomposeUnicode = true
   preloadIndex = true
   safecrlf = false
-[status]
- submoduleSummary = true
 [push]
   default = current
   followTags = true
+  autoSetupRemote = true
 [submodule]
   recurse = true
 [color]
@@ -56,6 +53,7 @@
   rebase = true
 [fetch]
   prune = true
+  recurseSubmodules = true
 [rebase]
   autosquash = true
   instructionFormat = [%cn <%ce> %G?] %s
@@ -68,11 +66,7 @@
   A = "add -A ."
   aa = "add --all"
   amend = "commit --amend --no-edit"
-  br = "branch --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(contents:subject) %(color:green)(%(committerdate:relative)) [%(authorname)]' --sort=-committerdate"
-  branch-name = "!git for-each-ref --format='%(refname:short)' 'git symbolic-ref HEAD'"
-  bx = "branch -D"
   c = "clone"
-  ck = "checkout"
   clean = "clean -fdx"
   done = "!git push origin HEAD"
   force = "push --force"
@@ -86,8 +80,6 @@
   me = "config user.name"
   mail = "config user.email"
   open = "!f() { url=$(git remote get-url ${1:-origin} | sed 's/git@\\([^:]*\\):/https:\\/\\/\\1\\//' | sed 's/\\.git$//'); xdg-open \"$url\"; }; f"
-  origin-url = "url"
-  original = "!git fetch origin && git reset --hard origin/master"
   panic = "!tar cvf ../git_panic.tar *"
   permission-reset = !git diff -p -R --no-ext-diff --no-color | grep -E \"^(diff|(old|new) mode)\" --color=never | git apply
   publish = "push -u origin HEAD"
@@ -96,12 +88,22 @@
   rev = "log --format='%H' -n 1"
   s = "status -sb ."
   se = "!git rev-list --all | xargs git grep -F"
-  save = "save = !git add -A && git commit -m 'chore: commit save point"
-  unpush = "revert HEAD-1"
   tags = "tag -l"
   undo = "reset --soft HEAD"
+  unpush = "revert HEAD~1"
+  wip = "!git add -A && git commit -m 'wip: work in progress'"
+  pushsafe = "!git pull --rebase && git push"
   yoda = "push --force-with-lease"
-  zip = "git archive --format=zip -o latest.zip HEAD";
+  zip = "!git archive --format=zip -o latest.zip HEAD"
+  # switch/restore (modern replacements for checkout/branch)
+  sw = "switch"
+  swc = "switch -c"
+  rs = "restore"
+  rss = "restore --staged"
+  # remote helpers
+  set-origin = "remote set-url origin"
+  to-ssh = "!f() { url=$(git remote get-url ${1:-origin} | sed 's|https://\\([^/]*\\)/|git@\\1:|'); git remote set-url ${1:-origin} \"$url\"; echo \"Set to $url\"; }; f"
+  to-https = "!f() { url=$(git remote get-url ${1:-origin} | sed 's/git@\\([^:]*\\):/https:\\/\\/\\1\\//'); git remote set-url ${1:-origin} \"$url\"; echo \"Set to $url\"; }; f"
 [gpg]
   program = /usr/bin/gpg2
 [diff]
@@ -113,9 +115,8 @@
   keepTemporaries = false
   writeToTemp = true
   prompt = false
-[fetch]
-  recurseSubmodules = on-demand
 [status]
+  submoduleSummary = true
   relativePaths = true
 [init]
   defaultBranch = main
