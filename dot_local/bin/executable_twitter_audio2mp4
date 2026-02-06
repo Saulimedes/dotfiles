@@ -11,23 +11,38 @@ if ! command_exists podman; then
     exit 1
 fi
 
-# Check if two input files are provided
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <cover_image> <audio_file>"
+# Check input arguments
+if [ $# -eq 2 ]; then
+    cover_image="$1"
+    audio_file="$2"
+elif [ $# -eq 1 ]; then
+    cover_image=""
+    audio_file="$1"
+else
+    echo "Usage: $0 [cover_image] <audio_file>"
     exit 1
 fi
 
-cover_image="$1"
-audio_file="$2"
 output_file="${audio_file%.*}_twitter.mp4"
 
 # Run ffmpeg using podman
-echo "Creating video from audio and cover image..."
-if podman run --rm -v "$(pwd)":/tmp -w /tmp jrottenberg/ffmpeg \
-    -loop 1 -i "$cover_image" -i "$audio_file" \
-    -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
-    -c:a aac -b:a 128k -shortest -movflags +faststart \
-    "$output_file"; then
+if [ -n "$cover_image" ]; then
+    echo "Creating video from audio and cover image..."
+    podman run --rm -v "$(pwd)":/tmp -w /tmp jrottenberg/ffmpeg \
+        -loop 1 -i "$cover_image" -i "$audio_file" \
+        -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
+        -c:a aac -b:a 128k -shortest -movflags +faststart \
+        "$output_file"
+else
+    echo "Creating video from audio with black background..."
+    podman run --rm -v "$(pwd)":/tmp -w /tmp jrottenberg/ffmpeg \
+        -f lavfi -i color=c=black:s=1280x720:r=1 -i "$audio_file" \
+        -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
+        -c:a aac -b:a 128k -shortest -movflags +faststart \
+        "$output_file"
+fi
+
+if [ $? -eq 0 ]; then
     echo "Video creation complete. Output file: $output_file"
 else
     echo "Error: Video creation failed."
