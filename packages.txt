@@ -78,6 +78,7 @@ app-crypt/gnupg
 # VPN
 net-vpn/mullvadvpn-app
 net-vpn/i2pd
+net-vpn/openconnect
 
 # Fonts
 media-fonts/noto
@@ -91,7 +92,6 @@ media-video/mpv
 media-video/ffmpeg
 
 # Browser
-www-client/vivaldi
 www-client/firefox-bin
 www-client/helium-bin
 www-client/nyxt
@@ -110,7 +110,7 @@ x11-misc/xdg-utils
 # Containers
 app-containers/podman
 app-containers/podman-compose
-app-containers/podman-docker
+# docker alias: use 'alias docker=podman' in shell
 
 # Utils
 app-text/tree
