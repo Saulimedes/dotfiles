@@ -1,3 +1,6 @@
+[env]
+KUBECONFIG = "{{ exec(command='cd ' ~ env.HOME ~ ' && KUBECONFIG=$(printf \"%s:\" .kube/*.yaml | sed \"s/:$//\") kubectl config view --flatten --raw > .kube/config && echo ' ~ env.HOME ~ '/.kube/config') }}"
+
 [settings]
 experimental = true
 
