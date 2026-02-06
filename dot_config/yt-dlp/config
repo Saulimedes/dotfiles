@@ -1,6 +1,7 @@
 --ignore-errors
 --continue
 --add-metadata
+--concurrent-fragments 4
 --yes-playlist
 --no-overwrites
 -o
@@ -11,8 +12,8 @@
 --embed-thumbnail
 --geo-bypass
 --compat-options no-live-chat,filename-sanitization
+--format-sort vcodec:h264,res:1080,tbr~3000
 --sponsorblock-remove all
---no-call-home
 -f
 best[ext=mp4][height<=1080][format_id!*=VR][format_id!*=3D]/best[height<=1080][format_id!*=VR][format_id!*=3D]/best[height<=1080]/best
 --mark-watched
