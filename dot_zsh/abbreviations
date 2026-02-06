@@ -33,6 +33,11 @@ abbr "kgsv"="kubectl get service -o wide"
 abbr "kl"="kubectl logs -f"
 abbr "kw"="watch kubectl get -f"
 
+# Portage
+abbr "eu"="sudo emerge --update --deep --newuse @world"
+abbr "ei"="sudo emerge"
+abbr "es"="eix"
+
 # System
 abbr "s"="sudo"
 abbr "se"="sudo edit"
