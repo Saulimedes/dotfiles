@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# Enable user systemd services for Arch Linux
-# This replaces the systemd service management from the desktop Ansible role
+# Enable user systemd services for Gentoo Linux
 
 set -euo pipefail
-
-# (removed hostname check since only using Arch Linux)
 
 # Colors for output
 RED='\033[0;31m'

@@ -1,6 +1,7 @@
 #!/bin/bash
-# Install packages from all packages*.txt files
-# Runs once via chezmoi, or manually: ./run_once_install-packages.sh
+# Install packages from packages.txt
+# Re-runs automatically when packages.txt changes
+# packages.txt hash: {{ include "packages.txt" | sha256sum }}
 
 set -euo pipefail
 
