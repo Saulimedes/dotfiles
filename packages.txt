@@ -94,7 +94,6 @@ media-video/ffmpeg
 # Browser
 www-client/firefox-bin
 www-client/helium-bin
-www-client/nyxt
 
 # Messaging
 net-im/telegram-desktop-bin
