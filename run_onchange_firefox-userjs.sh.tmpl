@@ -5,11 +5,22 @@
 
 set -euo pipefail
 
-PROFILES_INI="$HOME/.mozilla/firefox/profiles.ini"
+FIREFOX_DIR="$HOME/.mozilla/firefox"
+PROFILES_INI="$FIREFOX_DIR/profiles.ini"
 
+# If no profile exists yet, launch Firefox headlessly to create one
 if [[ ! -f "$PROFILES_INI" ]]; then
-    echo "Firefox profiles.ini not found — skipping user.js setup"
-    exit 0
+    echo "No Firefox profile found — launching Firefox to create one..."
+    firefox-bin --headless &
+    FF_PID=$!
+    sleep 3
+    kill "$FF_PID" 2>/dev/null || true
+    wait "$FF_PID" 2>/dev/null || true
+
+    if [[ ! -f "$PROFILES_INI" ]]; then
+        echo "Failed to create Firefox profile — skipping"
+        exit 0
+    fi
 fi
 
 # Find the default profile directory
