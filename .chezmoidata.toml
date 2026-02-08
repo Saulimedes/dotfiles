@@ -2,3 +2,7 @@
 editor = "emacsclient -t"
 visual = "emacsclient -c"
 manpager = "emacsclient -t +Man!"
+
+[data.user]
+name = "Paul Becker"
+email = "p@becker.kiwi"

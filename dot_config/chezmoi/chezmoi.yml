@@ -1,11 +1,3 @@
-data:
-  user:
-    name: "Paul Becker"
-    email: "p@becker.kiwi"
-  editor: "emacsclient -t"
-  visual: "emacsclient -c -a emacs"
-  manpager: "emacsclient -t +Man!"
-
 git:
   autoPush: true
 
