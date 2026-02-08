@@ -160,10 +160,10 @@
 ;; Games are completely disabled in early-init.el
 
 ;; Performance optimization
-(load-file (expand-file-name "init.performance.el" user-emacs-directory))
+(load-file (expand-file-name "init.performance.el" "~/.emacs.d/"))
 
 ;; Loading additional Emacs Lisp files with error handling
-(let ((lisp-dir (expand-file-name "lisp" user-emacs-directory)))
+(let ((lisp-dir (expand-file-name "lisp" "~/.emacs.d/")))
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir)
     (dolist (file (directory-files lisp-dir t "\\.el$"))
