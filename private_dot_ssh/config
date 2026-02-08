@@ -5,9 +5,13 @@ AddKeysToAgent yes
 Compression yes
 VerifyHostKeyDNS yes
 
-# ask = prompts for new hosts AND key changes
 # accept-new = auto-accept new hosts, warn on key changes
 StrictHostKeyChecking accept-new
+
+# Local networks: silently accept key changes
+Host 192.168.178.* 192.168.1.* 192.168.23.*
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
 
 # Keep Alive
 TCPKeepAlive yes
