@@ -1,6 +1,6 @@
 #!/bin/bash
 # Initial Gentoo portage setup - runs once per machine
-
+exec < /dev/tty
 set -euo pipefail
 
 GREEN='\033[0;32m'
@@ -17,9 +17,6 @@ if [[ ! -f /etc/gentoo-release ]]; then
 fi
 
 log "Setting up Gentoo portage..."
-
-# Cache sudo credentials upfront (prompt goes to terminal directly)
-sudo -v < /dev/tty > /dev/tty 2>&1
 
 # Install eselect-repository if needed
 if ! command -v eselect &>/dev/null || ! eselect repository list &>/dev/null 2>&1; then
