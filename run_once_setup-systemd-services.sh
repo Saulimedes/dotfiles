@@ -69,4 +69,12 @@ for timer_file in "$service_dir"/*.timer; do
     fi
 done
 
+# Create XDG user directories
+if command -v xdg-user-dirs-update &> /dev/null; then
+    log_info "Creating XDG user directories"
+    xdg-user-dirs-update
+else
+    log_warn "xdg-user-dirs-update not found, skipping"
+fi
+
 log_info "User systemd service setup completed"

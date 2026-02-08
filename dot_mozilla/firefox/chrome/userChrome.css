@@ -1,4 +1,14 @@
 /* Firefox userChrome.css — managed by chezmoi */
 
+/* Square top window corners */
+:root {
+    --border-radius-toplevel: 0px !important;
+    --tab-border-radius: 0px !important;
+}
+
+#navigator-toolbox {
+    border-radius: 0 !important;
+}
+
 /* Hide "Email Image" from context menu */
 #context-sendimage { display: none !important; }
