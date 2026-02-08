@@ -18,6 +18,9 @@ if [[ ! -f /etc/gentoo-release ]]; then
     exit 0
 fi
 
+# Cache sudo credentials upfront (prompt goes to terminal directly)
+sudo -v < /dev/tty
+
 PACKAGES_DIR="${HOME}/.local/share/chezmoi"
 
 # Read packages from all package lists (skip comments and empty lines)

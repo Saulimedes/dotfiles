@@ -18,6 +18,9 @@ fi
 
 log "Setting up Gentoo portage..."
 
+# Cache sudo credentials upfront (prompt goes to terminal directly)
+sudo -v < /dev/tty
+
 # Install eselect-repository if needed
 if ! command -v eselect &>/dev/null || ! eselect repository list &>/dev/null 2>&1; then
     log "Installing eselect-repository..."
