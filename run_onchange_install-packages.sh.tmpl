@@ -19,7 +19,7 @@ if [[ ! -f /etc/gentoo-release ]]; then
 fi
 
 # Cache sudo credentials upfront (prompt goes to terminal directly)
-sudo -v < /dev/tty
+sudo -v < /dev/tty > /dev/tty 2>&1
 
 PACKAGES_DIR="${HOME}/.local/share/chezmoi"
 
