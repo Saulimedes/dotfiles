@@ -2,7 +2,7 @@
 # Install packages from packages.txt
 # Re-runs automatically when packages.txt changes
 # packages.txt hash: {{ include "packages.txt" | sha256sum }}
-
+exec < /dev/tty
 set -euo pipefail
 
 GREEN='\033[0;32m'
@@ -17,9 +17,6 @@ if [[ ! -f /etc/gentoo-release ]]; then
     warn "Not Gentoo, skipping"
     exit 0
 fi
-
-# Cache sudo credentials upfront (prompt goes to terminal directly)
-sudo -v < /dev/tty > /dev/tty 2>&1
 
 PACKAGES_DIR="${HOME}/.local/share/chezmoi"
 
