@@ -73,6 +73,18 @@ This will:
 - `emacsclient` as default editor
 - Dired alias: `d` opens current directory
 
+## Re-running Scripts
+
+```bash
+# Re-run all setup scripts
+chezmoi state delete-bucket --bucket=scriptState
+chezmoi apply
+
+# Re-run a specific script manually
+chezmoi execute-template < run_onchange_firefox-userjs.sh.tmpl | bash
+chezmoi execute-template < run_onchange_install-packages.sh.tmpl | bash
+```
+
 ## Requirements
 
 - Gentoo Linux with `~amd64` in ACCEPT_KEYWORDS
