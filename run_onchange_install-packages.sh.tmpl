@@ -38,23 +38,9 @@ install_packages() {
     sudo emerge --noreplace --quiet-build $packages || warn "Some packages may have failed"
 }
 
-# Install clipboard tool based on display server
-install_clipboard() {
-    if [[ "$XDG_SESSION_TYPE" == "wayland" ]] || [[ -n "${WAYLAND_DISPLAY:-}" ]]; then
-        log "Wayland detected, installing wl-clipboard..."
-        sudo emerge --noreplace --quiet-build gui-apps/wl-clipboard || warn "wl-clipboard install failed"
-    elif [[ "$XDG_SESSION_TYPE" == "x11" ]] || [[ -n "${DISPLAY:-}" ]]; then
-        log "X11 detected, installing xclip..."
-        sudo emerge --noreplace --quiet-build x11-misc/xclip || warn "xclip install failed"
-    else
-        warn "No display server detected, skipping clipboard tool"
-    fi
-}
-
 main() {
     log "Package installation"
     install_packages
-    install_clipboard
     log "Done"
 }
 
