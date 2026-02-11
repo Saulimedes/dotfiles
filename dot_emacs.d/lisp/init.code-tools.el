@@ -6,11 +6,11 @@
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
   (setq dumb-jump-selector 'completing-read))
 
-;; Smart code folding
-(use-package origami
-  :hook (prog-mode . origami-mode)
-  :config
-  (global-origami-mode))
+;; Code folding (built-in hideshow, no daemon issues)
+(use-package hideshow
+  :ensure nil
+  :straight nil
+  :hook (prog-mode . hs-minor-mode))
 
 ;; Quick edit similar items
 (use-package iedit
@@ -74,11 +74,11 @@
    ("M-<down>" . move-text-down)))
 
 ;; Keybindings for code tools (Meow compatible)
-(global-set-key (kbd "C-c z f") 'origami-close-node)
-(global-set-key (kbd "C-c z o") 'origami-open-node)
-(global-set-key (kbd "C-c z r") 'origami-open-all-nodes)
-(global-set-key (kbd "C-c z m") 'origami-close-all-nodes)
-(global-set-key (kbd "C-c z t") 'origami-toggle-node)
+(global-set-key (kbd "C-c z f") 'hs-hide-block)
+(global-set-key (kbd "C-c z o") 'hs-show-block)
+(global-set-key (kbd "C-c z r") 'hs-show-all)
+(global-set-key (kbd "C-c z m") 'hs-hide-all)
+(global-set-key (kbd "C-c z t") 'hs-toggle-hiding)
 (global-set-key (kbd "C-c c d") 'xref-find-definitions)
 (global-set-key (kbd "C-c c r") 'xref-find-references)
 (global-set-key (kbd "C-c c i") 'imenu-list-smart-toggle)

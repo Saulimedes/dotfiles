@@ -38,6 +38,7 @@
 (use-package vertico-directory
   :after vertico
   :ensure nil
+  :straight nil
   :load-path "straight/build/vertico/extensions/"
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
 
@@ -119,8 +120,8 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   consult-source-bookmark consult-source-file-register
+   consult-source-recent-file consult-source-project-recent-file
    :preview-key '(:debounce 0.4 any)))
 
 ;; ============================================================
@@ -178,6 +179,34 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   :config
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
+
+;; Tmux pane completion - complete words visible in other tmux panes
+(defun my/tmux-pane-words ()
+  "Collect words from all visible tmux panes."
+  (when (getenv "TMUX")
+    (let ((words '()))
+      (dolist (pane (split-string
+                     (shell-command-to-string
+                      "tmux list-panes -s -F '#{pane_id}'") "\n" t))
+        (let ((text (shell-command-to-string
+                     (format "tmux capture-pane -t %s -p" pane))))
+          (dolist (word (split-string text "[^a-zA-Z0-9_.-]+" t))
+            (when (>= (length word) 3)
+              (push word words)))))
+      (delete-dups words))))
+
+(defun my/cape-tmux ()
+  "Completion-at-point function for tmux pane content."
+  (when (getenv "TMUX")
+    (let ((bounds (cape--bounds 'word)))
+      (when bounds
+        `(,(car bounds) ,(cdr bounds)
+          ,(completion-table-dynamic
+            (lambda (_) (my/tmux-pane-words)))
+          :exclusive no)))))
+
+(with-eval-after-load 'cape
+  (add-to-list 'completion-at-point-functions #'my/cape-tmux))
 
 ;; Icons for corfu
 (use-package nerd-icons-corfu

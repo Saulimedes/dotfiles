@@ -12,12 +12,11 @@ abbr "gpx"="git push"
 abbr "gr"="git restore"
 abbr "grb"="git rebase"
 abbr "grx"="git rm -r"
+abbr "gl"="git log"
 abbr "gs"="git status"
 
 # Kubernetes
 abbr "k"="kubectl"
-abbr "kctx"="kubectx"
-abbr "kns"="kubens"
 abbr "ka"="kubectl apply -f"
 abbr "kd"="kubectl describe"
 abbr "kde"="kubectl delete"

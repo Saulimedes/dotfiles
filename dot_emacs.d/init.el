@@ -127,6 +127,10 @@
  initial-scratch-message nil
  ring-bell-function 'ignore)
 
+;; Clipboard integration
+(setq select-enable-clipboard t
+      select-enable-primary t)
+
 ;; Misc better defaults
 (defalias 'yes-or-no-p 'y-or-n-p)
 (global-auto-revert-mode t)
@@ -170,6 +174,7 @@
       (condition-case err
           (load-file file)
         (error (message "Error loading %s: %s" file (error-message-string err)))))))
+
 
 (provide 'init)
 

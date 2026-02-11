@@ -16,15 +16,16 @@
   :init
   (setq fontaine-presets
         '((regular
-           :default-family "VictorMono Nerd Font Propo Medium"
-           :default-height 120
-           :variable-pitch-family "SF Pro"
-           :variable-pitch-height 120
-           :fixed-pitch-family "VictorMono Nerd Font Propo Medium"
-           :fixed-pitch-height 120
+           :default-family "MonoLisaVariable Nerd Font"
+           :default-height 100
+           :variable-pitch-family "MonoLisaVariable Nerd Font"
+           :variable-pitch-height 100
+           :fixed-pitch-family "MonoLisaVariable Nerd Font"
+           :fixed-pitch-height 100
            :line-spacing 1))))
 
-(fontaine-set-preset 'regular)
+(unless (daemonp)
+  (fontaine-set-preset 'regular))
 
 (setq-default line-spacing 1)
 (setq auto-composition-mode nil)
@@ -55,6 +56,7 @@
           (bg-alt "#111111")
           (bg-active "#222222")
           (bg-inactive "#080808")
+          (bg-header "#000000")
           ;; Slightly warmer comments
           (comment fg-dim)
           ;; More vibrant strings
@@ -135,7 +137,8 @@
   :ensure nil
   :hook ((prog-mode text-mode) . display-line-numbers-mode)
   :config
-  (setq display-line-numbers-type 'relative))
+  (setq display-line-numbers-type 'relative
+        display-line-numbers-width-start t))
 
 ;; Highlight indentation levels
 (use-package highlight-indent-guides
@@ -146,39 +149,58 @@
   (highlight-indent-guides-delay 0.1))
 
 ;; ============================================================
-;; Doom Modeline - modern, polished modeline (VSCode-like)
+;; Doom Modeline - minimal config
 ;; ============================================================
 (use-package doom-modeline
   :init
-  (setq doom-modeline-height 28
-        doom-modeline-bar-width 4
+  (setq doom-modeline-height 24
+        doom-modeline-bar-width 0
         doom-modeline-hud nil
         doom-modeline-window-width-limit 85
         doom-modeline-project-detection 'auto
         doom-modeline-buffer-file-name-style 'truncate-upto-project
         doom-modeline-icon t
-        doom-modeline-major-mode-icon t
-        doom-modeline-major-mode-color-icon t
+        doom-modeline-major-mode-icon nil
+        doom-modeline-major-mode-color-icon nil
         doom-modeline-buffer-state-icon t
         doom-modeline-buffer-modification-icon t
-        doom-modeline-lsp-icon t
-        doom-modeline-time nil
+        doom-modeline-lsp-icon nil
+        doom-modeline-time t
         doom-modeline-battery nil
-        doom-modeline-env-version t
+        doom-modeline-env-version nil
         doom-modeline-vcs-max-length 20
         doom-modeline-persp-name nil
         doom-modeline-modal t
-        doom-modeline-modal-icon t
-        doom-modeline-modal-modern-icon t)
+        doom-modeline-modal-icon nil
+        doom-modeline-modal-modern-icon nil)
   :config
-  (doom-modeline-mode 1))
+  (setq display-time-format "%H:%M"
+        display-time-default-load-average nil)
+  (display-time-mode 1)
+  (unless (daemonp)
+    (doom-modeline-mode 1)))
+
+;; Clean modeline padding
+(use-package spacious-padding
+  :config
+  (setq spacious-padding-widths
+        '(:internal-border-width 12
+          :header-line-width 4
+          :mode-line-width 4
+          :tab-width 4
+          :right-divider-width 16
+          :scroll-bar-width 0
+          :fringe-width 8))
+  (unless (daemonp)
+    (spacious-padding-mode 1)))
 
 ;; ============================================================
 ;; Solaire-mode - dim non-file buffers (VSCode-like)
 ;; ============================================================
 (use-package solaire-mode
   :config
-  (solaire-global-mode +1))
+  (unless (daemonp)
+    (solaire-global-mode +1)))
 
 ;; ============================================================
 ;; Git blame on-demand
@@ -239,51 +261,44 @@
   :if (display-graphic-p))
 
 ;; ============================================================
-;; Centaur Tabs - VSCode-like tab bar
+;; Tab Line - built-in buffer tabs
 ;; ============================================================
-(use-package centaur-tabs
-  :demand t
+(use-package tab-line
+  :ensure nil
   :init
-  (setq centaur-tabs-style "bar"
-        centaur-tabs-height 32
-        centaur-tabs-set-icons t
-        centaur-tabs-icon-type 'nerd-icons
-        centaur-tabs-set-bar 'under
-        x-underline-at-descent-line t
-        centaur-tabs-set-close-button t
-        centaur-tabs-close-button "×"
-        centaur-tabs-set-modified-marker t
-        centaur-tabs-modified-marker "●"
-        centaur-tabs-cycle-scope 'tabs
-        centaur-tabs-show-new-tab-button nil
-        centaur-tabs-show-navigation-buttons nil
-        centaur-tabs-show-count nil)
+  (setq tab-line-close-button-show t
+        tab-line-new-button-show nil
+        tab-line-separator " "
+        tab-line-tab-name-truncated-max 20)
   :config
-  (centaur-tabs-mode t)
-  (centaur-tabs-headline-match)
-  ;; Group by project
-  (centaur-tabs-group-by-projectile-project)
-  ;; Hide tabs for special buffers
-  (defun centaur-tabs-hide-tab (x)
-    "Hide tab for buffer X if it's special."
-    (let ((name (format "%s" x)))
-      (or
-       (string-prefix-p "*" name)
-       (string-prefix-p " *" name)
-       (and (string-prefix-p "magit" name)
-            (not (file-name-extension name))))))
+  (unless (daemonp)
+    (if (display-graphic-p)
+        (global-tab-line-mode 1)
+      (global-tab-line-mode -1)))
+  ;; Filter out special buffers
+  (setq tab-line-exclude-modes
+        '(special-mode completion-list-mode help-mode
+          messages-buffer-mode magit-mode))
+  (defun my/tab-line-buffer-group (buffer)
+    "Group tabs by project."
+    (with-current-buffer buffer
+      (if-let ((proj (and (fboundp 'projectile-project-root)
+                          (projectile-project-root))))
+          proj
+        "general")))
+  (setq tab-line-tabs-buffer-group-function #'my/tab-line-buffer-group)
+  (setq tab-line-tabs-function #'tab-line-tabs-buffer-groups)
   :bind
-  ("M-h" . centaur-tabs-backward)
-  ("M-l" . centaur-tabs-forward)
-  ("C-c t k" . centaur-tabs-kill-other-buffers-in-current-group)
-  ("C-c t c" . centaur-tabs-close-tab))
+  ("M-h" . tab-line-switch-to-prev-tab)
+  ("M-l" . tab-line-switch-to-next-tab))
 
 ;; ============================================================
 ;; Breadcrumb - VSCode-like file path in header
 ;; ============================================================
 (use-package breadcrumb
   :config
-  (breadcrumb-mode 1))
+  (unless (daemonp)
+    (breadcrumb-mode 1)))
 
 ;; ============================================================
 ;; Symbol overlay - highlight symbol at point (like VSCode)
@@ -311,5 +326,59 @@
   :custom
   (visual-fill-column-center-text t)
   (visual-fill-column-width 100))
+
+;; ============================================================
+;; Save cursor position in files
+;; ============================================================
+(use-package saveplace
+  :ensure nil
+  :straight nil
+  :init
+  (setq save-place-file (expand-file-name "places" emacs-cache-directory))
+  :config
+  (save-place-mode 1))
+
+;; ============================================================
+;; Terminal: use terminal's own background colors
+;; ============================================================
+(defun my/terminal-setup ()
+  "Configure Emacs for terminal frames."
+  (unless (display-graphic-p)
+    ;; Transparent background - use terminal colors
+    (set-face-background 'default "unspecified-bg")
+    (set-face-background 'line-number "unspecified-bg")
+    (set-face-background 'line-number-current-line "unspecified-bg")
+    (set-face-background 'fringe "unspecified-bg")
+    (set-face-background 'hl-line "unspecified-bg")
+    ;; Disable tab line (clicks cause buffer switching)
+    (global-tab-line-mode -1)
+    (xterm-mouse-mode 1)))
+
+(add-hook 'tty-setup-hook #'my/terminal-setup)
+;; Also run for daemon frames created via emacsclient -t
+(add-hook 'after-make-frame-functions
+          (lambda (frame)
+            (with-selected-frame frame
+              (my/terminal-setup))))
+
+;; ============================================================
+;; Daemon: defer display modes until first frame is created
+;; ============================================================
+(when (daemonp)
+  (defvar my/daemon-display-initialized nil)
+  (defun my/daemon-setup-display (frame)
+    "Activate display-dependent modes on first frame creation."
+    (unless my/daemon-display-initialized
+      (setq my/daemon-display-initialized t)
+      (with-selected-frame frame
+        (fontaine-set-preset 'regular)
+        (doom-modeline-mode 1)
+        (spacious-padding-mode 1)
+        (solaire-global-mode +1)
+        (breadcrumb-mode 1)
+        (when (display-graphic-p)
+          (global-tab-line-mode 1)))))
+  (add-hook 'server-after-make-frame-hook
+            (lambda () (my/daemon-setup-display (selected-frame)))))
 
 (provide 'init.appearance)

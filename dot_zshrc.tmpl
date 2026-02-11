@@ -37,7 +37,7 @@ typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)
 
 ## Mise activation
-eval "$(mise activate zsh --shims)"
+eval "$(mise activate zsh)"
 
 # Exports
 export EDITOR="{{ .editor }}"
@@ -49,6 +49,16 @@ export MANPAGER='{{ .manpager }}'
 
 ## atuin
 eval "$(atuin init zsh --disable-up-arrow)"
+
+## kubectl
+if type kubectl &>/dev/null; then
+  source <(kubectl completion zsh)
+fi
+
+## chezmoi
+if type chezmoi &>/dev/null; then
+  source <(chezmoi completion zsh)
+fi
 
 # Key bindings
 bindkey '^I' expand-or-complete

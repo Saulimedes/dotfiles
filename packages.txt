@@ -51,6 +51,7 @@ app-arch/unrar
 dev-vcs/git
 dev-vcs/git-lfs
 dev-vcs/git-crypt
+dev-vcs/got
 
 # Network
 gnome-extra/nm-applet
@@ -74,6 +75,10 @@ net-misc/iperf
 
 # Security
 app-crypt/gnupg
+app-admin/gopass
+
+# SMB/Network filesystems
+net-fs/cifs-utils
 
 # VPN
 net-vpn/mullvadvpn-app
@@ -104,6 +109,7 @@ net-p2p/syncthing
 
 # Clipboard
 x11-misc/xclip
+x11-apps/setxkbmap
 
 # XDG
 x11-misc/xdg-user-dirs
@@ -113,6 +119,9 @@ x11-misc/xdg-utils
 app-containers/podman
 app-containers/podman-compose
 # docker alias: use 'alias docker=podman' in shell
+
+# Power management
+sys-power/tlp
 
 # Utils
 app-text/tree

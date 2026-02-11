@@ -38,6 +38,7 @@
 ;; Programming language specific settings
 (use-package prog-mode
   :ensure nil
+  :straight nil
   :config
   (defun my/set-up-prog-mode ()
     "Set up indentation for various programming modes."

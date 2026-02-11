@@ -54,7 +54,7 @@
      ;; Buffers
      '("b" . (keymap))
      '("bb" . consult-buffer)
-     '("bd" . kill-current-buffer)
+     '("bd" . my/kill-buffer-quick)
      '("bD" . kill-buffer-and-window)
      '("bn" . next-buffer)
      '("bp" . previous-buffer)
@@ -297,8 +297,9 @@
 (global-set-key (kbd "M-l") 'windmove-right)
 
 ;; Buffer navigation
-(global-set-key (kbd "M-[") 'previous-buffer)
-(global-set-key (kbd "M-]") 'next-buffer)
+;; Note: M-[ is the CSI escape prefix in terminals - never bind it globally
+(global-set-key (kbd "M-{") 'previous-buffer)
+(global-set-key (kbd "M-}") 'next-buffer)
 
 ;; Date/time insertion
 (global-set-key (kbd "M-S-d") 'my/insert-current-date)
