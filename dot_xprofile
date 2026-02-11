@@ -1,2 +1,2 @@
-setxkbmap -layout us -variant intl -option ctrl:nocaps -option compose:ralt
+setxkbmap -layout eu -option ctrl:nocaps -option lv3:ralt_switch
 xset b off

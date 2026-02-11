@@ -27,6 +27,7 @@ fi
 # Enable overlays
 log "Enabling overlays..."
 sudo eselect repository enable guru 2>/dev/null || true
+sudo eselect repository add saulimedes-overlay git https://github.com/saulimedes/saulimedes-overlay.git 2>/dev/null || true
 
 # Sync repositories
 log "Syncing repositories..."

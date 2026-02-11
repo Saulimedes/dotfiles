@@ -1,4 +1,5 @@
 #!/bin/bash
+# mise config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
 MISE="$HOME/.local/bin/mise"
 
 if ! command -v mise >/dev/null 2>&1 && [[ ! -x "$MISE" ]]; then

@@ -11,13 +11,20 @@
   (tab-bar-close-button-show nil)  ; No close button
   (tab-bar-new-button-show nil)    ; No new button
   :config
-  (tab-bar-mode 1)
-  
-  ;; Initialize default workspaces
-  (tab-bar-new-tab)
-  (tab-bar-rename-tab "code")
-  (tab-bar-new-tab)
-  (tab-bar-rename-tab "org"))
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook
+                (lambda ()
+                  (unless tab-bar-mode
+                    (tab-bar-mode 1)
+                    (tab-bar-new-tab)
+                    (tab-bar-rename-tab "code")
+                    (tab-bar-new-tab)
+                    (tab-bar-rename-tab "org"))))
+    (tab-bar-mode 1)
+    (tab-bar-new-tab)
+    (tab-bar-rename-tab "code")
+    (tab-bar-new-tab)
+    (tab-bar-rename-tab "org")))
 
 ;; Better keybindings for tab-bar
 (global-set-key (kbd "C-c w r") 'tab-bar-rename-tab)

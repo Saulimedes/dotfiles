@@ -34,7 +34,7 @@
     ;; Buffer operations
     "b"  '(:ignore t :which-key "buffers")
     "bb" '(consult-buffer :which-key "switch buffer")
-    "bd" '(kill-current-buffer :which-key "kill buffer")
+    "bd" '(my/kill-buffer-quick :which-key "kill buffer")
     "bD" '(kill-buffer-and-window :which-key "kill buffer and window")
     "bn" '(next-buffer :which-key "next buffer")
     "bp" '(previous-buffer :which-key "previous buffer")

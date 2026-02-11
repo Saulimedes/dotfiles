@@ -1,5 +1,5 @@
-editor = "emacsclient -t"
-visual = "emacsclient -c"
+editor = "emacsclient -t -a ''"
+visual = "emacsclient -c -a ''"
 manpager = "emacsclient -t +Man!"
 
 [user]

@@ -69,6 +69,30 @@ for timer_file in "$service_dir"/*.timer; do
     fi
 done
 
+# Enable system-level services (requires sudo)
+SYSTEM_SERVICES=(
+    "tlp"
+    "tlp-pd"
+)
+
+for svc in "${SYSTEM_SERVICES[@]}"; do
+    if systemctl list-unit-files "$svc.service" &>/dev/null; then
+        if ! systemctl is-enabled "$svc.service" &>/dev/null; then
+            log_info "Enabling system service $svc (requires sudo)"
+            if sudo systemctl enable --now "$svc.service"; then
+                log_info "Successfully enabled $svc"
+            else
+                log_warn "Failed to enable $svc"
+            fi
+        else
+            log_info "System service $svc already enabled"
+        fi
+    else
+        log_warn "System service $svc not found"
+    fi
+done
+
+
 # Create XDG user directories
 if command -v xdg-user-dirs-update &> /dev/null; then
     log_info "Creating XDG user directories"
