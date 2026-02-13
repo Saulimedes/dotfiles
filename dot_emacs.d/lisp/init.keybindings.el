@@ -340,16 +340,6 @@
       (yank))
     (move-to-column col)))
 
-(defun eshell-here ()
-  "Open eshell in current directory."
-  (interactive)
-  (let ((dir (if (buffer-file-name)
-                 (file-name-directory (buffer-file-name))
-               default-directory)))
-    (eshell 'new)
-    (eshell/cd dir)
-    (eshell-send-input)))
-
 ;; Winner mode for window undo/redo
 (winner-mode 1)
 

@@ -1,0 +1,33 @@
+#!/bin/bash
+# Sync USE flags from useflags.txt to /etc/portage/package.use/
+# Re-runs automatically when useflags.txt changes
+# useflags.txt hash: {{ include "useflags.txt" | sha256sum }}
+exec < /dev/tty
+set -euo pipefail
+
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+log() { echo -e "${GREEN}[*]${NC} $1"; }
+warn() { echo -e "${YELLOW}[!]${NC} $1"; }
+
+if [[ ! -f /etc/gentoo-release ]]; then
+    warn "Not Gentoo, skipping USE flag sync"
+    exit 0
+fi
+
+SRC="${HOME}/.local/share/chezmoi/useflags.txt"
+DEST="/etc/portage/package.use/chezmoi"
+
+# Strip comments and empty lines
+FLAGS=$(grep -v '^#' "$SRC" | grep -v '^$')
+
+if [[ -z "$FLAGS" ]]; then
+    warn "No USE flags found in useflags.txt"
+    exit 0
+fi
+
+log "Syncing USE flags..."
+echo "$FLAGS" | sudo tee "$DEST" > /dev/null
+log "Done"

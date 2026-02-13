@@ -49,7 +49,7 @@ while true; do
                 break
                 ;;
             "e")
-                ${EDITOR:-vi} "$PLAYLIST_FILE"
+                ${EDITOR:-vi} "$PLAYLIST_FILE" </dev/tty >/dev/tty
                 ;;
         esac
     elif [[ $? -eq 1 ]]; then

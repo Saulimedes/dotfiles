@@ -1,10 +1,6 @@
-;; Set preset Size of the Frame 
-(setq default-frame-alist
-      '((width . 160)  ; Set the window width to 160 columns
-        (height . 60)  ; Set the window height to 60 rows
-        (tool-bar-lines . 0)
-        (menu-bar-lines . 0)
-        (vertical-scroll-bars . nil)))
+;; Frame dimensions (push to preserve early-init.el settings)
+(push '(width . 160) default-frame-alist)
+(push '(height . 60) default-frame-alist)
 
 ;; Better frame behavior
 (setq frame-title-format '("%b - Emacs")
@@ -17,79 +13,83 @@
   (setq fontaine-presets
         '((regular
            :default-family "MonoLisaVariable Nerd Font"
-           :default-height 100
-           :variable-pitch-family "MonoLisaVariable Nerd Font"
-           :variable-pitch-height 100
+           :default-height 105
+           :variable-pitch-family "SF Pro"
+           :variable-pitch-height 115
            :fixed-pitch-family "MonoLisaVariable Nerd Font"
-           :fixed-pitch-height 100
+           :fixed-pitch-height 105
            :line-spacing 1))))
 
 (unless (daemonp)
   (fontaine-set-preset 'regular))
 
 (setq-default line-spacing 1)
-(setq auto-composition-mode nil)
-
-;; Modus Themes - highly accessible, customizable themes (built into Emacs 28+)
-(use-package modus-themes
-  :ensure nil
+;; Tomorrow Night Theme - clean, colorful syntax highlighting
+(use-package color-theme-sanityinc-tomorrow
   :demand t
-  :init
-  ;; Configure before loading
-  (setq modus-themes-bold-constructs t
-        modus-themes-italic-constructs t
-        modus-themes-mixed-fonts t
-        modus-themes-prompts '(bold)
-        modus-themes-completions '((matches . (extrabold))
-                                   (selection . (semibold accented))
-                                   (popup . (accented)))
-        modus-themes-org-blocks 'gray-background
-        modus-themes-headings '((1 . (rainbow overline 1.4))
-                                (2 . (rainbow 1.3))
-                                (3 . (rainbow 1.2))
-                                (t . (rainbow 1.1))))
-
-  ;; Pitch black background overrides
-  (setq modus-vivendi-palette-overrides
-        '((bg-main "#000000")
-          (bg-dim "#0a0a0a")
-          (bg-alt "#111111")
-          (bg-active "#222222")
-          (bg-inactive "#080808")
-          (bg-header "#000000")
-          ;; Slightly warmer comments
-          (comment fg-dim)
-          ;; More vibrant strings
-          (string green-cooler)))
   :config
-  (load-theme 'modus-vivendi t))
+  (load-theme 'sanityinc-tomorrow-night t))
 
-;; Alternative themes (deferred)
-(use-package nano-theme :defer t)
+;; Define pitch-black as a proper overlay theme (cleanly toggleable)
+(deftheme my-pitch-black "Pitch black background overlay.")
+(custom-theme-set-faces
+ 'my-pitch-black
+ ;; Core backgrounds
+ '(default ((t :background "#000000")))
+ '(fringe ((t :background "#000000")))
+ '(cursor ((t :background "#ffffff")))
+ '(hl-line ((t :background "#0e0e0e")))
+ '(region ((t :background "#3b4252")))
+ '(vertical-border ((t :foreground "#1a1a1a")))
+ ;; Line numbers
+ '(line-number ((t :background "#000000")))
+ '(line-number-current-line ((t :background "#0e0e0e")))
+ ;; Header / tab line
+ '(header-line ((t :background "#000000")))
+ '(tab-line ((t :background "#000000")))
+ ;; Minibuffer
+ '(minibuffer-prompt ((t :background "#000000")))
+ ;; Modeline - visible against black
+ '(mode-line ((t :background "#1c1c1c" :foreground "#c5c8c6" :box (:line-width (1 . 4) :color "#1c1c1c") :overline nil :underline nil)))
+ '(mode-line-inactive ((t :background "#111111" :foreground "#555555" :box (:line-width (1 . 4) :color "#111111") :overline nil :underline nil)))
+ '(mode-line-highlight ((t :background "#ffffff" :foreground "#000000" :box nil)))
+ ;; Doom-modeline segments
+ '(doom-modeline-bar ((t :background "#81a2be")))
+ '(doom-modeline-bar-inactive ((t :background "#373b41")))
+ '(doom-modeline-panel ((t :background "#1c1c1c")))
+ '(doom-modeline-buffer-file ((t :background unspecified)))
+ '(doom-modeline-buffer-modified ((t :background unspecified)))
+ '(doom-modeline-buffer-path ((t :background unspecified)))
+ '(doom-modeline-project-dir ((t :background unspecified)))
+ '(doom-modeline-highlight ((t :background "#ffffff" :foreground "#000000")))
+ '(doom-modeline-warning ((t :background unspecified :inherit doom-modeline)))
+ '(doom-modeline-urgent ((t :background unspecified :inherit doom-modeline)))
+ '(doom-modeline-info ((t :background unspecified :inherit doom-modeline)))
+ '(doom-modeline-notification ((t :background unspecified)))
+ '(doom-modeline-buffer-major-mode ((t :background unspecified)))
+ '(warning ((t :background unspecified)))
+ ;; Solaire (non-file buffers)
+ '(solaire-default-face ((t :background "#000000")))
+ '(solaire-fringe-face ((t :background "#000000")))
+ '(solaire-header-line-face ((t :background "#000000")))
+ '(solaire-mode-line-face ((t :background "#1c1c1c")))
+ '(solaire-mode-line-inactive-face ((t :background "#111111"))))
+(provide-theme 'my-pitch-black)
+(enable-theme 'my-pitch-black)
 
-(use-package catppuccin-theme :defer t)
-(use-package ef-themes :defer t)
-
-;; Quick toggle between light/dark modus
-(defun my/modus-toggle ()
-  "Toggle between modus-vivendi (dark) and modus-operandi (light)."
-  (interactive)
-  (modus-themes-toggle))
-
-;; Cycle between favorite themes
-(defun my/cycle-theme ()
-  "Cycle between favorite themes."
-  (interactive)
-  (let* ((themes '(modus-vivendi modus-operandi ef-dark ef-light catppuccin-mocha))
-         (current-theme (car custom-enabled-themes))
-         (next-theme (or (cadr (member current-theme themes))
-                         (car themes))))
-    (mapc #'disable-theme custom-enabled-themes)
-    (load-theme next-theme t)
-    (message "Theme: %s" next-theme)))
-
-(global-set-key (kbd "<f5>") #'my/modus-toggle)
-(global-set-key (kbd "<f6>") #'my/cycle-theme)
+(global-set-key (kbd "<f5>") (lambda () (interactive)
+                               (let ((themes '(sanityinc-tomorrow-night
+                                               sanityinc-tomorrow-day
+                                               sanityinc-tomorrow-eighties
+                                               sanityinc-tomorrow-blue
+                                               sanityinc-tomorrow-bright))
+                                     (current (car custom-enabled-themes)))
+                                 (mapc #'disable-theme custom-enabled-themes)
+                                 (let ((next (or (cadr (member current themes)) (car themes))))
+                                   (load-theme next t)
+                                   (when (eq next 'sanityinc-tomorrow-night)
+                                     (enable-theme 'my-pitch-black))
+                                   (message "Theme: %s" next)))))
 
 ;; Highlight matching parentheses with better color
 (use-package paren
@@ -149,30 +149,31 @@
   (highlight-indent-guides-delay 0.1))
 
 ;; ============================================================
-;; Doom Modeline - minimal config
+;; Doom Modeline - modern config
 ;; ============================================================
 (use-package doom-modeline
   :init
-  (setq doom-modeline-height 24
-        doom-modeline-bar-width 0
+  (setq doom-modeline-height 30
+        doom-modeline-bar-width 4
         doom-modeline-hud nil
         doom-modeline-window-width-limit 85
         doom-modeline-project-detection 'auto
         doom-modeline-buffer-file-name-style 'truncate-upto-project
         doom-modeline-icon t
-        doom-modeline-major-mode-icon nil
-        doom-modeline-major-mode-color-icon nil
+        doom-modeline-major-mode-icon t
+        doom-modeline-major-mode-color-icon t
         doom-modeline-buffer-state-icon t
         doom-modeline-buffer-modification-icon t
-        doom-modeline-lsp-icon nil
+        doom-modeline-lsp-icon t
         doom-modeline-time t
+        doom-modeline-time-icon nil
         doom-modeline-battery nil
-        doom-modeline-env-version nil
-        doom-modeline-vcs-max-length 20
+        doom-modeline-env-version t
+        doom-modeline-vcs-max-length 24
         doom-modeline-persp-name nil
         doom-modeline-modal t
-        doom-modeline-modal-icon nil
-        doom-modeline-modal-modern-icon nil)
+        doom-modeline-modal-icon t
+        doom-modeline-modal-modern-icon t)
   :config
   (setq display-time-format "%H:%M"
         display-time-default-load-average nil)
@@ -186,7 +187,7 @@
   (setq spacious-padding-widths
         '(:internal-border-width 12
           :header-line-width 4
-          :mode-line-width 4
+          :mode-line-width 0
           :tab-width 4
           :right-divider-width 16
           :scroll-bar-width 0
@@ -252,10 +253,6 @@
 ;; mode-line
 
 
-;; all the icons
-(use-package all-the-icons
-  :if (display-graphic-p))
-
 ;; page-break-lines-mode
 (use-package page-break-lines
   :if (display-graphic-p))
@@ -288,9 +285,7 @@
         "general")))
   (setq tab-line-tabs-buffer-group-function #'my/tab-line-buffer-group)
   (setq tab-line-tabs-function #'tab-line-tabs-buffer-groups)
-  :bind
-  ("M-h" . tab-line-switch-to-prev-tab)
-  ("M-l" . tab-line-switch-to-next-tab))
+)
 
 ;; ============================================================
 ;; Breadcrumb - VSCode-like file path in header
@@ -344,12 +339,18 @@
 (defun my/terminal-setup ()
   "Configure Emacs for terminal frames."
   (unless (display-graphic-p)
-    ;; Transparent background - use terminal colors
+    ;; Disable pitch-black overlay so all its #000000 backgrounds go away
+    (disable-theme 'my-pitch-black)
+    ;; Use terminal's own background
     (set-face-background 'default "unspecified-bg")
     (set-face-background 'line-number "unspecified-bg")
     (set-face-background 'line-number-current-line "unspecified-bg")
     (set-face-background 'fringe "unspecified-bg")
     (set-face-background 'hl-line "unspecified-bg")
+    (set-face-background 'mode-line "unspecified-bg")
+    (set-face-background 'mode-line-inactive "unspecified-bg")
+    (set-face-background 'header-line "unspecified-bg")
+    (set-face-background 'minibuffer-prompt "unspecified-bg")
     ;; Disable tab line (clicks cause buffer switching)
     (global-tab-line-mode -1)
     (xterm-mouse-mode 1)))

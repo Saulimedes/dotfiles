@@ -24,6 +24,12 @@ app-misc/tmux
 # Editors
 app-editors/emacs
 
+# Typesetting
+app-text/typst
+
+# PDF rendering (needed by emacs pdf-tools)
+app-text/poppler
+
 # Monitoring
 sys-process/btop
 sys-process/htop
@@ -61,6 +67,7 @@ net-vpn/networkmanager-openvpn
 net-vpn/networkmanager-pptp
 net-vpn/networkmanager-l2tp
 net-vpn/networkmanager-fortisslvpn
+net-vpn/networkmanager-openconnect
 net-misc/curl
 net-misc/wget
 net-misc/rsync
@@ -77,8 +84,10 @@ net-misc/iperf
 app-crypt/gnupg
 app-admin/gopass
 
-# SMB/Network filesystems
+# Network filesystems
 net-fs/cifs-utils
+net-fs/nfs-utils
+net-fs/autofs
 
 # VPN
 net-vpn/mullvadvpn-app
@@ -110,6 +119,7 @@ net-p2p/syncthing
 # Clipboard
 x11-misc/xclip
 x11-apps/setxkbmap
+x11-misc/xcape
 
 # XDG
 x11-misc/xdg-user-dirs
@@ -122,6 +132,13 @@ app-containers/podman-compose
 
 # Power management
 sys-power/tlp
+
+# Debugging
+dev-debug/strace
+
+# Spell checking
+app-text/aspell
+app-dicts/aspell-en
 
 # Utils
 app-text/tree

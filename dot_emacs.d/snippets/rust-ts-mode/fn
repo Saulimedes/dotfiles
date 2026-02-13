@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: fn function
+# key: fn
+# --
+fn ${1:name}(${2:args}) -> ${3:Result<()>} {
+    $0
+}

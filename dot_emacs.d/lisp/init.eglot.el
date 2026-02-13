@@ -20,7 +20,8 @@
          (c-mode . eglot-ensure)
          (c++-mode . eglot-ensure)
          (c-ts-mode . eglot-ensure)
-         (c++-ts-mode . eglot-ensure))
+         (c++-ts-mode . eglot-ensure)
+)
   :config
   ;; Performance tweaks
   (setq eglot-events-buffer-size 0
@@ -39,18 +40,23 @@
   (add-to-list 'eglot-server-programs
                '((rust-mode rust-ts-mode) . ("rust-analyzer")))
 
-  ;; Nix language server
-  (add-to-list 'eglot-server-programs
-               '(nix-mode . ("nixd")))
-
   ;; Bash/Shell language server
   (add-to-list 'eglot-server-programs
-               '((sh-mode bash-ts-mode) . ("bash-language-server" "start"))))
+               '((sh-mode bash-ts-mode) . ("bash-language-server" "start")))
 
-;; Nix mode
-(use-package nix-mode
-  :mode "\\.nix\\'"
-  :hook (nix-mode . eglot-ensure))
+  ;; Zig language server
+  (add-to-list 'eglot-server-programs
+               '(zig-mode . ("zls")))
+
+  ;; Ansible language server
+  (add-to-list 'eglot-server-programs
+               '(yaml-mode . ("ansible-language-server" "--stdio")))
+
+  ;; Dockerfile language server
+  (add-to-list 'eglot-server-programs
+               '(dockerfile-mode . ("docker-langserver" "--stdio")))
+
+)
 
 ;; Enhanced error checking
 (use-package flymake

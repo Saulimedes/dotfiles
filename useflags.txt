@@ -1,0 +1,18 @@
+# Gentoo USE flags - managed by chezmoi
+# Changes to this file trigger automatic sync to /etc/portage/package.use/
+# Format: same as /etc/portage/package.use entries
+
+# Media
+media-video/ffmpeg samba
+
+# Network filesystems
+gnome-base/gvfs samba fuse nfs
+
+# Graphics
+x11-libs/libdrm video_cards_radeon
+
+# Networking
+net-firewall/iptables nftables
+
+# System
+sys-apps/systemd boot cryptsetup

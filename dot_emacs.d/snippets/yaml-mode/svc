@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: k8s service
+# key: svc
+# --
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${1:name}
+spec:
+  selector:
+    app: $1
+  ports:
+    - protocol: TCP
+      port: ${2:80}
+      targetPort: ${3:8080}
+  type: ${4:ClusterIP}

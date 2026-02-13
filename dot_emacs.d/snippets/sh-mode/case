@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: case statement
+# key: case
+# --
+case "${1:var}" in
+    ${2:pattern})
+        $0
+        ;;
+    *)
+        echo "Unknown option: \$1"
+        exit 1
+        ;;
+esac

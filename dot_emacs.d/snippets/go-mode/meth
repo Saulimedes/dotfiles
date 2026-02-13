@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: method
+# key: meth
+# --
+func (${1:r} *${2:Receiver}) ${3:Name}(${4:args}) ${5:error} {
+	$0
+}

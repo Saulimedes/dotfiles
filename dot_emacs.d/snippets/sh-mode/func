@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: function
+# key: func
+# --
+${1:name}() {
+    local ${2:arg}="\$1"
+    $0
+}
