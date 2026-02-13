@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: module
+# key: mod
+# --
+module "${1:name}" {
+  source  = "${2:./modules/$1}"
+  version = "${3:~> 1.0}"
+
+  $0
+}

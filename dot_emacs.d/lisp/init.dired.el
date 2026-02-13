@@ -1,13 +1,10 @@
+;; -*- lexical-binding: t; -*-
 ;; sidebar
 (use-package dired-sidebar
   :bind ("C-c s" . dired-sidebar-toggle-sidebar))
 
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package all-the-icons-ivy-rich
-  :after ivy-rich
-  :config (all-the-icons-ivy-rich-mode 1))
+(use-package nerd-icons-dired
+  :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package treemacs
   :bind ("C-c S" . treemacs))

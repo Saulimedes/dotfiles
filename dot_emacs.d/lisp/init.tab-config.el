@@ -70,11 +70,42 @@
 
 ;; Web development modes
 (use-package web-mode
-  :mode ("\\.html?\\'" "\\.css\\'" "\\.jsx?\\'" "\\.tsx?\\'")
+  :mode ("\\.html?\\'" "\\.vue\\'" "\\.svelte\\'"
+         "\\.php\\'" "\\.erb\\'" "\\.hbs\\'")
+  :custom
+  (web-mode-markup-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-enable-auto-pairing t)
+  (web-mode-enable-auto-closing t)
+  (web-mode-enable-current-element-highlight t)
+  (web-mode-enable-current-column-highlight t)
   :config
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2))
+  ;; Auto-close tags
+  (setq web-mode-auto-close-style 2))
+
+;; CSS / SCSS / LESS
+(use-package css-mode
+  :ensure nil
+  :mode ("\\.css\\'" "\\.less\\'")
+  :custom
+  (css-indent-offset 2))
+
+(use-package scss-mode
+  :mode "\\.scss\\'"
+  :custom
+  (scss-compile-at-save nil))
+
+;; Emmet - expand abbreviations to HTML/CSS
+;; e.g. div.container>ul>li.item*3 + C-j = full HTML
+(use-package emmet-mode
+  :hook ((web-mode . emmet-mode)
+         (css-mode . emmet-mode)
+         (scss-mode . emmet-mode)
+         (html-mode . emmet-mode))
+  :custom
+  (emmet-indentation 2)
+  (emmet-move-cursor-between-quotes t))
 
 ;; C/C++ settings
 (use-package cc-mode
@@ -87,14 +118,6 @@
   :mode "\\.ya?ml\\'"
   :config
   (setq yaml-indent-offset 2))
-
-;; Indentation highlighting
-(use-package highlight-indent-guides
-  :hook (prog-mode . highlight-indent-guides-mode)
-  :config
-  (setq highlight-indent-guides-method 'character
-        highlight-indent-guides-character ?\|
-        highlight-indent-guides-responsive 'top))
 
 ;; Aggressive indentation for some modes
 (use-package aggressive-indent

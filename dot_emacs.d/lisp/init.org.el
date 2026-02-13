@@ -1,9 +1,10 @@
+;; -*- lexical-binding: t; -*-
 ;; Enhanced Org Mode setup for productivity
 (use-package f)
 (use-package org
   :hook ((org-mode . org-indent-mode)
          (org-mode . visual-line-mode)
-         (org-mode . flyspell-mode))
+         (org-mode . (lambda () (when (executable-find "aspell") (flyspell-mode 1)))))
   :custom
   (org-directory "~/Documents/org")
   (org-default-notes-file (concat org-directory "/notes.org"))
@@ -46,13 +47,6 @@
           ("SOMEDAY" . (:foreground "gray60" :weight bold))
           ("DONE" . (:foreground "forest green" :weight bold))
           ("CANCELLED" . (:foreground "gray50" :weight bold)))))
-
-;; Pretty headings and bullets
-(use-package org-bullets
-  :hook (org-mode . org-bullets-mode)
-  :custom
-  (org-bullets-bullet-list
-   '("❁" "◉" "✿" "✱" "❂" "❖" "☯")))
 
 ;; Better looking org mode
 (use-package org-modern
@@ -99,7 +93,66 @@
 (global-set-key (kbd "C-c o l") 'org-store-link)
 (global-set-key (kbd "C-c o b") 'org-switchb)
 
+;; ============================================================
+;; Org-roam - Zettelkasten / knowledge graph
+;; ============================================================
+(use-package org-roam
+  :custom
+  (org-roam-directory (expand-file-name "roam" org-directory))
+  (org-roam-completion-everywhere t)
+  (org-roam-dailies-directory "daily/")
+  (org-roam-dailies-capture-templates
+   '(("d" "default" entry
+      "* %?"
+      :target (file+head "%<%Y-%m-%d>.org"
+                         "#+title: %<%Y-%m-%d>\n"))))
+  (org-roam-capture-templates
+   '(("d" "default" plain "%?"
+      :target (file+head "%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n")
+      :unnarrowed t)
+     ("r" "reference" plain "%?"
+      :target (file+head "ref/%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+filetags: :reference:\n")
+      :unnarrowed t)
+     ("p" "project" plain "%?"
+      :target (file+head "project/%<%Y%m%d%H%M%S>-${slug}.org"
+                         "#+title: ${title}\n#+filetags: :project:\n")
+      :unnarrowed t)))
+  :bind (("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert)
+         ("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n c" . org-roam-capture)
+         ("C-c n g" . org-roam-graph)
+         ("C-c n d" . org-roam-dailies-goto-today)
+         ("C-c n D" . org-roam-dailies-goto-date)
+         ("C-c n j" . org-roam-dailies-capture-today))
+  :config
+  (org-roam-db-autosync-mode))
+
 ;; Flyspell for prose (comments in prog-mode)
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+(when (executable-find "aspell")
+  (setq ispell-program-name "aspell")
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode))
+
+;; ============================================================
+;; Org-Pomodoro - Pomodoro technique for org tasks
+;; ============================================================
+(use-package org-pomodoro
+  :after org
+  :bind (:map org-mode-map
+              ("C-c C-x p" . org-pomodoro))
+  :custom
+  (org-pomodoro-length 25)
+  (org-pomodoro-short-break-length 5)
+  (org-pomodoro-long-break-length 15)
+  (org-pomodoro-long-break-frequency 4)
+  (org-pomodoro-audio-player (or (executable-find "paplay")
+                                 (executable-find "aplay")))
+  (org-pomodoro-play-sounds t)
+  (org-pomodoro-keep-killed-pomodoro-time t)
+  :config
+  ;; Show pomodoro in modeline
+  (setq org-pomodoro-format " %s"))
 
 (provide 'init.org)

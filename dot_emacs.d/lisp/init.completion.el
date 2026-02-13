@@ -128,6 +128,8 @@
 ;; Context Actions: Embark
 ;; ============================================================
 
+(straight-use-package 'embark-consult)
+
 (use-package embark
   :demand t
   :bind (("C-." . embark-act)
@@ -143,6 +145,7 @@
 
 (use-package embark-consult
   :after (embark consult)
+  :demand t
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 ;; ============================================================
@@ -182,12 +185,12 @@
 
 ;; Tmux pane completion - complete words visible in other tmux panes
 (defun my/tmux-pane-words ()
-  "Collect words from all visible tmux panes."
+  "Collect words from all panes across all tmux sessions."
   (when (getenv "TMUX")
     (let ((words '()))
       (dolist (pane (split-string
                      (shell-command-to-string
-                      "tmux list-panes -s -F '#{pane_id}'") "\n" t))
+                      "tmux list-panes -a -F '#{pane_id}'") "\n" t))
         (let ((text (shell-command-to-string
                      (format "tmux capture-pane -t %s -p" pane))))
           (dolist (word (split-string text "[^a-zA-Z0-9_.-]+" t))
@@ -239,6 +242,32 @@
   (recentf-mode))
 
 ;; ============================================================
+;; Consult-eglot - LSP symbol search via consult
+;; ============================================================
+(use-package consult-eglot
+  :after (consult eglot)
+  :bind (:map eglot-mode-map
+              ("M-g s" . consult-eglot-symbols)))
+
+;; ============================================================
+;; Snippets: YASnippet
+;; ============================================================
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :hook ((prog-mode . yas-minor-mode)
+         (text-mode . yas-minor-mode))
+  :custom
+  (yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
+  :config
+  (yas-reload-all))
+
+(use-package yasnippet-snippets
+  :after yasnippet
+  :config
+  (add-to-list 'yas-snippet-dirs yasnippet-snippets-dir t)
+  (yas-reload-all))
+
+;; ============================================================
 ;; Snippets: Tempel (faster, simpler than yasnippet)
 ;; ============================================================
 
@@ -262,5 +291,22 @@
 ;; Community template collection
 (use-package tempel-collection
   :after tempel)
+
+;; ============================================================
+;; Wgrep - Writable grep results
+;; ============================================================
+(use-package wgrep
+  :custom
+  (wgrep-auto-save-buffer t)
+  (wgrep-change-readonly-file t))
+
+;; ============================================================
+;; Consult-dir - Quick directory switching
+;; ============================================================
+(use-package consult-dir
+  :bind (("C-x C-d" . consult-dir)
+         :map vertico-map
+         ("C-x C-d" . consult-dir)
+         ("C-x C-j" . consult-dir-jump-file)))
 
 (provide 'init.completion)

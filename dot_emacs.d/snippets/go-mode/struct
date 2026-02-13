@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: struct
+# key: st
+# --
+type ${1:Name} struct {
+	${2:Field} ${3:string} `json:"${4:field}"`
+	$0
+}

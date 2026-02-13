@@ -60,6 +60,11 @@ if type chezmoi &>/dev/null; then
   source <(chezmoi completion zsh)
 fi
 
+## opencode
+if type opencode &>/dev/null; then
+  source <(opencode completion zsh)
+fi
+
 # Key bindings
 bindkey '^I' expand-or-complete
 bindkey "^H" backward-delete-char

@@ -283,15 +283,19 @@
 
 (use-package docker
   :commands docker
-  :bind ("C-c D" . docker))
+  :bind ("C-c D" . docker)
+  :custom
+  (docker-command "podman")
+  (docker-compose-command "podman-compose")
+  (docker-container-tramp-method "podman"))
 
 (defun docker-ps ()
   "List running containers."
   (interactive)
-  (let ((buffer "*docker-ps*"))
+  (let ((buffer "*podman-ps*"))
     (with-current-buffer (get-buffer-create buffer)
       (erase-buffer)
-      (insert (shell-command-to-string "docker ps --format 'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}'"))
+      (insert (shell-command-to-string "podman ps --format 'table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}'"))
       (special-mode)
       (switch-to-buffer buffer))))
 
@@ -300,7 +304,6 @@
 ;; ============================================================
 
 (use-package transient
-  :demand t
   :config
 
   ;; Kubernetes menu
@@ -341,9 +344,90 @@
       ("a" "AWS menu" aws-menu)]
      ["Terraform"
       ("t" "Terraform menu" terraform-menu)]
+     ["Helm"
+      ("h" "Template" helm-template)
+      ("H" "Lint" helm-lint)]
+     ["Mise"
+      ("m" "Current" mise-current)
+      ("M" "List" mise-list)]
      ["Docker"
       ("d" "Docker" docker)
       ("D" "Docker ps" docker-ps)]]))
+
+;; ============================================================
+;; Helm Charts
+;; ============================================================
+
+(use-package k8s-mode
+  :hook (k8s-mode . yas-minor-mode))
+
+(defun helm-template ()
+  "Run helm template on the current chart directory."
+  (interactive)
+  (let* ((chart-dir (locate-dominating-file default-directory "Chart.yaml"))
+         (buffer "*helm-template*"))
+    (if chart-dir
+        (progn
+          (with-current-buffer (get-buffer-create buffer)
+            (erase-buffer)
+            (insert (shell-command-to-string (format "helm template %s 2>&1" chart-dir)))
+            (yaml-mode)
+            (goto-char (point-min))
+            (switch-to-buffer buffer)))
+      (message "No Chart.yaml found in parent directories"))))
+
+(defun helm-lint ()
+  "Run helm lint on the current chart."
+  (interactive)
+  (let ((chart-dir (locate-dominating-file default-directory "Chart.yaml")))
+    (if chart-dir
+        (compile (format "helm lint %s" chart-dir))
+      (message "No Chart.yaml found in parent directories"))))
+
+(defun helm-dry-run ()
+  "Run helm install --dry-run on the current chart."
+  (interactive)
+  (let ((chart-dir (locate-dominating-file default-directory "Chart.yaml")))
+    (if chart-dir
+        (let* ((name (read-string "Release name: " "test"))
+               (buffer "*helm-dry-run*"))
+          (with-current-buffer (get-buffer-create buffer)
+            (erase-buffer)
+            (insert (shell-command-to-string
+                     (format "helm install %s %s --dry-run 2>&1" name chart-dir)))
+            (yaml-mode)
+            (goto-char (point-min))
+            (switch-to-buffer buffer)))
+      (message "No Chart.yaml found in parent directories"))))
+
+;; ============================================================
+;; Mise (polyglot runtime manager)
+;; ============================================================
+
+(defun mise-install ()
+  "Run mise install in current project."
+  (interactive)
+  (compile "mise install"))
+
+(defun mise-use (tool)
+  "Run mise use TOOL in current project."
+  (interactive "sTool (e.g. python@3.12, node@20): ")
+  (compile (format "mise use %s" tool)))
+
+(defun mise-list ()
+  "Show installed mise tools."
+  (interactive)
+  (let ((buffer "*mise-list*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string "mise list 2>&1"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun mise-current ()
+  "Show active mise tool versions."
+  (interactive)
+  (message "%s" (string-trim (shell-command-to-string "mise current 2>&1"))))
 
 ;; Global bindings
 (global-set-key (kbd "C-c k") 'kubectl-menu)
@@ -384,6 +468,19 @@
    '("Tp" . terraform-plan)
    '("Ta" . terraform-apply)
    '("Tv" . terraform-validate)
-   '("Ts" . terraform-state-list)))
+   '("Ts" . terraform-state-list)
+
+   ;; Helm
+   '("H" . (keymap))
+   '("Ht" . helm-template)
+   '("Hl" . helm-lint)
+   '("Hd" . helm-dry-run)
+
+   ;; Mise
+   '("M" . (keymap))
+   '("Mc" . mise-current)
+   '("Ml" . mise-list)
+   '("Mi" . mise-install)
+   '("Mu" . mise-use)))
 
 (provide 'init.devops)

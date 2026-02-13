@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: variable
+# key: var
+# --
+variable "${1:name}" {
+  description = "${2:Description}"
+  type        = ${3:string}
+  default     = "${4:value}"
+}

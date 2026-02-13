@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: while read loop
+# key: while
+# --
+while IFS= read -r ${1:line}; do
+    $0
+done < "${2:file}"

@@ -37,6 +37,12 @@ age = "latest"
 gcloud = "latest"
 azure-cli = "latest"
 
+# LSP servers
+tinymist = "latest"
+zls = "latest"
+rust-analyzer = "latest"
+terraform-ls = "latest"
+
 # Dev tools
 direnv = "latest"
 github-cli = "latest"

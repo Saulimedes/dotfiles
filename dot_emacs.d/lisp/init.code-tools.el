@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Advanced code navigation and editing tools
 
 ;; Jump to definition across files
@@ -14,7 +15,7 @@
 
 ;; Quick edit similar items
 (use-package iedit
-  :bind ("C-;" . iedit-mode))
+  :bind ("C-c ;" . iedit-mode))
 
 ;; Multiple cursors
 (use-package multiple-cursors
@@ -83,9 +84,345 @@
 (global-set-key (kbd "C-c c r") 'xref-find-references)
 (global-set-key (kbd "C-c c i") 'imenu-list-smart-toggle)
 (global-set-key (kbd "C-c c e") 'iedit-mode)
+(global-set-key (kbd "C-c c ;") 'iedit-mode)
 (global-set-key (kbd "C-c c f") 'format-all-buffer)
 (global-set-key (kbd "C-c x e") 'eval-last-sexp)
 (global-set-key (kbd "C-c x b") 'eval-buffer)
 (global-set-key (kbd "C-c x f") 'eval-defun)
+
+;; ============================================================
+;; Markdown
+;; ============================================================
+(use-package markdown-mode
+  :mode (("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode)
+         ("README\\.md\\'" . gfm-mode))
+  :custom
+  (markdown-fontify-code-blocks-natively t)
+  (markdown-command "multimarkdown")
+  (markdown-header-scaling t))
+
+;; ============================================================
+;; Zig
+;; ============================================================
+(use-package zig-mode
+  :mode "\\.zig\\'"
+  :hook (zig-mode . eglot-ensure)
+  :custom
+  (zig-format-on-save t))
+
+;; ============================================================
+;; Typst - modern typesetting (LaTeX alternative)
+;; ============================================================
+(use-package typst-ts-mode
+  :mode "\\.typ\\'"
+  :custom
+  (typst-ts-mode-watch-options "--open")
+  :config
+  (with-eval-after-load 'eglot
+    (add-to-list 'eglot-server-programs
+                 '(typst-ts-mode . ("tinymist")))))
+
+;; ============================================================
+;; Ansible
+;; ============================================================
+(use-package ansible
+  :hook (yaml-mode . (lambda ()
+                       (when (or (string-match-p "/\\(roles\\|tasks\\|handlers\\|playbooks\\|group_vars\\|host_vars\\)/" (or buffer-file-name ""))
+                                 (string-match-p "\\(playbook\\|site\\|main\\|ansible\\)\\.ya?ml\\'" (or buffer-file-name "")))
+                         (ansible 1)))))
+
+(use-package ansible-doc
+  :after ansible
+  :hook (ansible-hook . ansible-doc-mode))
+
+;; ============================================================
+;; Dockerfile
+;; ============================================================
+(use-package dockerfile-mode
+  :mode ("Dockerfile\\'" "\\.dockerfile\\'"))
+
+;; ============================================================
+;; Gentoo ebuild
+;; ============================================================
+(use-package ebuild-mode
+  :mode ("\\.ebuild\\'" "\\.eclass\\'"))
+
+;; ============================================================
+;; TOML
+;; ============================================================
+(use-package toml-mode
+  :mode ("\\.toml\\'" "Cargo\\.lock\\'"))
+
+;; ============================================================
+;; Jinja2
+;; ============================================================
+(use-package jinja2-mode
+  :mode ("\\.j2\\'" "\\.jinja2?\\'"))
+
+;; ============================================================
+;; Systemd unit files
+;; ============================================================
+(use-package systemd
+  :mode ("\\.service\\'" "\\.timer\\'" "\\.socket\\'"
+         "\\.target\\'" "\\.mount\\'" "\\.path\\'"
+         "\\.slice\\'" "\\.scope\\'"))
+
+;; ============================================================
+;; Nginx
+;; ============================================================
+(use-package nginx-mode
+  :mode ("nginx\\.conf\\'" "/nginx/.+\\.conf\\'" "/sites-\\(available\\|enabled\\)/"))
+
+;; ============================================================
+;; Apache
+;; ============================================================
+(use-package apache-mode
+  :mode ("\\.htaccess\\'" "httpd\\.conf\\'" "apache2?\\.conf\\'" "/sites-\\(available\\|enabled\\)/.*\\.conf\\'"))
+
+;; ============================================================
+;; SQL
+;; ============================================================
+(use-package sql-indent
+  :hook (sql-mode . sqlind-minor-mode))
+
+;; ============================================================
+;; GraphQL
+;; ============================================================
+(use-package graphql-mode
+  :mode ("\\.graphql\\'" "\\.gql\\'"))
+
+;; ============================================================
+;; CSV
+;; ============================================================
+(use-package csv-mode
+  :mode ("\\.csv\\'" "\\.tsv\\'")
+  :custom
+  (csv-separators '("," ";" "\t")))
+
+;; ============================================================
+;; SSH config
+;; ============================================================
+(use-package ssh-config-mode
+  :mode (("/\\.ssh/config\\'" . ssh-config-mode)
+         ("/sshd?_config\\'" . ssh-config-mode)
+         ("/known_hosts\\'" . ssh-known-hosts-mode)
+         ("/authorized_keys\\'" . ssh-authorized-keys-mode)))
+
+;; ============================================================
+;; Log files
+;; ============================================================
+(use-package logview
+  :mode ("\\.log\\'" "\\.log\\.[0-9]+\\'")
+  :custom
+  (logview-additional-timestamp-formats
+   '(("ISO 8601" (java-pattern . "yyyy-MM-dd HH:mm:ss.SSS")
+      (aliases "ISO")))))
+
+;; ============================================================
+;; Makefile (enhance built-in)
+;; ============================================================
+(add-hook 'makefile-mode-hook
+          (lambda ()
+            (setq-local indent-tabs-mode t)))
+
+;; ============================================================
+;; REST client - HTTP request builder
+;; ============================================================
+(use-package restclient
+  :mode ("\\.http\\'" "\\.rest\\'")
+  :bind (:map restclient-mode-map
+              ("C-c C-c" . restclient-http-send-current)
+              ("C-c C-r" . restclient-http-send-current-raw)
+              ("C-c C-n" . restclient-jump-next)
+              ("C-c C-p" . restclient-jump-prev)))
+
+;; ============================================================
+;; pass - password-store frontend
+;; ============================================================
+(use-package pass
+  :commands (pass)
+  :bind ("C-c P" . pass))
+
+(use-package auth-source-pass
+  :ensure nil
+  :config
+  (auth-source-pass-enable))
+
+;; ============================================================
+;; x509-mode - TLS certificate inspector
+;; ============================================================
+(use-package x509-mode
+  :mode ("\\.pem\\'" "\\.crt\\'" "\\.cer\\'" "\\.der\\'"))
+
+;; ============================================================
+;; ELF binary inspector
+;; ============================================================
+(use-package elf-mode
+  :magic ("\\^?ELF" . elf-mode))
+
+;; ============================================================
+;; Flymake-shellcheck - security linting for shell scripts
+;; ============================================================
+(use-package flymake-shellcheck
+  :hook (sh-mode . flymake-shellcheck-load))
+
+;; ============================================================
+;; Nmap output highlighting
+;; ============================================================
+(use-package nmap-mode
+  :mode "\\.nmap\\'")
+
+;; ============================================================
+;; PCAP - packet capture viewing
+;; ============================================================
+(use-package pcap-mode
+  :mode ("\\.pcap\\'" "\\.pcapng\\'"))
+
+;; ============================================================
+;; EasyPG - GPG encryption (built-in)
+;; ============================================================
+(use-package epa
+  :ensure nil
+  :config
+  (setq epa-pinentry-mode 'loopback
+        epa-file-encrypt-to user-mail-address)
+  (epa-file-enable))
+
+(setq epg-gpg-program "gpg2")
+
+;; ============================================================
+;; Hexl - hex editor (built-in)
+;; ============================================================
+(use-package hexl
+  :ensure nil
+  :bind (("C-c X" . hexl-find-file))
+  :config
+  (setq hexl-bits 8))
+
+;; ============================================================
+;; nov.el - EPUB reader
+;; ============================================================
+(use-package nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :custom
+  (nov-text-width 80)
+  (nov-variable-pitch t)
+  :config
+  (defun my/nov-setup ()
+    "Configure nov-mode for comfortable reading."
+    ;; Body text: SF Pro variable pitch
+    (face-remap-add-relative 'variable-pitch
+                             :family "SF Pro"
+                             :height 140)
+    (face-remap-add-relative 'default
+                             :height 130)
+    ;; Code/monospace: MonoLisa
+    (face-remap-add-relative 'fixed-pitch
+                             :family "MonoLisaVariable Nerd Font"
+                             :height 120)
+    ;; Bold text: use SF Pro bold weight
+    (face-remap-add-relative 'bold
+                             :family "SF Pro"
+                             :weight bold)
+    (setq-local line-spacing 0.4)
+    (visual-line-mode 1)
+    (visual-fill-column-mode 1)
+    (setq-local visual-fill-column-center-text t
+                visual-fill-column-width 90))
+  (add-hook 'nov-mode-hook #'my/nov-setup))
+
+;; ============================================================
+;; pdf-tools - PDF viewer (replaces DocView)
+;; ============================================================
+(use-package pdf-tools
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :magic ("%PDF" . pdf-view-mode)
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-view-use-scaling t)
+  (pdf-view-use-imagemagick nil)
+  :config
+  (pdf-tools-install :no-query)
+  ;; Midnight mode for dark reading
+  (setq pdf-view-midnight-colors '("#c5c8c6" . "#000000"))
+  ;; Keybindings
+  (define-key pdf-view-mode-map (kbd "d") #'pdf-view-midnight-minor-mode)
+  (define-key pdf-view-mode-map (kbd "j") #'pdf-view-next-line-or-next-page)
+  (define-key pdf-view-mode-map (kbd "k") #'pdf-view-previous-line-or-previous-page)
+  (define-key pdf-view-mode-map (kbd "h") #'image-backward-hscroll)
+  (define-key pdf-view-mode-map (kbd "l") #'image-forward-hscroll)
+  (define-key pdf-view-mode-map (kbd "J") #'pdf-view-next-page)
+  (define-key pdf-view-mode-map (kbd "K") #'pdf-view-previous-page)
+  (define-key pdf-view-mode-map (kbd "g") #'pdf-view-first-page)
+  (define-key pdf-view-mode-map (kbd "G") #'pdf-view-last-page))
+
+;; ============================================================
+;; calibredb - Calibre library management
+;; ============================================================
+(use-package calibredb
+  :commands (calibredb calibredb-list calibredb-find-counsel)
+  :bind ("C-c B" . calibredb)
+  :custom
+  (calibredb-root-dir "~/Calibre Library")
+  (calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir))
+  (calibredb-library-alist '(("~/Calibre Library")))
+  (calibredb-format-all-the-icons nil)
+  (calibredb-size-show t)
+  (calibredb-date-width 10))
+
+;; ============================================================
+;; Elfeed - RSS/Atom feed reader
+;; ============================================================
+(use-package elfeed
+  :bind (("C-c R" . elfeed))
+  :custom
+  (elfeed-db-directory (expand-file-name "elfeed" emacs-cache-directory))
+  (elfeed-search-filter "@2-weeks-ago +unread")
+  (elfeed-search-title-max-width 80)
+  (elfeed-search-trailing-width 30)
+  :config
+  (setq elfeed-feeds
+        '(;; Emacs blogs
+          ("https://sachachua.com/blog/category/emacs-news/feed" emacs news)
+          ("https://protesilaos.com/codelog.xml" emacs prot)
+          ("https://www.masteringemacs.org/feed" emacs mastering)
+          ("https://irreal.org/blog/?feed=rss2" emacs irreal)
+          ("https://karthinks.com/index.xml" emacs karthink)
+          ("https://systemcrafters.net/rss/news.xml" emacs systemcrafters)
+          ("https://planet.emacslife.com/rss.xml" emacs planet)))
+
+  ;; Faces for tags
+  (defface elfeed-search-emacs-tag '((t :foreground "#81a2be"))
+    "Face for emacs-tagged entries.")
+
+  ;; Better entry display
+  (defun my/elfeed-setup ()
+    "Configure elfeed for comfortable reading."
+    (visual-line-mode 1)
+    (setq-local shr-width 80))
+  (add-hook 'elfeed-show-mode-hook #'my/elfeed-setup))
+
+;; ============================================================
+;; Emoji & Unicode
+;; ============================================================
+
+;; emojify - display and insert emojis
+(use-package emojify
+  :hook (after-init . global-emojify-mode)
+  :custom
+  (emojify-display-style 'unicode)
+  (emojify-emoji-styles '(unicode github))
+  :bind
+  (("C-c e e" . emojify-insert-emoji)
+   ("C-c e d" . emojify-describe-emoji-at-point)
+   ("C-c e l" . emojify-list-emojis)))
+
+;; Built-in Emacs 29+ emoji search (Unicode only, no package needed)
+(when (fboundp 'emoji-search)
+  (global-set-key (kbd "C-c e s") #'emoji-search))
+
+;; Quick Unicode character insert (built-in)
+(global-set-key (kbd "C-c e u") #'insert-char)
 
 (provide 'init.code-tools)

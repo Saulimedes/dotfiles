@@ -75,11 +75,9 @@
 
 (defun my/dashboard--insert-separator ()
   "Insert a subtle separator line."
-  (let* ((width (min 64 (- (window-width) 8)))
-         (pad (max 0 (/ (- (window-width) width) 2))))
-    (insert (make-string pad ?\s))
-    (insert (propertize (make-string width ?─) 'face 'my/dashboard-separator))
-    (insert "\n")))
+  (insert "    ")
+  (insert (propertize (make-string 60 ?─) 'face 'my/dashboard-separator))
+  (insert "\n"))
 
 (defun my/dashboard--section-icon (section)
   "Return icon for SECTION if nerd-icons available."
@@ -506,20 +504,18 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
   (let ((inhibit-read-only t))
     (erase-buffer)
 
+    ;; ASCII banner
+    (dolist (line '("     ___  _ __ ___   __ _  ___ ___"
+                    "    / _ \\| '_ ` _ \\ / _` |/ __/ __|"
+                    "   |  __/| | | | | | (_| | (__\\__ \\"
+                    "    \\___||_| |_| |_|\\__,_|\\___|___/"))
+      (insert (propertize line 'face 'my/dashboard-banner))
+      (insert "\n"))
     (insert "\n")
 
     ;; Occult celestial header
     (my/dashboard--insert-occult-header)
     (insert "\n")
-
-    ;; Init stats
-    (insert "    ")
-    (insert (propertize (format "%.2fs  %d packages  %s"
-                                (float-time (time-subtract after-init-time before-init-time))
-                                (length package-activated-list)
-                                (format "Emacs %s" emacs-version))
-                        'face 'my/dashboard-dim))
-    (insert "\n\n")
 
     ;; Sections
     (dolist (item my/dashboard-items)
@@ -538,7 +534,15 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
         (insert "\n")))
 
     (my/dashboard--insert-separator)
-    (insert "\n")
+
+    ;; Init stats
+    (insert "    ")
+    (insert (propertize (format "%.2fs  %d packages  %s"
+                                (float-time (time-subtract after-init-time before-init-time))
+                                (length package-activated-list)
+                                (format "Emacs %s" emacs-version))
+                        'face 'my/dashboard-dim))
+    (insert "\n\n")
 
     ;; Quick actions in two lines
     (insert "    ")

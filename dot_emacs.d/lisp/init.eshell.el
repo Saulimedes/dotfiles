@@ -31,58 +31,106 @@
           "k9s" "lazygit" "lazydocker"))
 
   ;; Configure eshell prompt
-  (setq eshell-prompt-regexp "^[^❯#$\n]*[❯#$] ")
+  (setq eshell-prompt-regexp "^[^❯#\n]*[❯#] "
+        eshell-highlight-prompt nil)
 
-  ;; Define a pretty prompt with git info (like Fish/Starship)
-  (defun eshell-prompt-function ()
-    (let ((current-branch (magit-get-current-branch)))
-      (concat
-       (propertize (abbreviate-file-name (eshell/pwd))
-                   'face '(:foreground "#8FBCBB" :weight bold))
-       (when current-branch
-         (propertize (format " (%s)" current-branch)
-                     'face '(:foreground "#B48EAD")))
-       (if (= (user-uid) 0)
-           (propertize " # " 'face '(:foreground "#BF616A" :weight bold))
-         (propertize " ❯ " 'face '(:foreground "#A3BE8C" :weight bold))))))
-  
+  ;; Starship-like prompt with git info, duration, and status
+  (defvar my/eshell-last-cmd-start nil)
+  (defvar my/eshell-last-cmd-duration nil)
+
+  (defun my/eshell--git-info ()
+    "Return git branch + status string or nil."
+    (let ((branch (string-trim
+                   (shell-command-to-string
+                    "git rev-parse --abbrev-ref HEAD 2>/dev/null"))))
+      (when (and (not (string-empty-p branch))
+                 (not (string-prefix-p "fatal" branch)))
+        (let ((dirty (not (string-empty-p
+                           (string-trim
+                            (shell-command-to-string
+                             "git status --porcelain 2>/dev/null"))))))
+          (concat
+           (propertize " " 'face '(:foreground "#444444"))
+           (propertize " " 'face '(:foreground "#B48EAD"))
+           (propertize branch 'face '(:foreground "#B48EAD"))
+           (when dirty
+             (propertize " ✗" 'face '(:foreground "#EBCB8B"))))))))
+
+  (defun my/eshell--node-version ()
+    "Return node version if package.json exists."
+    (when (locate-dominating-file "." "package.json")
+      (let ((ver (string-trim (shell-command-to-string "node --version 2>/dev/null"))))
+        (unless (string-empty-p ver)
+          (concat " " (propertize (concat "⬢ " ver) 'face '(:foreground "#5e81ac")))))))
+
+  (defun my/eshell--python-version ()
+    "Return python version if in a python project."
+    (when (or (locate-dominating-file "." "pyproject.toml")
+              (locate-dominating-file "." "setup.py")
+              (locate-dominating-file "." ".python-version"))
+      (let ((ver (string-trim (shell-command-to-string "python --version 2>/dev/null"))))
+        (unless (string-empty-p ver)
+          (concat " " (propertize (concat "🐍 " (string-trim-left ver "Python "))
+                                  'face '(:foreground "#EBCB8B")))))))
+
+  (defun my/eshell--kube-context ()
+    "Return current kube context if KUBECONFIG is set."
+    (when (getenv "KUBECONFIG")
+      (let ((ctx (string-trim (shell-command-to-string "kubectl config current-context 2>/dev/null"))))
+        (unless (string-empty-p ctx)
+          (concat " " (propertize (concat "☸ " ctx) 'face '(:foreground "#88C0D0")))))))
+
+  (defun my/eshell--duration ()
+    "Return duration string if last command took >2s."
+    (when (and my/eshell-last-cmd-duration (> my/eshell-last-cmd-duration 2))
+      (concat " "
+              (propertize (format "took %.1fs" my/eshell-last-cmd-duration)
+                          'face '(:foreground "#4C566A")))))
+
+  (defun my/eshell-prompt ()
+    "Starship-like multi-line prompt."
+    (let* ((dir (propertize (abbreviate-file-name (eshell/pwd))
+                            'face '(:foreground "#8FBCBB" :weight bold)))
+           (git (my/eshell--git-info))
+           (node (ignore-errors (my/eshell--node-version)))
+           (py (ignore-errors (my/eshell--python-version)))
+           (kube (ignore-errors (my/eshell--kube-context)))
+           (dur (my/eshell--duration))
+           (status (if (and (boundp 'eshell-last-command-status)
+                            (not (zerop eshell-last-command-status)))
+                       (propertize "❯ " 'face '(:foreground "#BF616A" :weight bold))
+                     (propertize "❯ " 'face '(:foreground "#A3BE8C" :weight bold)))))
+      (setq my/eshell-last-cmd-duration nil)
+      (concat "\n" dir (or git "") (or node "") (or py "") (or kube "") (or dur "")
+              "\n"
+              (if (= (user-uid) 0)
+                  (propertize "# " 'face '(:foreground "#BF616A" :weight bold))
+                status))))
+
+  (setq eshell-prompt-function #'my/eshell-prompt)
+
+  (add-hook 'eshell-pre-command-hook
+            (lambda () (setq my/eshell-last-cmd-start (current-time))))
+  (add-hook 'eshell-post-command-hook
+            (lambda ()
+              (when my/eshell-last-cmd-start
+                (setq my/eshell-last-cmd-duration
+                      (float-time (time-subtract (current-time) my/eshell-last-cmd-start))))))
+
   ;; Custom eshell functions
-  
+
   ;; Fish-like "sudo !!" to repeat last command with sudo
   (defun eshell/!! ()
     "Repeat the last command with sudo."
     (let ((last-command (car (ring-elements eshell-history-ring))))
       (eshell-add-input (concat "sudo " last-command))))
-  
+
   ;; Clear the eshell buffer
   (defun eshell/clear ()
     "Clear the eshell buffer."
     (let ((inhibit-read-only t))
       (erase-buffer)
       (eshell-send-input)))
-  
-  ;; Fish-like "ls" colorization with icons
-  (defun eshell/ls (&rest args)
-    "Replacement for `ls' with colorized output."
-    (if (or (not args) (and (= (length args) 1) (string= (car args) "-l")))
-        (let ((files (sort (directory-files "." nil 
-                                            (lambda (file) 
-                                              (not (or (string= file ".") (string= file ".."))))) 'string<)))
-          (if files
-              (let ((out ""))
-                (dolist (file files)
-                  (setq out (concat out 
-                                   (cond
-                                    ((file-directory-p file)
-                                     (propertize file 'face '(:foreground "#8FBCBB" :weight bold)))
-                                    ((file-executable-p file)
-                                     (propertize file 'face '(:foreground "#A3BE8C")))
-                                    (t (propertize file 'face '(:foreground "gray80"))))
-                                   "\n")))
-                (eshell-printn out))
-            (eshell-printn "No files")))
-      ;; Fall back to regular ls for other args
-      (eshell-command-result (concat "ls " (string-join args " ")))))
   
   ;; Set up aliases (matching fish shell)
   (defun eshell-add-aliases ()
@@ -91,40 +139,35 @@
                      ("vim" "find-file $1")
                      ("emacs" "find-file $1")
                      ("ff" "find-file $1")
-                     ;; File operations with safety
-                     ("cp" "cp -iv $*")
+                     ;; File operations (match zsh)
+                     ("cp" "cp -airv $*")
                      ("mv" "mv -iv $*")
-                     ("rm" "rm -v $*")
-                     ("mkdir" "mkdir -pv $*")
-                     ("md" "mkdir -pv $1")
+                     ("rm" "rm -rf $*")
+                     ("ln" "ln -vi $*")
+                     ("mkdir" "mkdir -p $*")
+                     ("md" "mkdir -p $1")
                      ;; Modern replacements
-                     ("cat" "bat --style=plain $*")
+                     ("cat" "bat $*")
                      ("diff" "diff --color=auto $*")
-                     ;; Directory listing (eza)
-                     ("la" "eza -a --icons --group-directories-first $*")
-                     ("ll" "eza -la --icons --group-directories-first $*")
-                     ("l" "eza --icons --group-directories-first $*")
-                     ("lg" "eza -la --icons --group-directories-first --git $*")
-                     ("lt" "eza -la --icons --group-directories-first --tree --level=2 $*")
+                     ("rg" "rg --color always $*")
+                     ("docker" "podman $*")
+                     ;; Directory listing (eza, match zsh)
+                     ("la" "eza -a --group-directories-first $*")
+                     ("ll" "eza -la --group-directories-first --icons $*")
+                     ("l" "eza -la --group-directories-first --icons $*")
+                     ("lg" "eza -l --group-directories-first --ignore-glob='.git' --icons $*")
+                     ("lt" "eza -T --group-directories-first --level=4 $*")
+                     ("l." "eza -a $* | grep -E '^\\.'" )
                      ;; Navigation
                      (".." "cd ..")
                      ("..." "cd ../..")
                      (".3" "cd ../../..")
                      (".4" "cd ../../../..")
                      (".5" "cd ../../../../..")
+                     ("back" "cd $OLDPWD")
                      ;; Utilities
                      ("c" "clear")
-                     ("getip" "curl -s https://api.ipify.org")
-                     ;; Kubernetes
-                     ("kwatch" "watch kubectl $*")
-                     ("kubectx" "kubectl config use-context $1")
-                     ("kubens" "kubectl config set-context --current --namespace=$1")
-                     ;; Git (use magit when possible)
-                     ("gs" "magit-status")
-                     ("gd" "magit-diff")
-                     ("gb" "magit-branch")
-                     ("gl" "magit-log")
-                     ("gc" "magit-commit")
+                     ("getip" "curl -s https://ifconfig.me")
                      ;; File handling
                      ("open" "find-file $1")
                      ("d" "dired $1")
@@ -146,47 +189,71 @@
     '(;; System
       ("s" . "sudo ")
       ("se" . "sudo -e ")
-      ("sy" . "systemctl ")
+      ("sy" . "sudo systemctl ")
       ;; Git
       ("g" . "git ")
       ("ga" . "git add ")
-      ("gdf" . "git diff ")
+      ("gc" . "git commit -m ")
       ("gdc" . "git diff --cached ")
-      ("gdx" . "git diff HEAD ")
+      ("gdf" . "git diff --name-only ")
+      ("gdx" . "git rm -r ")
       ("gf" . "git fetch ")
+      ("gl" . "git log ")
       ("gm" . "git merge ")
+      ("gox" . "git open ")
       ("gp" . "git pull ")
       ("gpx" . "git push ")
-      ("gr" . "git rebase ")
-      ("grx" . "git reset ")
+      ("gr" . "git restore ")
       ("grb" . "git rebase ")
+      ("grx" . "git rm -r ")
+      ("gs" . "git status ")
       ;; Kubernetes
       ("k" . "kubectl ")
-      ("kgd" . "kubectl get deployments ")
-      ("kg" . "kubectl get ")
-      ("kgp" . "kubectl get pods ")
-      ("kgh" . "kubectl get pods | head ")
-      ("kge" . "kubectl get events --sort-by='.lastTimestamp' ")
-      ("kgsv" . "kubectl get services ")
       ("ka" . "kubectl apply -f ")
-      ("kde" . "kubectl describe ")
-      ("kd" . "kubectl delete ")
-      ("kgs" . "kubectl get secrets ")
-      ("kl" . "kubectl logs ")
-      ("kw" . "kubectl get pods --watch "))
-    "Abbreviations for eshell, similar to fish abbreviations.")
+      ("kd" . "kubectl describe ")
+      ("kde" . "kubectl delete ")
+      ("kex" . "kubectl exec -it ")
+      ("kg" . "kubectl get ")
+      ("kgd" . "kubectl get deployments -o wide ")
+      ("kge" . "kubectl get events --watch ")
+      ("kgh" . "kubectl get hr -o wide ")
+      ("kgp" . "kubectl get pod ")
+      ("kgs" . "kubectl get service ")
+      ("kgsv" . "kubectl get service -o wide ")
+      ("kgw" . "kubectl get pod --watch ")
+      ("kl" . "kubectl logs -f ")
+      ("kw" . "watch kubectl get -f ")
+      ;; Portage
+      ("eu" . "sudo emerge --update --deep --newuse @world ")
+      ("ei" . "sudo emerge ")
+      ("es" . "eix "))
+    "Abbreviations for eshell, synced with zsh abbreviations.")
 
   (defun eshell-expand-abbrev ()
     "Expand abbreviation at point if it matches, otherwise insert space."
     (interactive)
-    (let* ((word-start (save-excursion (skip-chars-backward "a-zA-Z0-9") (point)))
-           (word (buffer-substring-no-properties word-start (point)))
+    (let* ((word-start (save-excursion (eshell-bol) (point)))
+           (word (string-trim (buffer-substring-no-properties word-start (point))))
            (expansion (cdr (assoc word eshell-abbrev-table))))
       (if expansion
           (progn
             (delete-region word-start (point))
             (insert expansion))
         (insert " "))))
+
+  ;; Also register abbreviations as eshell aliases so they work on Enter
+  (defun my/eshell-add-abbrev-aliases ()
+    "Generate eshell aliases from abbreviation table."
+    (dolist (abbrev eshell-abbrev-table)
+      (let* ((name (car abbrev))
+             (expansion (string-trim (cdr abbrev)))
+             (parts (split-string expansion))
+             (cmd (car parts))
+             (args (cdr parts)))
+        (add-to-list 'eshell-command-aliases-list
+                     (list name (concat (string-join (cons cmd args) " ") " $*"))))))
+
+  (add-hook 'eshell-mode-hook #'my/eshell-add-abbrev-aliases)
 
   (add-hook 'eshell-mode-hook
             (lambda ()
@@ -203,14 +270,10 @@
               (define-key eshell-mode-map (kbd "C-c z") 'eshell/zf)
               (define-key eshell-mode-map (kbd "C-c C-z") 'eshell/zi)))
   
-  ;; Syntax highlighting in eshell
+  ;; Ensure TERM is set for color output
   (add-hook 'eshell-mode-hook
             (lambda ()
-              (require 'esh-mode)
-              (require 'eshell)
-              (setenv "TERM" "xterm-256color")
-              ;; Make command output read-only
-              (add-hook 'eshell-output-filter-functions 'eshell-readonly-command-output-filter nil t))))
+              (setenv "TERM" "xterm-256color"))))
 
 ;; Eshell syntax highlighting
 (use-package eshell-syntax-highlighting
@@ -294,7 +357,10 @@ INPUT is the command that was run."
 ;; Hook up atuin recording
 (add-hook 'eshell-pre-command-hook #'eshell-atuin-pre-command)
 (add-hook 'eshell-post-command-hook
-          (lambda () (eshell-atuin-post-command (ring-ref eshell-history-ring 0))))
+          (lambda ()
+            (when (and (bound-and-true-p eshell-history-ring)
+                       (not (ring-empty-p eshell-history-ring)))
+              (eshell-atuin-post-command (ring-ref eshell-history-ring 0)))))
 
 ;; Keybindings for atuin
 (add-hook 'eshell-mode-hook
@@ -435,35 +501,10 @@ INPUT is the command that was run."
 ;; Global keybinding for zoxide directory jump
 (global-set-key (kbd "C-c j") 'find-file-zoxide)
 
-;; General.el integration for eshell commands
-(with-eval-after-load 'general
-  (when (fboundp 'my/leader-keys)
-    (my/leader-keys
-      ;; Eshell operations
-      "e"   '(:ignore t :which-key "eshell")
-      "ee"  '(eshell :which-key "eshell")
-      "eh"  '(eshell-here :which-key "eshell here")
-      "es"  '(split-and-eshell-here :which-key "eshell split")
-      "et"  '(eshell-toggle :which-key "eshell toggle")
-      "ep"  '(eshell-project-root :which-key "eshell project root")
-      
-      ;; Zoxide commands
-      "ez"  '(:ignore t :which-key "zoxide")
-      "ezf" '(find-file-zoxide :which-key "zoxide find file")
-      "ezi" '(eshell/zi :which-key "zoxide interactive"))))
-
 ;; Update which-key descriptions
 (with-eval-after-load 'which-key
   (which-key-add-key-based-replacements "SPC e" "eshell")
   (which-key-add-key-based-replacements "SPC ez" "zoxide"))
-
-;; ============================================================
-;; Direnv integration
-;; ============================================================
-(use-package envrc
-  :hook (eshell-mode . envrc-mode)
-  :config
-  (envrc-global-mode))
 
 ;; ============================================================
 ;; Additional fish-like functions

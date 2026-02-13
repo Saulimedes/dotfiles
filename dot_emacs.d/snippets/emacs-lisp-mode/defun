@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: defun
+# key: defun
+# --
+(defun ${1:name} (${2:args})
+  "${3:Docstring.}"
+  (interactive${4: "$5"})
+  $0)

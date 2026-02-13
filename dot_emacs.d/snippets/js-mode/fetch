@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: fetch request
+# key: fetch
+# --
+const ${1:response} = await fetch("${2:url}", {
+  method: "${3:GET}",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  ${4:body: JSON.stringify($5),}
+});
+const ${6:data} = await $1.json();

@@ -1,15 +1,5 @@
-;; Performance optimizations for startup
-(setq gc-cons-threshold most-positive-fixnum
-      gc-cons-percentage 0.6)
-
-;; Reset GC after startup
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            (setq gc-cons-threshold (* 100 1000 1000)
-                  gc-cons-percentage 0.1)))
-
-;; Run garbage collection when idle (manual GC management)
-(run-with-idle-timer 5 t 'garbage-collect)
+;; -*- lexical-binding: t; -*-
+;; Main init file — GC is managed by gcmh in init.performance.el
 
 ;; Cache directory
 (defvar emacs-cache-directory (expand-file-name "~/.cache/emacs/"))
@@ -41,28 +31,21 @@
           (goto-char (point-max))
           (eval-print-last-sexp)))
       (load bootstrap-file nil 'nomessage)
-      
+
       ;; Configure straight.el settings immediately after bootstrap
       (when (featurep 'straight)
         (setq straight-use-package-by-default t
               straight-check-for-modifications '(check-on-save find-when-checking)
               straight-repository-branch "develop"
-              ;; Disable problematic mirror functionality
               straight-recipes-gnu-elpa-use-mirror nil
               straight-recipes-emacsmirror-use-mirror nil)
-        
-        ;; Only update recipe repositories in interactive mode to avoid batch mode issues
-        (unless noninteractive
-          (condition-case repo-err
-              (straight-pull-recipe-repositories)
-            (error (message "Recipe repository update failed: %s" (error-message-string repo-err)))))
-        
+
         ;; Install use-package safely
         (condition-case use-pkg-err
             (straight-use-package 'use-package)
-          (error (message "Failed to install use-package via straight.el: %s" 
+          (error (message "Failed to install use-package via straight.el: %s"
                          (error-message-string use-pkg-err))))))
-  (error 
+  (error
    (message "Failed to bootstrap straight.el: %s" (error-message-string err))
    (message "Falling back to built-in package.el")
    ;; Set up basic use-package without straight
@@ -74,46 +57,24 @@
    (require 'use-package)
    (setq use-package-always-ensure t)))
 
-;; Configure package.el for compatibility
-(require 'package)
-(setq package-user-dir (expand-file-name "elpa" emacs-cache-directory))
-(setq package-enable-at-startup nil)
-(setq package-archives '(("melpa" . "https://melpa.org/packages/")
-                         ("nongnu" . "https://elpa.nongnu.org/nongnu/")
-                         ("gnu" . "https://elpa.gnu.org/packages/")
-                         ("org" . "https://orgmode.org/elpa/")))
-(package-initialize)
-
 ;; Native compilation cache
 (when (boundp 'native-comp-eln-load-path)
   (setcar native-comp-eln-load-path
           (expand-file-name "eln-cache/" emacs-cache-directory)))
-
-;; Recent files with better defaults
-(use-package recentf
-  :ensure nil
-  :init
-  (setq recentf-save-file (expand-file-name "recentf" emacs-cache-directory)
-        recentf-max-saved-items 200
-        recentf-max-menu-items 15)
-  :config
-  (recentf-mode))
 
 ;; Transient settings
 (setq transient-history-file (expand-file-name "transient/history.el" emacs-cache-directory))
 (setq transient-levels-file (expand-file-name "transient/levels.el" emacs-cache-directory))
 (setq transient-values-file (expand-file-name "transient/values.el" emacs-cache-directory))
 
-;; Sane defaults and other settings
+;; Sane defaults
 (setq-default
- electric-pair-mode 1
  display-line-numbers 'relative
  indent-tabs-mode nil
  vc-follow-symlinks t
  use-package-always-ensure t
  kill-ring-max 300
- tab-width 2
- ;; Game score functionality disabled in early-init.el
+ tab-width 4
  fill-column 80
  backup-by-copying t
  version-control t
@@ -127,12 +88,16 @@
  initial-scratch-message nil
  ring-bell-function 'ignore)
 
+;; Enable useful minor modes
+(electric-pair-mode 1)
+(savehist-mode 1)
+
 ;; Clipboard integration
 (setq select-enable-clipboard t
       select-enable-primary t)
 
 ;; Misc better defaults
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setopt use-short-answers t)
 (global-auto-revert-mode t)
 (setq context-menu-functions
       '(context-menu-ffap
@@ -144,7 +109,6 @@
 ;; Tree-sitter support (built-in for Emacs 29+)
 (when (fboundp 'treesit-available-p)
   (when (treesit-available-p)
-    ;; Built-in treesit is available
     (setq major-mode-remap-alist
           '((c-mode . c-ts-mode)
             (c++-mode . c++-ts-mode)
@@ -159,12 +123,6 @@
 
 ;; Better text editing defaults
 (add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-
-;; Games are completely disabled in early-init.el
-
-;; Performance optimization
-(load-file (expand-file-name "init.performance.el" "~/.emacs.d/"))
 
 ;; Loading additional Emacs Lisp files with error handling
 (let ((lisp-dir (expand-file-name "lisp" "~/.emacs.d/")))
@@ -175,6 +133,4 @@
           (load-file file)
         (error (message "Error loading %s: %s" file (error-message-string err)))))))
 
-
 (provide 'init)
-

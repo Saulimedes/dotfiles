@@ -73,6 +73,7 @@ done
 SYSTEM_SERVICES=(
     "tlp"
     "tlp-pd"
+    "autofs"
 )
 
 for svc in "${SYSTEM_SERVICES[@]}"; do

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: logger setup
+# key: log
+# --
+import logging
+
+logger = logging.getLogger(__name__)

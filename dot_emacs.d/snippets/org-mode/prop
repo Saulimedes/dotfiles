@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: property drawer
+# key: prop
+# --
+:PROPERTIES:
+:${1:CATEGORY}: ${2:value}
+:END:

@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Enhanced Git integration with blame info and modeline indicators
 
 ;; Git basics with magit
@@ -40,17 +41,7 @@
   :config
   (setq diff-hl-draw-borders nil))
 
-;; Git Gutter - show git changes in the left margin
-(use-package git-gutter
-  :hook (prog-mode . git-gutter-mode)
-  :config
-  (setq git-gutter:update-interval 1)
-  ;; These symbols work well with most fonts
-  (setq git-gutter:modified-sign "≡"  ; TRIPLE BAR ≡
-        git-gutter:added-sign "+"     ; PLUS +
-        git-gutter:deleted-sign "-")) ; MINUS -
-
-;; Add git info to modeline (to be used with mood-line)
+;; Add git info to modeline
 (use-package minions
   :config
   (minions-mode 1))
