@@ -8,6 +8,7 @@ on:
 
 jobs:
   shellcheck:
+    if: github.server_url == 'https://github.com'
     name: ShellCheck
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +24,7 @@ jobs:
           ignore_names: '*.zsh'
 
   shfmt:
+    if: github.server_url == 'https://github.com'
     name: Shell Formatting
     runs-on: ubuntu-latest
     steps:
@@ -39,6 +41,7 @@ jobs:
           shfmt -d -i 4 -ci run_once_*.sh run_onchange_*.sh || true
 
   elisp:
+    if: github.server_url == 'https://github.com'
     name: Emacs Lisp
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +70,7 @@ jobs:
           echo "Elisp check complete!"
 
   packages:
+    if: github.server_url == 'https://github.com'
     name: Validate Packages
     runs-on: ubuntu-latest
     steps:
