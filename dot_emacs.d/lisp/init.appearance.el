@@ -341,16 +341,19 @@
   (unless (display-graphic-p)
     ;; Disable pitch-black overlay so all its #000000 backgrounds go away
     (disable-theme 'my-pitch-black)
+    ;; Disable solaire-mode so it doesn't re-apply backgrounds to non-file buffers
+    (when (bound-and-true-p solaire-global-mode)
+      (solaire-global-mode -1))
     ;; Use terminal's own background
-    (set-face-background 'default "unspecified-bg")
-    (set-face-background 'line-number "unspecified-bg")
-    (set-face-background 'line-number-current-line "unspecified-bg")
-    (set-face-background 'fringe "unspecified-bg")
-    (set-face-background 'hl-line "unspecified-bg")
-    (set-face-background 'mode-line "unspecified-bg")
-    (set-face-background 'mode-line-inactive "unspecified-bg")
-    (set-face-background 'header-line "unspecified-bg")
-    (set-face-background 'minibuffer-prompt "unspecified-bg")
+    (dolist (face '(default fringe line-number line-number-current-line
+                    hl-line mode-line mode-line-inactive header-line
+                    minibuffer-prompt tab-line
+                    solaire-default-face solaire-fringe-face
+                    solaire-header-line-face solaire-mode-line-face
+                    solaire-mode-line-inactive-face
+                    dired-header dired-directory))
+      (when (facep face)
+        (set-face-background face "unspecified-bg")))
     ;; Disable tab line (clicks cause buffer switching)
     (global-tab-line-mode -1)
     (xterm-mouse-mode 1)))

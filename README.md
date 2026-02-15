@@ -67,6 +67,15 @@ This will:
 - **forgit** for fzf + git integration
 - Custom abbreviations and functions
 
+### Keyboard Layout
+
+- **US QWERTY** with `altgr-weur` variant for Western European characters
+- `;` key remapped to `dead_diaeresis` via XKB — type `;a` for ä, `;o` for ö, `;s` for ẞ
+- `;;` for literal semicolon, `; ` (space) preserves natural typing flow
+- AltGr+letter still available for direct accented characters (hold AltGr+a → ä, AltGr+8 → ß)
+- Custom `.XCompose` overrides for ẞ and semicolon fallback sequences
+- Caps Lock → Control via `ctrl:nocaps`
+
 ### Editor
 
 - **Emacs** with custom config (`dot_emacs.d/`)

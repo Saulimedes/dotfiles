@@ -1,0 +1,8 @@
+# System compose rules first (dead_diaeresis + a → ä, etc.)
+include "%L"
+
+# Custom overrides
+<dead_diaeresis> <dead_diaeresis>       : ";"
+<dead_diaeresis> <space>                : "; "
+<dead_diaeresis> <s>                    : "ẞ"
+<dead_diaeresis> <S>                    : "ẞ"

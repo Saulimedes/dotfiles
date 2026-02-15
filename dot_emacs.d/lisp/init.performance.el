@@ -58,7 +58,7 @@
 (global-so-long-mode 1)
 
 ;; Reduce rendering work
-(setq idle-update-delay 1.0
+(setq idle-update-delay 0.1
       fast-but-imprecise-scrolling t
       redisplay-skip-fontification-on-input t)
 

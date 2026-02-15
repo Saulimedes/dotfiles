@@ -16,6 +16,9 @@ if ! command -v flatpak &>/dev/null; then
     exit 0
 fi
 
+# Set XDG_DATA_DIRS so flatpak doesn't warn during bootstrap
+export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
 log "Setting up Flatpak..."
 
 # Add user to flatpak group if it exists
@@ -40,3 +43,9 @@ log "Element installed"
 
 flatpak install --user --noninteractive flathub io.github.victoralvesf.aonsoku
 log "Aonsoku installed"
+
+flatpak install --user --noninteractive flathub org.libreoffice.LibreOffice
+log "LibreOffice installed"
+
+flatpak install --user --noninteractive flathub org.jdownloader.JDownloader
+log "JDownloader installed"

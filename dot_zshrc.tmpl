@@ -32,6 +32,11 @@ zstyle ':completion:*:(scp|rsync|sftp):*:files' quoting off
 
 # General Settings
 setopt NO_BEEP NO_BG_NICE CORRECT GLOB_COMPLETE EXTENDED_GLOB INTERACTIVE_COMMENTS NO_BAD_PATTERN
+# Flatpak XDG integration
+if type flatpak &>/dev/null; then
+  export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+fi
+
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
 typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)

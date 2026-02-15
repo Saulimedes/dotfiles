@@ -24,8 +24,8 @@ app-misc/tmux
 # Editors
 app-editors/emacs
 
-# Typesetting
-app-text/typst
+# LaTeX
+app-text/texlive
 
 # PDF rendering (needed by emacs pdf-tools)
 app-text/poppler
@@ -124,6 +124,9 @@ x11-misc/xcape
 # XDG
 x11-misc/xdg-user-dirs
 x11-misc/xdg-utils
+
+# Flatpak
+sys-apps/flatpak
 
 # Containers
 app-containers/podman
