@@ -1,7 +1,18 @@
-export GTK_IM_MODULE=xim
-export QT_IM_MODULE=xim
+export GTK_IM_MODULE=gtk-im-context-simple
+export QT_IM_MODULE=compose
 export XMODIFIERS=@im=none
 
-setxkbmap -layout eu -option ctrl:nocaps -option lv3:ralt_switch
-xcape -e 'ISO_Level3_Shift=dead_diaeresis'
+setxkbmap -layout us -variant altgr-weur -option ctrl:nocaps
+
+# Patch XKB keymap:
+# - LatchMods on AltGr: tap latches Level3 for next keypress, hold works normally
+# - Remap AltGr+s from agrave to ssharp (ß)
+xkbcomp :0 - 2>/dev/null \
+  | sed '/key <RALT> {/{
+      N;N;N
+      s|symbols\[Group1\]= \[ ISO_Level3_Shift \]\n    };|symbols[Group1]= [ ISO_Level3_Shift ],\n        actions[Group1]= [ LatchMods(modifiers=LevelThree) ]\n    };|
+    }' \
+  | sed 's/\[               s,               S,          agrave,          Agrave \]/[               s,               S,          ssharp,          Agrave ]/' \
+  | xkbcomp -w 0 - :0 2>/dev/null
+
 xset b off
