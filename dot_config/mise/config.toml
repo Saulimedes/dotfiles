@@ -38,7 +38,7 @@ gcloud = "latest"
 azure-cli = "latest"
 
 # LSP servers
-tinymist = "latest"
+"cargo:texlab" = "latest"
 zls = "latest"
 rust-analyzer = "latest"
 terraform-ls = "latest"

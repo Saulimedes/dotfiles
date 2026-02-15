@@ -112,16 +112,19 @@
   (zig-format-on-save t))
 
 ;; ============================================================
-;; Typst - modern typesetting (LaTeX alternative)
+;; LaTeX
 ;; ============================================================
-(use-package typst-ts-mode
-  :mode "\\.typ\\'"
+(use-package auctex
+  :mode ("\\.tex\\'" . LaTeX-mode)
   :custom
-  (typst-ts-mode-watch-options "--open")
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-master nil)
+  (TeX-PDF-mode t)
   :config
   (with-eval-after-load 'eglot
     (add-to-list 'eglot-server-programs
-                 '(typst-ts-mode . ("tinymist")))))
+                 '(LaTeX-mode . ("texlab")))))
 
 ;; ============================================================
 ;; Ansible
