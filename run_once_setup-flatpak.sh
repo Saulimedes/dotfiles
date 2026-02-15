@@ -28,3 +28,15 @@ fi
 flatpak remote-add --if-not-exists --user flathub https://flathub.org/repo/flathub.flatpakrepo
 
 log "Flathub repository added"
+
+# Install Flatpak applications
+log "Installing Flatpak applications..."
+
+flatpak install --user --noninteractive flathub com.valvesoftware.Steam
+log "Steam installed"
+
+flatpak install --user --noninteractive flathub im.riot.Riot
+log "Element installed"
+
+flatpak install --user --noninteractive flathub io.github.victoralvesf.aonsoku
+log "Aonsoku installed"

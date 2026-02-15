@@ -1,10 +1,11 @@
 ctrl_n_shortcuts = false
-search_mode = "skim"
+search_mode = "fuzzy"
 filter_mode = "global"
+filter_mode_shell_up_key = "directory"
 style = "compact"
 auto_sync = true
 case_sensitive = false
-tore_success_only = true
+store_failed = false
 sync_address = "https://atuin.lan.becker.kiwi"
 sync_frequency = "6h"
 history_format = "plain"
