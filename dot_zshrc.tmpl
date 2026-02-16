@@ -47,7 +47,9 @@ eval "$(mise activate zsh)"
 # Exports
 export EDITOR="{{ .editor }}"
 export VISUAL="{{ .visual }}"
-export MANPAGER='{{ .manpager }}'
+man() {
+  emacsclient -t --eval "(man \"$*\")" || command man "$@"
+}
 
 ## zoxide
 [[ $- == *i* ]] && eval "$(zoxide init --cmd cd zsh)"

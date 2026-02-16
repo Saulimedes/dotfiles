@@ -91,6 +91,17 @@
                                      (enable-theme 'my-pitch-black))
                                    (message "Theme: %s" next)))))
 
+;; Man-mode colors (sanityinc-tomorrow doesn't style these)
+(use-package man
+  :ensure nil
+  :defer t
+  :custom
+  (Man-notify-method 'pushy)
+  :custom-face
+  (Man-overstrike ((t :foreground "#81a2be" :weight bold)))
+  (Man-underline ((t :foreground "#b5bd68" :underline t)))
+  (Man-reverse ((t :foreground "#1d1f21" :background "#c5c8c6"))))
+
 ;; Highlight matching parentheses with better color
 (use-package paren
   :ensure nil

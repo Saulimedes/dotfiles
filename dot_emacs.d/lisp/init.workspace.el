@@ -42,6 +42,7 @@
   (desktop-path (list (expand-file-name "desktop" emacs-cache-directory)))
   (desktop-restore-frames t)  ; Restore frame configuration
   (desktop-restore-window-configuration t)  ; Restore window configuration
+  (desktop-modes-not-to-save '(nov-mode pdf-view-mode))
   :config
   (make-directory (expand-file-name "desktop" emacs-cache-directory) t)
   (desktop-save-mode 1))

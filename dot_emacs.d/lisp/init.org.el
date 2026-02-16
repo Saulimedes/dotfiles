@@ -155,4 +155,10 @@
   ;; Show pomodoro in modeline
   (setq org-pomodoro-format " %s"))
 
+;; ============================================================
+;; ox-epub - Export Org files to EPUB
+;; ============================================================
+(use-package ox-epub
+  :after ox)
+
 (provide 'init.org)
