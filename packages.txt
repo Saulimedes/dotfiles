@@ -27,8 +27,9 @@ app-editors/emacs
 # LaTeX
 app-text/texlive
 
-# PDF rendering (needed by emacs pdf-tools)
+# PDF rendering
 app-text/poppler
+app-emacs/pdf-tools
 
 # Monitoring
 sys-process/lsof

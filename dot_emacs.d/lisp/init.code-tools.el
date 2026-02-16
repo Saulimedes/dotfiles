@@ -271,10 +271,11 @@
   :hook (sh-mode . flymake-shellcheck-load))
 
 ;; ============================================================
-;; Nmap output highlighting
+;; Scan mode - nmap/nikto/testssl output highlighting
 ;; ============================================================
-(use-package nmap-mode
-  :mode "\\.nmap\\'")
+(use-package scan-mode
+  :straight (:host github :repo "PeterMosmans/scan-mode")
+  :mode ("\\.nmap\\'" "\\.nikto\\'" "\\.testssl\\'"))
 
 ;; ============================================================
 ;; PCAP - packet capture viewing
@@ -308,47 +309,56 @@
 ;; ============================================================
 (use-package nov
   :mode ("\\.epub\\'" . nov-mode)
+  :init
+  ;; Remove doc-view epub association so nov-mode wins
+  (setq auto-mode-alist
+        (cl-remove-if (lambda (entry)
+                        (and (string-match-p "epub" (car entry))
+                             (not (eq (cdr entry) 'nov-mode))))
+                      auto-mode-alist))
   :custom
-  (nov-text-width 80)
-  (nov-variable-pitch t)
+  (nov-text-width t)
+  (nov-variable-pitch nil)
+  (nov-header-line-format nil)
   :config
   (defun my/nov-setup ()
     "Configure nov-mode for comfortable reading."
-    ;; Body text: SF Pro variable pitch
-    (face-remap-add-relative 'variable-pitch
-                             :family "SF Pro"
-                             :height 140)
-    (face-remap-add-relative 'default
-                             :height 130)
-    ;; Code/monospace: MonoLisa
-    (face-remap-add-relative 'fixed-pitch
-                             :family "MonoLisaVariable Nerd Font"
-                             :height 120)
-    ;; Bold text: use SF Pro bold weight
-    (face-remap-add-relative 'bold
-                             :family "SF Pro"
-                             :weight bold)
-    (setq-local line-spacing 0.4)
+    (display-line-numbers-mode -1)
+    (setq-local line-spacing 0.15)
     (visual-line-mode 1)
-    (visual-fill-column-mode 1)
-    (setq-local visual-fill-column-center-text t
-                visual-fill-column-width 90))
+    (visual-fill-column-mode -1)
+    (face-remap-add-relative 'default :family "Fast_Sans" :height 130)
+    (face-remap-add-relative 'variable-pitch :family "Fast_Sans" :height 130)
+    (face-remap-add-relative 'shr-text :family "Fast_Sans" :height 130)
+    (face-remap-add-relative 'fixed-pitch :family "Fast_Mono" :height 120)
+    ;; Enable HarfBuzz shaping for calt (Fast Font bold initial letters)
+    (let ((table (make-char-table nil)))
+      (set-char-table-parent table composition-function-table)
+      (dolist (ch (append (number-sequence ?a ?z) (number-sequence ?A ?Z) (list ?\s)))
+        (set-char-table-range table ch
+          (list (vector ".+" 0 #'font-shape-gstring))))
+      (setq-local composition-function-table table)))
+
   (add-hook 'nov-mode-hook #'my/nov-setup))
 
 ;; ============================================================
 ;; pdf-tools - PDF viewer (replaces DocView)
 ;; ============================================================
 (use-package pdf-tools
+  :ensure nil
+  :straight nil
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :magic ("%PDF" . pdf-view-mode)
   :custom
+  (pdf-info-epdfinfo-program "/usr/bin/epdfinfo")
   (pdf-view-display-size 'fit-page)
   (pdf-view-use-scaling t)
   (pdf-view-use-imagemagick nil)
   :config
   (pdf-tools-install :no-query)
-  ;; Midnight mode for dark reading
+  ;; Midnight mode for dark reading - auto-enable
   (setq pdf-view-midnight-colors '("#c5c8c6" . "#000000"))
+  (add-hook 'pdf-view-mode-hook #'pdf-view-midnight-minor-mode)
   ;; Keybindings
   (define-key pdf-view-mode-map (kbd "d") #'pdf-view-midnight-minor-mode)
   (define-key pdf-view-mode-map (kbd "j") #'pdf-view-next-line-or-next-page)

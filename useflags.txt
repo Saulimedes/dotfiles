@@ -14,5 +14,8 @@ x11-libs/libdrm video_cards_radeon
 # Networking
 net-firewall/iptables nftables
 
+# Editors
+app-editors/emacs libxml2 tree-sitter harfbuzz
+
 # System
 sys-apps/systemd boot cryptsetup

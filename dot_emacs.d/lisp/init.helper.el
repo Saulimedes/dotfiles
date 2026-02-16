@@ -72,4 +72,7 @@
 
 (global-set-key (kbd "C-c w") #'wcopy-toggle)
 
+;; tldr - simplified man pages with examples
+(use-package tldr)
+
 (provide 'init.helper)

@@ -1,6 +1,5 @@
 editor = "emacsclient -t -a ''"
 visual = "emacsclient -c -a ''"
-manpager = "emacsclient -t +Man!"
 
 [user]
 name = "Paul Becker"
