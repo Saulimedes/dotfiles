@@ -1,0 +1,87 @@
+# Seti theme for k9s
+# Based on the Seti UI color palette
+k9s:
+  body:
+    fgColor: "#D4D7D6"
+    bgColor: "#151718"
+    logoColor: "#9FCA56"
+  prompt:
+    fgColor: "#D4D7D6"
+    bgColor: "#151718"
+    suggestColor: "#A074C4"
+  info:
+    fgColor: "#55B5DB"
+    sectionColor: "#9FCA56"
+  dialog:
+    fgColor: "#D4D7D6"
+    bgColor: "#151718"
+    buttonFgColor: "#D4D7D6"
+    buttonBgColor: "#434546"
+    buttonFocusFgColor: "#151718"
+    buttonFocusBgColor: "#9FCA56"
+    labelFgColor: "#DCCD69"
+    fieldFgColor: "#D4D7D6"
+  frame:
+    border:
+      fgColor: "#2F3C42"
+      focusColor: "#9FCA56"
+    menu:
+      fgColor: "#D4D7D6"
+      keyColor: "#55B5DB"
+      numKeyColor: "#A074C4"
+    crumbs:
+      fgColor: "#151718"
+      bgColor: "#55B5DB"
+      activeColor: "#9FCA56"
+    status:
+      newColor: "#55B5DB"
+      modifyColor: "#DCCD69"
+      addColor: "#9FCA56"
+      pendingColor: "#A074C4"
+      errorColor: "#CE4045"
+      highlightColor: "#75E5F4"
+      killColor: "#CE4045"
+      completedColor: "#41535B"
+    title:
+      fgColor: "#D4D7D6"
+      bgColor: "#151718"
+      highlightColor: "#9FCA56"
+      counterColor: "#55B5DB"
+      filterColor: "#DCCD69"
+  views:
+    charts:
+      bgColor: "#151718"
+      defaultDialColors:
+        - "#55B5DB"
+        - "#CE4045"
+      defaultChartColors:
+        - "#55B5DB"
+        - "#CE4045"
+    table:
+      fgColor: "#D4D7D6"
+      bgColor: "#151718"
+      cursorFgColor: "#D4D7D6"
+      cursorBgColor: "#434546"
+      markColor: "#DCCD69"
+      header:
+        fgColor: "#9FCA56"
+        bgColor: "#151718"
+        sorterColor: "#55B5DB"
+    xray:
+      fgColor: "#D4D7D6"
+      bgColor: "#151718"
+      cursorColor: "#434546"
+      graphicColor: "#55B5DB"
+      showColor: "#9FCA56"
+    yaml:
+      keyColor: "#9FCA56"
+      colonColor: "#858D8A"
+      valueColor: "#55B5DB"
+    logs:
+      fgColor: "#D4D7D6"
+      bgColor: "#151718"
+      indicator:
+        fgColor: "#D4D7D6"
+        bgColor: "#151718"
+        toggleOnColor: "#9FCA56"
+        toggleOffColor: "#41535B"

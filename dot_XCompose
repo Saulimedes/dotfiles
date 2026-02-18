@@ -1,5 +1,5 @@
 # System compose rules first (dead_diaeresis + a → ä, etc.)
-include "%L"
+include "/usr/share/X11/locale/en_US.UTF-8/Compose"
 
 # Custom overrides
 <dead_diaeresis> <dead_diaeresis>       : ";"

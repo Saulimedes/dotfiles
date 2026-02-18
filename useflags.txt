@@ -17,5 +17,8 @@ net-firewall/iptables nftables
 # Editors
 app-editors/emacs libxml2 tree-sitter harfbuzz
 
+# Pinentry
+app-crypt/pinentry emacs
+
 # System
 sys-apps/systemd boot cryptsetup

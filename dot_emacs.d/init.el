@@ -98,6 +98,7 @@
 
 ;; Misc better defaults
 (setopt use-short-answers t)
+(setq confirm-kill-processes nil)
 (global-auto-revert-mode t)
 (setq context-menu-functions
       '(context-menu-ffap

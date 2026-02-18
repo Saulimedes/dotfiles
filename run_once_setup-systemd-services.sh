@@ -71,6 +71,7 @@ done
 
 # Enable system-level services (requires sudo)
 SYSTEM_SERVICES=(
+    "bluetooth"
     "tlp"
     "tlp-pd"
     "autofs"

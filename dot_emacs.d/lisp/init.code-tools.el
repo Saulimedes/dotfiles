@@ -326,7 +326,6 @@
     (display-line-numbers-mode -1)
     (setq-local line-spacing 0.15)
     (visual-line-mode 1)
-    (visual-fill-column-mode -1)
     (face-remap-add-relative 'default :family "Fast_Sans" :height 130)
     (face-remap-add-relative 'variable-pitch :family "Fast_Sans" :height 130)
     (face-remap-add-relative 'shr-text :family "Fast_Sans" :height 130)
