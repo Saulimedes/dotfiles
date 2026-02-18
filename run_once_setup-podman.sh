@@ -38,5 +38,11 @@ fi
 # Add user to required groups
 sudo usermod -aG kvm "$USER" 2>/dev/null || true
 
+# Symlink podman as docker for compatibility
+if [[ ! -e /usr/local/bin/docker ]]; then
+    log "Symlinking podman as docker"
+    sudo ln -s /usr/bin/podman /usr/local/bin/docker
+fi
+
 log "Podman rootless setup complete"
 log "You may need to log out and back in for group changes to take effect"

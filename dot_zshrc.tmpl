@@ -37,6 +37,11 @@ if type flatpak &>/dev/null; then
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
 fi
 
+# Re-apply keyboard patch if Cinnamon reset it after .xprofile
+if [[ -n "$DISPLAY" ]] && xkbcomp :0 - 2>/dev/null | grep -q '\bsemicolon\b'; then
+  source ~/.xprofile
+fi
+
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
 typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)
@@ -75,6 +80,7 @@ fi
 # Key bindings
 bindkey '^I' expand-or-complete
 bindkey "^H" backward-delete-char
+bindkey "${terminfo[kdch1]}" delete-char
 bindkey "^[[3;5~" kill-word
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -92,7 +98,6 @@ fi
 
 # Aliases
 alias e="$EDITOR"
-alias d='emacsclient -t .'
 alias cp="cp -airv"
 alias cat="bat"
 alias dd="sudo dd status=progress bs=4M oflag=sync"
@@ -123,6 +128,8 @@ alias back="cd $OLDPWD"
 
 # containers
 alias docker="podman"
+alias neofetch="fastfetch"
+alias gb="forgit::switch::branch"
 
 # functions
 for file in ~/.zsh/functions/*.zsh; do

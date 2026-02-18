@@ -43,9 +43,9 @@
 ;; Font-lock (syntax highlighting)
 (setq font-lock-maximum-decoration t
       font-lock-maximum-size (* 1024 1024))  ; 1MB
-(setq jit-lock-defer-time 0.05
-      jit-lock-stealth-time 0.5
-      jit-lock-stealth-nice 0.5)
+(setq jit-lock-defer-time 0
+      jit-lock-stealth-time 0.1
+      jit-lock-stealth-nice 0.1)
 
 ;; Bidirectional text (disable for LTR-only)
 (setq-default bidi-display-reordering nil

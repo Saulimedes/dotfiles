@@ -24,11 +24,11 @@
   (fontaine-set-preset 'regular))
 
 (setq-default line-spacing 1)
-;; Tomorrow Night Theme - clean, colorful syntax highlighting
-(use-package color-theme-sanityinc-tomorrow
+;; Seti Theme
+(use-package seti-theme
   :demand t
   :config
-  (load-theme 'sanityinc-tomorrow-night t))
+  (load-theme 'seti t))
 
 ;; Define pitch-black as a proper overlay theme (cleanly toggleable)
 (deftheme my-pitch-black "Pitch black background overlay.")
@@ -39,7 +39,7 @@
  '(fringe ((t :background "#000000")))
  '(cursor ((t :background "#ffffff")))
  '(hl-line ((t :background "#0e0e0e")))
- '(region ((t :background "#3b4252")))
+ '(region ((t :background "#2F3C42")))
  '(vertical-border ((t :foreground "#1a1a1a")))
  ;; Line numbers
  '(line-number ((t :background "#000000")))
@@ -50,12 +50,12 @@
  ;; Minibuffer
  '(minibuffer-prompt ((t :background "#000000")))
  ;; Modeline - visible against black
- '(mode-line ((t :background "#1c1c1c" :foreground "#c5c8c6" :box (:line-width (1 . 4) :color "#1c1c1c") :overline nil :underline nil)))
- '(mode-line-inactive ((t :background "#111111" :foreground "#555555" :box (:line-width (1 . 4) :color "#111111") :overline nil :underline nil)))
+ '(mode-line ((t :background "#1c1c1c" :foreground "#D4D7D6" :box (:line-width (1 . 4) :color "#1c1c1c") :overline nil :underline nil)))
+ '(mode-line-inactive ((t :background "#111111" :foreground "#41535B" :box (:line-width (1 . 4) :color "#111111") :overline nil :underline nil)))
  '(mode-line-highlight ((t :background "#ffffff" :foreground "#000000" :box nil)))
  ;; Doom-modeline segments
- '(doom-modeline-bar ((t :background "#81a2be")))
- '(doom-modeline-bar-inactive ((t :background "#373b41")))
+ '(doom-modeline-bar ((t :background "#55B5DB")))
+ '(doom-modeline-bar-inactive ((t :background "#2F3C42")))
  '(doom-modeline-panel ((t :background "#1c1c1c")))
  '(doom-modeline-buffer-file ((t :background unspecified)))
  '(doom-modeline-buffer-modified ((t :background unspecified)))
@@ -77,30 +77,16 @@
 (provide-theme 'my-pitch-black)
 (enable-theme 'my-pitch-black)
 
-(global-set-key (kbd "<f5>") (lambda () (interactive)
-                               (let ((themes '(sanityinc-tomorrow-night
-                                               sanityinc-tomorrow-day
-                                               sanityinc-tomorrow-eighties
-                                               sanityinc-tomorrow-blue
-                                               sanityinc-tomorrow-bright))
-                                     (current (car custom-enabled-themes)))
-                                 (mapc #'disable-theme custom-enabled-themes)
-                                 (let ((next (or (cadr (member current themes)) (car themes))))
-                                   (load-theme next t)
-                                   (when (eq next 'sanityinc-tomorrow-night)
-                                     (enable-theme 'my-pitch-black))
-                                   (message "Theme: %s" next)))))
-
-;; Man-mode colors (sanityinc-tomorrow doesn't style these)
+;; Man-mode colors
 (use-package man
   :ensure nil
   :defer t
   :custom
   (Man-notify-method 'pushy)
   :custom-face
-  (Man-overstrike ((t :foreground "#81a2be" :weight bold)))
-  (Man-underline ((t :foreground "#b5bd68" :underline t)))
-  (Man-reverse ((t :foreground "#1d1f21" :background "#c5c8c6"))))
+  (Man-overstrike ((t :foreground "#55B5DB" :weight bold)))
+  (Man-underline ((t :foreground "#9FCA56" :underline t)))
+  (Man-reverse ((t :foreground "#000000" :background "#D4D7D6"))))
 
 ;; Highlight matching parentheses with better color
 (use-package paren
@@ -327,11 +313,7 @@
 ;; ============================================================
 ;; Visual fill column - soft wrap at fill-column (nice for prose)
 ;; ============================================================
-(use-package visual-fill-column
-  :hook (visual-line-mode . visual-fill-column-mode)
-  :custom
-  (visual-fill-column-center-text t)
-  (visual-fill-column-width 100))
+(use-package visual-fill-column)
 
 ;; ============================================================
 ;; Save cursor position in files
@@ -355,16 +337,19 @@
     ;; Disable solaire-mode so it doesn't re-apply backgrounds to non-file buffers
     (when (bound-and-true-p solaire-global-mode)
       (solaire-global-mode -1))
-    ;; Use terminal's own background
-    (dolist (face '(default fringe line-number line-number-current-line
-                    hl-line mode-line mode-line-inactive header-line
-                    minibuffer-prompt tab-line
-                    solaire-default-face solaire-fringe-face
-                    solaire-header-line-face solaire-mode-line-face
-                    solaire-mode-line-inactive-face
-                    dired-header dired-directory))
-      (when (facep face)
+    ;; Use terminal's own background — clear all faces with explicit backgrounds
+    ;; Preserve region highlight so selections remain visible
+    (dolist (face (face-list))
+      (when (and (face-background face nil nil)
+                 (not (memq face '(region))))
         (set-face-background face "unspecified-bg")))
+    ;; Disable GUI-only modes that create padding/borders in terminal
+    (when (bound-and-true-p spacious-padding-mode)
+      (spacious-padding-mode -1))
+    (when (bound-and-true-p breadcrumb-mode)
+      (breadcrumb-mode -1))
+    (when (bound-and-true-p visual-fill-column-mode)
+      (visual-fill-column-mode -1))
     ;; Disable tab line (clicks cause buffer switching)
     (global-tab-line-mode -1)
     (xterm-mouse-mode 1)))
@@ -388,10 +373,10 @@
       (with-selected-frame frame
         (fontaine-set-preset 'regular)
         (doom-modeline-mode 1)
-        (spacious-padding-mode 1)
-        (solaire-global-mode +1)
-        (breadcrumb-mode 1)
         (when (display-graphic-p)
+          (spacious-padding-mode 1)
+          (solaire-global-mode +1)
+          (breadcrumb-mode 1)
           (global-tab-line-mode 1)))))
   (add-hook 'server-after-make-frame-hook
             (lambda () (my/daemon-setup-display (selected-frame)))))

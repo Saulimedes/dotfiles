@@ -24,6 +24,17 @@ app-misc/tmux
 # Editors
 app-editors/emacs
 
+# Tree-sitter grammars (for Emacs 29+ ts-modes)
+dev-libs/tree-sitter-python
+dev-libs/tree-sitter-c
+dev-libs/tree-sitter-cpp
+dev-libs/tree-sitter-css
+dev-libs/tree-sitter-javascript
+dev-libs/tree-sitter-json
+dev-libs/tree-sitter-java
+dev-libs/tree-sitter-typescript
+dev-libs/tree-sitter-rust
+
 # LaTeX
 app-text/texlive
 
@@ -60,6 +71,9 @@ dev-vcs/git-lfs
 dev-vcs/git-crypt
 dev-vcs/got
 
+# Bluetooth
+net-wireless/bluez
+
 # Network
 gnome-extra/nm-applet
 net-vpn/networkmanager-vpnc
@@ -80,6 +94,7 @@ net-misc/socat
 net-analyzer/netcat
 net-misc/whois
 net-misc/iperf
+net-misc/telnet-bsd
 
 # Security
 app-crypt/gnupg
@@ -101,6 +116,7 @@ media-fonts/noto-emoji
 media-fonts/liberation-fonts
 media-fonts/fira-code
 media-fonts/jetbrains-mono
+media-fonts/noto-cjk
 
 # Media
 media-video/mpv

@@ -5,8 +5,9 @@ LICENSE
 # Setup script (not a dotfile)
 setup.sh
 
-# Package list (used by run scripts, not a dotfile)
+# Package list and USE flags (used by run scripts, not dotfiles)
 packages.txt
+useflags.txt
 
 # Temporary files
 tmp/
