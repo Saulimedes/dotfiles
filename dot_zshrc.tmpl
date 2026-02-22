@@ -22,13 +22,8 @@ zstyle ':completion:*' insert-unambiguous yes
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[./]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*:default' list-prompt '%Sscroll: %p'
 
-# Fix SSH completion double-escaping - removed squeeze-slashes globally, only apply to non-ssh contexts
 zstyle ':completion:*:*:*:*:*' squeeze-slashes true
 zstyle ':completion:*:(ssh|scp|sftp|rsync):*' squeeze-slashes false
-
-# Fix double-escaping of spaces in remote paths (scp, rsync, sftp)
-zstyle ':completion:*:(scp|rsync|sftp):*' completer _complete
-zstyle ':completion:*:(scp|rsync|sftp):*:files' quoting off
 
 # General Settings
 setopt NO_BEEP NO_BG_NICE CORRECT GLOB_COMPLETE EXTENDED_GLOB INTERACTIVE_COMMENTS NO_BAD_PATTERN
