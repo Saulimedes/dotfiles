@@ -43,7 +43,7 @@ This will:
 
 **mise** (`dot_config/mise/config.toml`):
 - Languages: Node, Python, Go, Rust, Zig, Java, Bun, Deno
-- Kubernetes: kubectl, helm, k9s, kubie, stern, kustomize, k3s
+- Kubernetes: kubectl, helm, k9s, stern, kustomize, k3s
 - IaC/Cloud: OpenTofu, Vault, Ansible, gcloud, azure-cli
 - Dev tools: direnv, gh, jq, yq, shellcheck, shfmt
 

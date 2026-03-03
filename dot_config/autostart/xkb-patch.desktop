@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=XKB Patch
+Comment=Re-apply xkbcomp keymap patch after session startup
+Exec=bash -c 'sleep 2 && xkb-patch'
+Hidden=false
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

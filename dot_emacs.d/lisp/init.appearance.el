@@ -354,7 +354,8 @@
     (global-tab-line-mode -1)
     (xterm-mouse-mode 1)))
 
-(add-hook 'tty-setup-hook #'my/terminal-setup)
+;; window-setup-hook fires after init file + themes are loaded (unlike tty-setup-hook)
+(add-hook 'window-setup-hook #'my/terminal-setup)
 ;; Also run for daemon frames created via emacsclient -t
 (add-hook 'after-make-frame-functions
           (lambda (frame)

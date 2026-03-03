@@ -1,5 +1,6 @@
 ctrl_n_shortcuts = false
 search_mode = "fuzzy"
+smart_sort = true
 filter_mode = "global"
 filter_mode_shell_up_key = "directory"
 style = "compact"

@@ -3,18 +3,18 @@
 k9s:
   body:
     fgColor: "#D4D7D6"
-    bgColor: "#151718"
+    bgColor: "default"
     logoColor: "#9FCA56"
   prompt:
     fgColor: "#D4D7D6"
-    bgColor: "#151718"
+    bgColor: "default"
     suggestColor: "#A074C4"
   info:
     fgColor: "#55B5DB"
     sectionColor: "#9FCA56"
   dialog:
     fgColor: "#D4D7D6"
-    bgColor: "#151718"
+    bgColor: "default"
     buttonFgColor: "#D4D7D6"
     buttonBgColor: "#434546"
     buttonFocusFgColor: "#151718"
@@ -44,13 +44,13 @@ k9s:
       completedColor: "#41535B"
     title:
       fgColor: "#D4D7D6"
-      bgColor: "#151718"
+      bgColor: "default"
       highlightColor: "#9FCA56"
       counterColor: "#55B5DB"
       filterColor: "#DCCD69"
   views:
     charts:
-      bgColor: "#151718"
+      bgColor: "default"
       defaultDialColors:
         - "#55B5DB"
         - "#CE4045"
@@ -59,17 +59,17 @@ k9s:
         - "#CE4045"
     table:
       fgColor: "#D4D7D6"
-      bgColor: "#151718"
+      bgColor: "default"
       cursorFgColor: "#D4D7D6"
       cursorBgColor: "#434546"
       markColor: "#DCCD69"
       header:
         fgColor: "#9FCA56"
-        bgColor: "#151718"
+        bgColor: "default"
         sorterColor: "#55B5DB"
     xray:
       fgColor: "#D4D7D6"
-      bgColor: "#151718"
+      bgColor: "default"
       cursorColor: "#434546"
       graphicColor: "#55B5DB"
       showColor: "#9FCA56"
@@ -79,9 +79,9 @@ k9s:
       valueColor: "#55B5DB"
     logs:
       fgColor: "#D4D7D6"
-      bgColor: "#151718"
+      bgColor: "default"
       indicator:
         fgColor: "#D4D7D6"
-        bgColor: "#151718"
+        bgColor: "default"
         toggleOnColor: "#9FCA56"
         toggleOffColor: "#41535B"

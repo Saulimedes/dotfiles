@@ -54,7 +54,6 @@ user_pref("browser.search.lens.enabled", false);
 // PERFORMANCE & NETWORK
 // =============================================================================
 user_pref("browser.sessionstore.restore_pinned_tabs_on_demand", true);
-user_pref("network.http.speculative-parallel-limit", 0);
 user_pref("browser.urlbar.speculativeConnect.enabled", true);
 user_pref("browser.places.speculativeConnect.enabled", true);
 user_pref("network.prefetch-next", true);
@@ -91,7 +90,7 @@ user_pref("accessibility.force_disabled", 1); // disable Accessibility features
 user_pref("security.cert_pinning.enforcement_level", 2); // strict public key pinning
 user_pref("captivedetect.canonicalURL", ""); // disable captive portal detection
 user_pref("network.captive-portal-service.enabled", false); // disable captive portal detection
-user_pref("network.connectivity-service.enabled", false); // disable captive portal detection
+user_pref("network.connectivity-service.enabled", true); // keep enabled so Firefox detects network state changes
 user_pref("browser.download.enableDeletePrivate", true); // Delete files downloaded in private browsing when all private windows are closed
 user_pref("browser.download.deletePrivateChosen", true); // Delete files downloaded in private browsing when all private windows are closed
 user_pref("browser.download.deletePrivate", true); // Delete files downloaded in private browsing when all private windows are closed
@@ -117,7 +116,7 @@ user_pref("browser.urlbar.quicksuggest.enabled", false); // hide Firefox Suggest
 user_pref("browser.bookmarks.max_backups", 0); // minimize disk use; manually back-up
 user_pref("view_source.wrap_long_lines", true);  // wrap source lines
 user_pref("devtools.debugger.ui.editor-wrapping", true);  // wrap lines in devtools
-user_pref("browser.zoom.full", false); // text-only zoom, not all elements on page
+user_pref("browser.zoom.full", true); // full-page zoom, matches Chrome behavior
 user_pref("layout.word_select.eat_space_to_next_word", false); // do not select the space next to a word when selecting a word
 
 // Default monospace font (serif/sans-serif follow system/GTK)
@@ -128,7 +127,7 @@ user_pref("general.autoScroll", false); // disable unintentional behavior for mi
 user_pref("ui.SpellCheckerUnderlineStyle", 1); // [HIDDEN] dots for spell check errors
 user_pref("reader.parse-on-load.enabled", false); // disable reader mode
 user_pref("network.trr.mode", 2); // enable TRR (with System fallback)
-user_pref("network.trr.uri", "https://adblock.dns.mullvad.net/dns-query");
+user_pref("network.trr.uri", "https://dns.mullvad.net/dns-query");
 user_pref("network.trr.max-fails", 5); // lower max attempts to use DoH
 user_pref("geo.provider.use_geoclue", false); // [LINUX]
 user_pref("pdfjs.defaultZoomValue", "page-width"); // PDF zoom level
@@ -203,11 +202,11 @@ user_pref("webgl.disabled", false); // keep webgl for compatibility
 
 // HTTPS-only mode
 user_pref("dom.security.https_only_mode", true);
-user_pref("dom.security.https_only_mode_send_http_background_request", false);
+// Keep send_http_background_request at default (true) so Firefox can fall back
+// gracefully when HTTP download URLs can't be upgraded to HTTPS — disabling it
+// causes "source file could not be read" errors on HTTP CDN download links.
 
-// Disable prefetching (saves bandwidth, slight privacy gain)
-user_pref("network.dns.disablePrefetch", true);
-user_pref("network.dns.disablePrefetchFromHTTPS", true);
+// DNS prefetch enabled — Mullvad sees lookups either way, prefetch reduces click latency
 
 // =============================================================================
 // PERFORMANCE TWEAKS

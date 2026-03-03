@@ -27,7 +27,7 @@
   (blamer-self-author-name "You") ; Name to use for self-authored code
   :custom-face
   (blamer-face ((t :foreground "#7a88cf"
-                   :background nil
+                   :background unspecified
                    :italic t
                    :height 0.9))))
 
