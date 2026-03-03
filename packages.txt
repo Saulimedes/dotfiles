@@ -99,6 +99,7 @@ net-misc/telnet-bsd
 # Security
 app-crypt/gnupg
 app-admin/gopass
+app-emacs/pinentry
 
 # Network filesystems
 net-fs/cifs-utils
@@ -142,8 +143,9 @@ x11-misc/xcape
 x11-misc/xdg-user-dirs
 x11-misc/xdg-utils
 
-# Flatpak
+# Flatpak / AppImage
 sys-apps/flatpak
+sys-fs/fuse:0
 
 # Containers
 app-containers/podman

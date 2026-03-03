@@ -92,14 +92,6 @@ k9s:
       "/": search
       ":": command
       "Shift-R": refresh
-  skin:
-    view:
-      defaultFgColor: white
-      defaultBgColor: black
-    status:
-      errorColor: red
-      successColor: green
-      warningColor: yellow
   xray:
     active: true
   saveDir: ~/.k9s

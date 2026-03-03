@@ -295,6 +295,11 @@
 
 (setq epg-gpg-program "gpg2")
 
+;; Set INSIDE_EMACS for child processes (vterm, eshell) so they inherit it.
+;; Use emacs-major/minor-version to avoid the newline embedded in emacs-version.
+(setenv "INSIDE_EMACS"
+        (format "%d.%d,1" emacs-major-version emacs-minor-version))
+
 ;; ============================================================
 ;; Hexl - hex editor (built-in)
 ;; ============================================================

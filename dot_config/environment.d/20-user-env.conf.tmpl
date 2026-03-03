@@ -1,0 +1,9 @@
+# Flatpak: expose app icons and data to graphical launchers
+XDG_DATA_DIRS=/var/lib/flatpak/exports/share:/home/becker/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}
+
+# Editor: used by file managers, git GUIs, and other graphical apps
+EDITOR={{ .editor | quote }}
+VISUAL={{ .visual | quote }}
+
+# PATH: user binaries for graphical apps that shell out
+PATH=/home/becker/.local/bin:/home/becker/.bin:/home/becker/.cargo/bin:/home/becker/.krew/bin:/home/becker/bin:/home/becker/Applications:/var/lib/flatpak/exports/bin:${PATH}
