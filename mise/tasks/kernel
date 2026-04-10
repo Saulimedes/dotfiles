@@ -1,0 +1,51 @@
+#!/bin/bash
+#MISE description="Build kernel, install modules, rebuild initramfs, update limine.conf"
+set -euo pipefail
+
+CONFIG="${HOME}/.config/kernel/linux.config"
+if [[ -f "$CONFIG" ]]; then
+    sudo cp "$CONFIG" /usr/src/linux/.config
+    echo "[*] Copied ${CONFIG} → /usr/src/linux/.config"
+else
+    echo "[!] No saved config at ${CONFIG}, using existing /usr/src/linux/.config"
+fi
+
+sudo make -C /usr/src/linux -j"$(nproc)"
+sudo make -C /usr/src/linux modules_install
+sudo make -C /usr/src/linux install
+sudo modprobe dm-crypt 2>/dev/null || true  # ensure dm-crypt is loaded so RAMDISKMODULES picks it up
+sudo genkernel initramfs
+
+if [[ ! -f /boot/limine.conf ]]; then
+    echo "[!] /boot/limine.conf not found, skipping bootloader update."
+    echo "[*] Done. Reboot to use the new kernel."
+    exit 0
+fi
+
+VER=$(make -C /usr/src/linux -s kernelrelease)
+VMLINUZ="vmlinuz-${VER}"
+INITRAMFS="initramfs-${VER}.img"
+
+CMDLINE=$(awk '/cmdline:/{print; exit}' /boot/limine.conf | sed 's/.*cmdline: //')
+OLD_LABEL=$(awk '/^\//{sub(/^\//, ""); label=$0} /kernel_path:/{print label; exit}' /boot/limine.conf)
+OLD_KERNEL=$(awk '/kernel_path:/{print $2; exit}' /boot/limine.conf | sed 's|boot():/||')
+OLD_INITRAMFS=$(awk '/module_path:/{print $2; exit}' /boot/limine.conf | sed 's|boot():/||')
+
+sudo tee /boot/limine.conf > /dev/null <<LIMINE
+timeout: 3
+
+/Gentoo Linux ${VER}
+    protocol: linux
+    kernel_path: boot():/${VMLINUZ}
+    cmdline: ${CMDLINE}
+    module_path: boot():/${INITRAMFS}
+
+/${OLD_LABEL} (fallback)
+    protocol: linux
+    kernel_path: boot():/${OLD_KERNEL}
+    cmdline: ${CMDLINE}
+    module_path: boot():/${OLD_INITRAMFS}
+LIMINE
+
+echo "[*] limine.conf updated — new: ${VER}, fallback: ${OLD_LABEL}"
+echo "[*] Done. Reboot to use the new kernel."
