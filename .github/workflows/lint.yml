@@ -20,7 +20,7 @@ jobs:
         with:
           scandir: '.'
           severity: warning
-          ignore_paths: 'dot_emacs.d dot_zsh dot_local/bin'
+          ignore_paths: 'dot_emacs.d dot_zsh'
           ignore_names: '*.zsh'
 
   shfmt:
@@ -83,7 +83,7 @@ jobs:
           # Check for empty lines between packages (comments allowed)
           # Check format: category/package
           grep -v '^#' packages.txt | grep -v '^$' | while read -r pkg; do
-            if ! echo "$pkg" | grep -qE '^[a-z0-9-]+/[a-zA-Z0-9._-]+$'; then
+            if ! echo "$pkg" | grep -qE '^[a-z0-9-]+/[a-zA-Z0-9._+-]+(:[a-zA-Z0-9._-]+)?$'; then
               echo "Invalid package format: $pkg"
               exit 1
             fi
