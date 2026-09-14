@@ -1,0 +1,15 @@
+{{- $name := promptStringOnce . "name" "Full name" -}}
+{{- $email := promptStringOnce . "email" "Email address" -}}
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+
+[git]
+    autoPush = true
+
+[merge]
+    keep = "none"
+
+[apply]
+    force = true

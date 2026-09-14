@@ -1,8 +1,0 @@
-git:
-  autoPush: true
-
-merge:
-  keep: "none"
-
-apply:
-  force: true

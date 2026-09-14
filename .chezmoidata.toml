@@ -1,6 +1,6 @@
 editor = "emacsclient -t -a ''"
 visual = "emacsclient -c -a ''"
 
-[user]
-name = "Paul Becker"
-email = "REDACTED"
+# name/email intentionally not here: they're prompted for at `chezmoi init`
+# time and stored locally in ~/.config/chezmoi/chezmoi.toml (untracked), via
+# .chezmoi.toml.tmpl. Keeps real contact info out of this public repo.
