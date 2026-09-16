@@ -27,7 +27,6 @@ fi
 # Enable overlays
 log "Enabling overlays..."
 sudo eselect repository enable guru 2>/dev/null || true
-sudo eselect repository add saulimedes-overlay git https://github.com/saulimedes/saulimedes-overlay.git 2>/dev/null || true
 sudo eselect repository enable another-brave-overlay 2>/dev/null || true
 sudo eselect repository enable pentoo 2>/dev/null || true
 

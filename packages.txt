@@ -70,7 +70,6 @@ app-arch/unrar
 dev-vcs/git
 dev-vcs/git-lfs
 dev-vcs/git-crypt
-dev-vcs/got
 
 # Bluetooth
 net-wireless/bluez

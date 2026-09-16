@@ -53,7 +53,7 @@ This will:
 
 | Script | Purpose |
 |--------|---------|
-| `run_once_setup-portage.sh` | Enable Gentoo overlays (guru, saulimedes-overlay, another-brave-overlay, pentoo) |
+| `run_once_setup-portage.sh` | Enable Gentoo overlays (guru, another-brave-overlay, pentoo) |
 | `run_once_setup-flatpak.sh` | Configure Flathub, install Flatpak apps |
 | `run_once_install-packages.sh` | Install packages from `packages.txt` |
 | `run_once_install-antidote.sh` | Install zsh plugin manager |
@@ -124,7 +124,7 @@ chezmoi execute-template < run_onchange_sync-useflags.sh.tmpl | bash
 ## Requirements
 
 - Gentoo Linux with `~amd64` in ACCEPT_KEYWORDS
-- Overlays: guru, saulimedes-overlay, another-brave-overlay, pentoo (auto-configured)
+- Overlays: guru, another-brave-overlay, pentoo (auto-configured)
 
 ## License
 
