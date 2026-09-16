@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Redot Engine
+Comment=Multi-platform 2D and 3D game engine
+Exec=/home/becker/.local/bin/redot
+Icon=redot
+Categories=Development;IDE;
+StartupNotify=true

@@ -5,9 +5,15 @@ LICENSE
 # Setup script (not a dotfile)
 setup.sh
 
+# mise tasks and direnv (local dev tooling, not dotfiles)
+mise.toml
+mise/
+.envrc
+
 # Package list and USE flags (used by run scripts, not dotfiles)
 packages.txt
 useflags.txt
+genkernel.conf
 
 # Temporary files
 tmp/

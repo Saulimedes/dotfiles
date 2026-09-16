@@ -1,0 +1,15 @@
+#!/bin/bash
+#MISE description="Install packages from packages.txt"
+set -euo pipefail
+
+CHEZMOI_DIR="${HOME}/.local/share/chezmoi"
+packages=$(cat "$CHEZMOI_DIR"/packages*.txt | grep -v '^#' | grep -v '^$' | sort -u | tr '\n' ' ')
+
+if [[ -z "$packages" ]]; then
+    echo "[!] No packages found"
+    exit 1
+fi
+
+echo "[*] Installing packages..."
+sudo emerge --noreplace --quiet-build $packages || echo "[!] Some packages may have failed"
+echo "[*] Done"

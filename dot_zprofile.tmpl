@@ -1,0 +1,25 @@
+# Login shell environment — sourced for login shells and graphical sessions.
+# On OpenRC, ~/.config/environment.d/ is NOT processed (systemd-only).
+
+# Editor
+export EDITOR={{ .editor | quote }}
+export VISUAL={{ .visual | quote }}
+export SUDO_EDITOR={{ .editor | quote }}
+export ALTERNATE_EDITOR=""
+
+# PATH
+typeset -U path
+path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)
+
+# Flatpak XDG integration
+if type flatpak &>/dev/null; then
+  export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+fi
+
+# GPG agent: route SSH through gpg-agent for pinentry-emacs SSH key prompts
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR:-/run/user/$UID}/gnupg/S.gpg-agent.ssh"
+
+# Tell pinentry-emacs to connect to the running Emacs server.
+# gpg-agent inherits this on startup; GnuPG 2.3+ removed PUTENV so it must
+# be set in the environment before gpg-agent starts.
+export INSIDE_EMACS=1

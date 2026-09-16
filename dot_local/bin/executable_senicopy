@@ -4,7 +4,7 @@
 if [ "$#" -eq 0 ]; then
     content=$(paste)
 else
-    content="$@"
+    content="$*"
 fi
 
 # Replace potential passwords with "SECRET"

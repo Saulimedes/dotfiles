@@ -1,0 +1,44 @@
+# Tmux pane word suggestion strategy for zsh-autosuggestions.
+# Falls back to this when history has no match: suggests completing the
+# current word from text visible in any tmux pane (any window, any session).
+# Same accept mechanism as history suggestions (Ctrl-F / end-of-line).
+
+zmodload zsh/datetime 2>/dev/null
+
+typeset -ga _tmuxpane_words_cache
+typeset -g _tmuxpane_words_cache_time=0
+
+_tmuxpane_collect_words() {
+  local now=$EPOCHSECONDS
+  (( now - _tmuxpane_words_cache_time < 2 )) && return
+  _tmuxpane_words_cache_time=$now
+  _tmuxpane_words_cache=(${(u)=$(
+    tmux list-panes -a -F '#{pane_id}' 2>/dev/null | while IFS= read -r p; do
+      tmux capture-pane -t "$p" -p 2>/dev/null
+    done | tr -sc 'a-zA-Z0-9_.-' '\n'
+  )})
+}
+
+_zsh_autosuggest_strategy_tmuxpane() {
+  emulate -L zsh
+  [[ -z "$TMUX" ]] && return
+
+  local buffer="$1"
+  [[ "$buffer" == *[[:space:]] ]] && return
+
+  local prefix="${buffer##*[[:space:]]}"
+  (( ${#prefix} < 2 )) && return
+
+  _tmuxpane_collect_words
+
+  local before="${buffer%"$prefix"}"
+  local w
+  for w in "${_tmuxpane_words_cache[@]}"; do
+    if [[ "$w" == "$prefix"* && "$w" != "$prefix" ]]; then
+      typeset -g suggestion="${before}${w}"
+      return
+    fi
+  done
+}
+
+ZSH_AUTOSUGGEST_STRATEGY=(history tmuxpane)

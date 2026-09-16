@@ -1,0 +1,3 @@
+#!/bin/sh
+# Prune stopped podman containers/images/volumes. Shared by zsh and fish.
+podman system prune -af && podman volume prune -f

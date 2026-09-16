@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Better TAB key handling and autocompletion by filetype
 
 ;; Smart tab behavior - indent or complete
@@ -18,8 +19,14 @@
    ;; At beginning of line, insert a real tab
    ((bolp)
     (insert "\t"))
-   ;; If we're in a completion context, complete
+   ;; If a completion popup is actually active, accept/expand it.
+   ;; completion-in-region-mode is required here: corfu-mode being
+   ;; enabled just means corfu *can* pop up, not that it currently
+   ;; has. Calling corfu-complete without a live session crashes
+   ;; with wrong-type-argument, since it reads bounds from a nil
+   ;; completion-in-region--data.
    ((and (bound-and-true-p corfu-mode)
+         completion-in-region-mode
          (or (looking-at "\\>")
              (looking-back "\\w" 1)))
     (or (corfu-complete)

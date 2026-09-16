@@ -10,3 +10,5 @@ xkbcomp :0 - 2>/dev/null \
   | xkbcomp -w 0 - :0 2>/dev/null
 
 xset b off
+
+pgrep -u "$USER" -x emacs >/dev/null || { emacs --daemon >/dev/null 2>&1 & disown; }

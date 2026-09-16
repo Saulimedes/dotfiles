@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Project-specific workflows and configurations
 ;; Provides per-project settings, directory management, and org integration
 
@@ -74,81 +75,37 @@
           (goto-char (point-min)))
         (switch-to-buffer buffer-name)))))
 
-;; Enhanced projectile configuration for project management
-(use-package projectile
-  :after project
-  :init
-  (setq projectile-project-search-path '("~/Projects")
-        projectile-sort-order 'recently-active
-        projectile-enable-caching t
-        projectile-completion-system 'default  ; Use Vertico/Marginalia
-        projectile-indexing-method 'hybrid)
-  
-  :config
-  (projectile-mode +1)
-  
-  ;; Function to create a new project
-  (defun projectile-create-project (dir)
-    "Create a new project in DIR."
-    (interactive "DCreate project in directory: ")
-    (unless (file-exists-p dir)
-      (make-directory dir t))
-    (let ((default-directory dir))
-      ;; Create basic project structure
-      (make-directory "src" t)
-      (make-directory "docs" t)
-      (make-directory "notes" t)
-      
-      ;; Create project org file
-      (find-file (expand-file-name "project.org" dir))
-      (insert "#+TITLE: " (file-name-nondirectory (directory-file-name dir)) " Project\n")
-      (insert "#+AUTHOR: " user-full-name "\n")
-      (insert "#+DATE: " (format-time-string "%Y-%m-%d") "\n\n")
-      (insert "* Project Overview\n\n")
-      (insert "* Tasks [/]\n")
-      (insert "* Notes\n")
-      (insert "* Resources\n")
-      (save-buffer)
-      
-      ;; Set project-specific variables
-      (set-project-org-file (expand-file-name "project.org" dir) 
-                          (project-current nil dir))
-      (set-project-notes-directory (expand-file-name "notes" dir)
-                                 (project-current nil dir)))
-    
-    (message "Project created in %s" dir))
-  
-  ;; Direnv integration is handled separately in envrc section below
-  
-  ;; Create project command menu
-  (defun projectile-project-command-menu ()
-    "Show menu of project commands."
-    (interactive)
-    (let* ((project (projectile-ensure-project (projectile-project-root)))
-           (compile-cmd (or (project-compile-command project) "make"))
-           (test-cmd (or (project-test-command project) "make test"))
-           (run-cmd (or (project-run-command project) "make run"))
-           (command (completing-read 
-                    "Project command: " 
-                    `(("compile" . ,compile-cmd)
-                     ("test" . ,test-cmd)
-                     ("run" . ,run-cmd)
-                     ("edit variables" . project-edit-variables)
-                     ("open org file" . projectile-open-project-org-file)
-                     ("new note" . projectile-create-project-note)))))
-      (cond
-       ((string= command "compile") 
-        (compile compile-cmd))
-       ((string= command "test") 
-        (compile test-cmd))
-       ((string= command "run") 
-        (compile run-cmd))
-       ((string= command "edit variables") 
-        (project-edit-variables))
-       ((string= command "open org file") 
-        (projectile-open-project-org-file))
-       ((string= command "new note") 
-        (projectile-create-project-note))))))
+;; Project-command menu (projectile itself is configured once, canonically,
+;; in init.projectile.el — this only defines a function, so it doesn't need
+;; projectile loaded yet).
+(defun projectile-project-command-menu ()
+  "Show menu of project commands."
+  (interactive)
+  (let* ((project (projectile-ensure-project (projectile-project-root)))
+         (compile-cmd (or (project-compile-command project) "make"))
+         (test-cmd (or (project-test-command project) "make test"))
+         (run-cmd (or (project-run-command project) "make run"))
+         (command (completing-read
+                  "Project command: "
+                  `(("compile" . ,compile-cmd)
+                   ("test" . ,test-cmd)
+                   ("run" . ,run-cmd)
+                   ("edit variables" . project-edit-variables)
+                   ("open org file" . projectile-open-project-org-file)
+                   ("new note" . projectile-create-project-note)))))
+    (cond
+     ((string= command "compile")
+      (compile compile-cmd))
+     ((string= command "test")
+      (compile test-cmd))
+     ((string= command "run")
+      (compile run-cmd))
+     ((string= command "edit variables")
+      (project-edit-variables))
+     ((string= command "open org file")
+      (projectile-open-project-org-file))
+     ((string= command "new note")
+      (projectile-create-project-note)))))
 
 ;; Project-specific directory management
 (defun projectile-known-directories ()

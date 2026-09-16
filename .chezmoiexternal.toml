@@ -3,4 +3,4 @@
     url = "git@github.com:Saulimedes/fonts.git"
     refreshPeriod = "168h"
     clone.args = ["--depth", "1"]
-    pull.args = ["--ff-only"]
+    pull.args = ["--ff-only", "--update-shallow"]

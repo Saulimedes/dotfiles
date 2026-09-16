@@ -1,5 +1,14 @@
 #!/bin/sh
-if [ -d "$1" ]; then
-  local ARCHIVEDIR=$(basename "$1.tar.gz")
-  export GZIP="-9"; tar -pcvJf  "${TAR_OPTS}" "$1" "${ARCHIVENAME}"
+if [ -z "$1" ]; then
+  echo "Usage: maketargz <directory>" >&2
+  exit 1
 fi
+
+if [ ! -d "$1" ]; then
+  echo "Error: '$1' is not a directory" >&2
+  exit 1
+fi
+
+archive="$(basename "$1").tar.gz"
+tar -pczf "$archive" "$1"
+echo "Created $archive"

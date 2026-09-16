@@ -2,8 +2,7 @@
 #MISE description="Save /usr/src/linux/.config back to chezmoi"
 set -euo pipefail
 
-DEST="${HOME}/.config/kernel/linux.config"
-mkdir -p "$(dirname "$DEST")"
+DEST="$(chezmoi source-path ~/.config/kernel/linux.config)"
 cp /usr/src/linux/.config "$DEST"
 echo "[*] Saved /usr/src/linux/.config → ${DEST}"
 echo "[*] Remember to commit the change in chezmoi."

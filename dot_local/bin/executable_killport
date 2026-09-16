@@ -1,0 +1,14 @@
+#!/bin/sh
+# Kill whatever is listening on a TCP/UDP port. Shared by zsh and fish.
+if [ -z "$1" ]; then
+  echo "Usage: killport <port>"
+  exit 1
+fi
+
+pids=$(fuser "$1/tcp" "$1/udp" 2>/dev/null)
+if [ -n "$pids" ]; then
+  echo "$pids" | xargs kill -9
+  echo "Killed process on port $1"
+else
+  echo "No process found on port $1"
+fi

@@ -128,6 +128,7 @@
      '("gp" . magit-push)
      '("gf" . magit-fetch)
      '("gF" . magit-pull)
+     '("gj" . majutsu)
 
      ;; Toggle
      '("t" . (keymap))
@@ -312,7 +313,7 @@
 (defun my/copy-file-path ()
   "Copy the current buffer's file path to clipboard."
   (interactive)
-  (if-let ((path (or (buffer-file-name) default-directory)))
+  (if-let* ((path (or (buffer-file-name) default-directory)))
       (progn
         (kill-new path)
         (message "Copied: %s" path))

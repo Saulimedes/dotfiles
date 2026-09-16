@@ -36,6 +36,7 @@ packer = "latest"
 age = "latest"
 gcloud = "latest"
 azure-cli = "latest"
+awscli = "latest"
 
 # LSP servers
 "cargo:texlab" = "latest"
@@ -44,6 +45,7 @@ rust-analyzer = "latest"
 terraform-ls = "latest"
 
 # Dev tools
+jj = "latest"
 direnv = "latest"
 github-cli = "latest"
 yarn = "latest"
@@ -58,3 +60,6 @@ cookiecutter = "latest"
 yt-dlp = "latest"
 actionlint = "latest"
 hugo = "latest"
+"aqua:ffuf/ffuf" = "latest"
+"aqua:projectdiscovery/nuclei" = "latest"
+"go:github.com/OJ/gobuster/v3" = "latest"

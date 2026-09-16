@@ -2,7 +2,6 @@
 # Sync USE flags from useflags.txt to /etc/portage/package.use/
 # Re-runs automatically when useflags.txt changes
 # useflags.txt hash: {{ include "useflags.txt" | sha256sum }}
-exec < /dev/tty
 set -euo pipefail
 
 GREEN='\033[0;32m'
@@ -17,7 +16,7 @@ if [[ ! -f /etc/gentoo-release ]]; then
     exit 0
 fi
 
-SRC="${HOME}/.local/share/chezmoi/useflags.txt"
+SRC="{{ .chezmoi.sourceDir }}/useflags.txt"
 DEST="/etc/portage/package.use/chezmoi"
 
 # Strip comments and empty lines

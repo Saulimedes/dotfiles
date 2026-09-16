@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; vundo
 (use-package vundo
   :config

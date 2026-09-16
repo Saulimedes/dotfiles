@@ -1,3 +1,6 @@
+# Pin SSH_AUTH_SOCK to the default ~/.gnupg gpg-agent (SSH key lives there, not in GNUPGHOME)
+export _GPG_AGENT_SSH_SOCK="$(GNUPGHOME=~/.gnupg gpgconf --list-dirs agent-ssh-socket)"
+
 # Load Antidote plugin manager
 ZDOTDIR=$HOME/.zsh
 ABBR_USER_ABBREVIATIONS_FILE=$ZDOTDIR/abbreviations
@@ -10,6 +13,9 @@ setopt APPEND_HISTORY SHARE_HISTORY HIST_IGNORE_ALL_DUPS HIST_REDUCE_BLANKS
 HISTSIZE=10000
 SAVEHIST=50000
 HISTFILE=$HOME/.local/share/zsh_history
+
+# Source custom functions
+for f in ~/.zsh/functions/*; do source "$f"; done
 
 # Completion System
 setopt COMPLETE_IN_WORD ALWAYS_TO_END AUTOLIST
@@ -47,6 +53,9 @@ eval "$(mise activate zsh)"
 # Exports
 export EDITOR="{{ .editor }}"
 export VISUAL="{{ .visual }}"
+export ALTERNATE_EDITOR=""
+export SUDO_EDITOR="emacsclient -t"
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
 man() {
   emacsclient -t --eval "(man \"$*\")" || command man "$@"
 }
@@ -86,10 +95,6 @@ export FZF_DEFAULT_COMMAND='rg --files --follow --no-messages'
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4"
 export FZF_ALT_C_OPTS="--preview 'eza -l --group-directories-first {} | head -200'"
 
-# SSH agent setup
-if ! pgrep -u "$USER" ssh-agent >/dev/null; then
-  eval "$(ssh-agent -s)" >/dev/null
-fi
 
 # Aliases
 alias e="$EDITOR"
@@ -110,7 +115,8 @@ alias mv="mv -iv"
 alias rm="rm -rf"
 alias ln="ln -vi"
 alias rg="rg --color always"
-alias getip="curl ifconfig.me"
+alias getip="curl -s -4 ifconfig.me"
+alias getip6="curl -s -6 ifconfig.me"
 alias ".."="cd .."
 alias "..."="cd ../.."
 alias ".3"="cd ../../.."
@@ -123,13 +129,9 @@ alias back="cd $OLDPWD"
 
 # containers
 alias docker="podman"
-alias neofetch="fastfetch"
+alias ff="fastfetch"
 alias gb="forgit::switch::branch"
 
-# functions
-for file in ~/.zsh/functions/*.zsh; do
-  [ -r "$file" ] && source "$file"
-done
 
 # Fix zsh-autopair breaking emacs keybindings (must be after plugins load)
 bindkey '^A' beginning-of-line
@@ -137,7 +139,20 @@ bindkey '^E' end-of-line
 bindkey '^F' forward-char
 bindkey '^B' backward-char
 
+# GPG TTY (required for pinentry-tty) — skip inside Claude Code sessions to
+# avoid redirecting gpg-agent's pinentry TTY away from the user's real terminal
+if [ -z "$CLAUDECODE" ]; then
+  export GPG_TTY=$TTY
+  function _gpg_update_default_agent_tty { gpg-connect-agent --homedir ~/.gnupg UPDATESTARTUPTTY /bye &>/dev/null }
+  add-zsh-hook preexec _gpg_update_default_agent_tty
+fi
+
 # Starship prompt
 if type starship &>/dev/null; then
   eval "$(starship init zsh)"
+fi
+
+# direnv
+if type direnv &>/dev/null; then
+  eval "$(direnv hook zsh)"
 fi

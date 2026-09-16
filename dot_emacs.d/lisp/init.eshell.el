@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Enhanced Eshell configuration to make it similar to Fish shell
 
 (use-package eshell

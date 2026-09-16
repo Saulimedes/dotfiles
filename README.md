@@ -23,6 +23,8 @@ Personal Gentoo Linux dotfiles managed with [chezmoi](https://chezmoi.io).
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply Saulimedes/dotfiles
 ```
 
+You'll be prompted once for your name and email (used for git/jj config, kept out of this repo).
+
 This will:
 1. Install chezmoi
 2. Clone dotfiles
@@ -38,7 +40,7 @@ This will:
 - CLI tools: bat, eza, fd, ripgrep, fzf
 - Network: nmap, mtr, tcpdump, iperf
 - Media: mpv, ffmpeg
-- Browsers: Librewolf, Helium, Zen Browser
+- Browsers: Brave, Helium
 - Messaging: Telegram, Session
 
 **mise** (`dot_config/mise/config.toml`):
@@ -51,13 +53,20 @@ This will:
 
 | Script | Purpose |
 |--------|---------|
-| `run_once_setup-portage.sh` | Enable Gentoo overlays (guru, librewolf) |
-| `run_once_setup-flatpak.sh` | Configure Flathub |
+| `run_once_setup-portage.sh` | Enable Gentoo overlays (guru, saulimedes-overlay, another-brave-overlay, pentoo) |
+| `run_once_setup-flatpak.sh` | Configure Flathub, install Flatpak apps |
 | `run_once_install-packages.sh` | Install packages from `packages.txt` |
 | `run_once_install-antidote.sh` | Install zsh plugin manager |
 | `run_once_install_tmux_plugins` | Install TPM and plugins |
-| `run_once_setup-systemd-services.sh` | Enable user services |
+| `run_once_install-mpv-plugins.sh` | Install mpv scripts/shaders (mpv360, gif-generator, webm) |
+| `run_once_setup-podman.sh` | Configure rootless podman (subuid/subgid, docker symlink) |
+| `run_once_setup-xkb-udev-rule.sh` | udev rule to re-apply the XKB patch on keyboard hotplug |
 | `run_onchange_mise-install` | Install mise tools |
+| `run_onchange_install-packages.sh` | Re-installs packages when `packages.txt` changes |
+| `run_onchange_setup-openrc-services.sh` | Enable OpenRC services (chronyd, tlp, bluetooth, mullvad-daemon, i2pd, autofs, syncthing) |
+| `run_onchange_setup-samba-mounts.sh` | Configure autofs mounts to the Unraid NAS |
+| `run_onchange_sync-genkernel.sh.tmpl` | Sync `genkernel.conf` to `/etc/genkernel.conf` |
+| `run_onchange_sync-useflags.sh.tmpl` | Sync `useflags.txt` to `/etc/portage/package.use/` |
 
 ### Shell Configuration
 
@@ -82,6 +91,24 @@ This will:
 - `emacsclient` as default editor
 - Dired alias: `d` opens current directory
 
+## Mise Tasks
+
+| Task | Purpose |
+|------|---------|
+| `mise run kernel` | Copy saved config, build kernel, install modules, rebuild initramfs, update limine.conf |
+| `mise run kernel-config-save` | Save `/usr/src/linux/.config` back to chezmoi (`~/.config/kernel/linux.config`) |
+
+**Kernel upgrade workflow:**
+```bash
+eselect kernel set <new>
+mise run kernel                          # applies saved config, builds
+# if config needs updating for new kernel:
+sudo make -C /usr/src/linux olddefconfig
+mise run kernel-config-save              # save updated config
+git -C ~/.local/share/chezmoi add dot_config/kernel/linux.config && git commit
+mise run kernel
+```
+
 ## Re-running Scripts
 
 ```bash
@@ -90,14 +117,14 @@ chezmoi state delete-bucket --bucket=scriptState
 chezmoi apply
 
 # Re-run a specific script manually
-chezmoi execute-template < run_onchange_firefox-userjs.sh.tmpl | bash
 chezmoi execute-template < run_onchange_install-packages.sh.tmpl | bash
+chezmoi execute-template < run_onchange_sync-useflags.sh.tmpl | bash
 ```
 
 ## Requirements
 
 - Gentoo Linux with `~amd64` in ACCEPT_KEYWORDS
-- Overlays: guru, librewolf (auto-configured)
+- Overlays: guru, saulimedes-overlay, another-brave-overlay, pentoo (auto-configured)
 
 ## License
 

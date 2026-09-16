@@ -46,6 +46,7 @@ app-emacs/pdf-tools
 sys-process/lsof
 sys-process/btop
 app-misc/fastfetch
+media-gfx/chafa
 sys-fs/ncdu
 sys-fs/duf
 
@@ -95,6 +96,18 @@ net-analyzer/netcat
 net-misc/whois
 net-misc/iperf
 net-misc/telnet-bsd
+net-misc/chrony
+
+# Pentesting
+app-crypt/johntheripper-jumbo
+app-crypt/hashcat
+net-analyzer/hydra
+net-analyzer/nikto
+dev-db/sqlmap
+net-misc/proxychains
+net-wireless/aircrack-ng
+net-analyzer/masscan
+net-analyzer/arp-scan
 
 # Security
 app-crypt/gnupg
@@ -102,6 +115,7 @@ app-admin/gopass
 app-emacs/pinentry
 
 # Network filesystems
+gnome-base/gvfs
 net-fs/cifs-utils
 net-fs/nfs-utils
 net-fs/autofs
@@ -122,9 +136,10 @@ media-fonts/noto-cjk
 # Media
 media-video/mpv
 media-video/ffmpeg
+media-video/libva-utils
 
 # Browser
-www-client/firefox-bin
+www-client/brave-browser::another-brave-overlay
 www-client/helium-bin
 
 # Messaging
@@ -133,6 +148,9 @@ net-im/session-desktop-bin
 
 # Sync
 net-p2p/syncthing
+
+# XFCE extras
+xfce-extra/xfce4-whiskermenu-plugin
 
 # Clipboard
 x11-misc/xclip
@@ -146,6 +164,9 @@ x11-misc/xdg-utils
 # Flatpak / AppImage
 sys-apps/flatpak
 sys-fs/fuse:0
+
+# Gaming
+games-util/game-device-udev-rules
 
 # Containers
 app-containers/podman
@@ -161,6 +182,14 @@ dev-debug/strace
 # Spell checking
 app-text/aspell
 app-dicts/aspell-en
+
+# Boot / Kernel
+sys-boot/limine
+sys-kernel/genkernel
+sys-kernel/linux-firmware
+
+# Android
+dev-util/android-tools
 
 # Utils
 app-text/tree

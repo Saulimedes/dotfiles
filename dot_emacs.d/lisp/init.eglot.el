@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Enhanced LSP support with built-in eglot
 (use-package eglot
   :ensure nil  ;; Built into Emacs 29+

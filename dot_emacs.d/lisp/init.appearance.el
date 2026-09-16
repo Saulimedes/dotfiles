@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Frame dimensions (push to preserve early-init.el settings)
 (push '(width . 160) default-frame-alist)
 (push '(height . 60) default-frame-alist)
@@ -12,23 +13,28 @@
   :init
   (setq fontaine-presets
         '((regular
-           :default-family "MonoLisaVariable Nerd Font"
+           :default-family "BerkeleyMono Nerd Font"
            :default-height 105
-           :variable-pitch-family "SF Pro"
+           :variable-pitch-family "BerkeleyMono Nerd Font"
            :variable-pitch-height 115
-           :fixed-pitch-family "MonoLisaVariable Nerd Font"
+           :fixed-pitch-family "BerkeleyMono Nerd Font"
            :fixed-pitch-height 105
            :line-spacing 1))))
 
 (unless (daemonp)
-  (fontaine-set-preset 'regular))
+  (when (display-graphic-p)
+    (fontaine-set-preset 'regular)))
 
 (setq-default line-spacing 1)
-;; Seti Theme
-(use-package seti-theme
+;; Base16 Black Metal (Immortal) - true black (base00) across the whole
+;; palette by construction, not patched black on top of a theme designed
+;; around some other background. All black-metal-* variants share the same
+;; base00-base07 grayscale (mode-line/tab-line/UI chrome), so this is
+;; internally consistent instead of clashing like the Tron Legacy overlay did.
+(use-package base16-theme
   :demand t
   :config
-  (load-theme 'seti t))
+  (load-theme 'base16-black-metal-immortal t))
 
 ;; Define pitch-black as a proper overlay theme (cleanly toggleable)
 (deftheme my-pitch-black "Pitch black background overlay.")
@@ -41,33 +47,30 @@
  '(hl-line ((t :background "#0e0e0e")))
  '(region ((t :background "#2F3C42")))
  '(vertical-border ((t :foreground "#1a1a1a")))
+ ;; Window dividers (spacious-padding right-divider-width 16)
+ '(window-divider ((t :foreground "#1a1a1a")))
+ '(window-divider-first-pixel ((t :foreground "#1a1a1a")))
+ '(window-divider-last-pixel ((t :foreground "#1a1a1a")))
+ '(internal-border ((t :background "#000000")))
  ;; Line numbers
  '(line-number ((t :background "#000000")))
  '(line-number-current-line ((t :background "#0e0e0e")))
  ;; Header / tab line
- '(header-line ((t :background "#000000")))
- '(tab-line ((t :background "#000000")))
+ '(header-line ((t :background "#000000" :foreground "#7B9099" :box nil)))
+ '(tab-line ((t :background "#111111" :foreground "#7B9099" :box nil)))
+ '(tab-line-tab ((t :background "#1a1a1a" :foreground "#7B9099" :box nil)))
+ '(tab-line-tab-current ((t :background "#2a2a2a" :foreground "#D4D7D6" :box nil)))
+ '(tab-line-tab-inactive ((t :background "#111111" :foreground "#41535B" :box nil)))
+ '(tab-line-highlight ((t :background "#222222" :foreground "#D4D7D6" :box nil)))
  ;; Minibuffer
  '(minibuffer-prompt ((t :background "#000000")))
- ;; Modeline - visible against black
- '(mode-line ((t :background "#1c1c1c" :foreground "#D4D7D6" :box (:line-width (1 . 4) :color "#1c1c1c") :overline nil :underline nil)))
- '(mode-line-inactive ((t :background "#111111" :foreground "#41535B" :box (:line-width (1 . 4) :color "#111111") :overline nil :underline nil)))
- '(mode-line-highlight ((t :background "#ffffff" :foreground "#000000" :box nil)))
- ;; Doom-modeline segments
- '(doom-modeline-bar ((t :background "#55B5DB")))
- '(doom-modeline-bar-inactive ((t :background "#2F3C42")))
- '(doom-modeline-panel ((t :background "#1c1c1c")))
- '(doom-modeline-buffer-file ((t :background unspecified)))
- '(doom-modeline-buffer-modified ((t :background unspecified)))
- '(doom-modeline-buffer-path ((t :background unspecified)))
- '(doom-modeline-project-dir ((t :background unspecified)))
- '(doom-modeline-highlight ((t :background "#ffffff" :foreground "#000000")))
- '(doom-modeline-warning ((t :background unspecified :inherit doom-modeline)))
- '(doom-modeline-urgent ((t :background unspecified :inherit doom-modeline)))
- '(doom-modeline-info ((t :background unspecified :inherit doom-modeline)))
- '(doom-modeline-notification ((t :background unspecified)))
- '(doom-modeline-buffer-major-mode ((t :background unspecified)))
- '(warning ((t :background unspecified)))
+ ;; Modeline - base faces doom-modeline builds its segments on top of
+ '(mode-line ((t :background "#1c1c1c" :foreground "#D4D7D6" :overline nil :underline nil :box nil)))
+ '(mode-line-active ((t :background "#1c1c1c" :foreground "#D4D7D6" :overline nil :underline nil :box nil)))
+ '(mode-line-inactive ((t :background "#111111" :foreground "#7B9099" :overline nil :underline nil :box nil)))
+ ;; doom-modeline accent
+ '(doom-modeline-bar ((t :background "#5e81ac")))
+ '(doom-modeline-bar-inactive ((t :background "#1c1c1c")))
  ;; Solaire (non-file buffers)
  '(solaire-default-face ((t :background "#000000")))
  '(solaire-fringe-face ((t :background "#000000")))
@@ -75,7 +78,13 @@
  '(solaire-mode-line-face ((t :background "#1c1c1c")))
  '(solaire-mode-line-inactive-face ((t :background "#111111"))))
 (provide-theme 'my-pitch-black)
-(enable-theme 'my-pitch-black)
+(when (display-graphic-p)
+  (enable-theme 'my-pitch-black)
+  ;; Ensure frame background-color parameter matches the default face,
+  ;; since my/terminal-setup can corrupt it via set-face-attribute on the initial frame.
+  (dolist (frame (frame-list))
+    (set-frame-parameter frame 'background-color "#000000")))
+
 
 ;; Man-mode colors
 (use-package man
@@ -146,37 +155,21 @@
   (highlight-indent-guides-delay 0.1))
 
 ;; ============================================================
-;; Doom Modeline - modern config
+;; Mode line: doom-modeline
 ;; ============================================================
+;; Single maintained package instead of moody+cyphejor+minions+which-func+mlscroll.
+;; Handles GUI/terminal/daemon frames itself — no per-frame face overrides needed.
+;; which-func is intentionally not shown here: breadcrumb-mode's header-line
+;; already gives an imenu-based "what scope am I in" trail.
 (use-package doom-modeline
   :init
-  (setq doom-modeline-height 30
-        doom-modeline-bar-width 4
-        doom-modeline-hud nil
-        doom-modeline-window-width-limit 85
-        doom-modeline-project-detection 'auto
-        doom-modeline-buffer-file-name-style 'truncate-upto-project
-        doom-modeline-icon t
-        doom-modeline-major-mode-icon t
-        doom-modeline-major-mode-color-icon t
-        doom-modeline-buffer-state-icon t
-        doom-modeline-buffer-modification-icon t
-        doom-modeline-lsp-icon t
-        doom-modeline-time t
-        doom-modeline-time-icon nil
-        doom-modeline-battery nil
-        doom-modeline-env-version t
-        doom-modeline-vcs-max-length 24
-        doom-modeline-persp-name nil
-        doom-modeline-modal t
-        doom-modeline-modal-icon t
-        doom-modeline-modal-modern-icon t)
-  :config
-  (setq display-time-format "%H:%M"
-        display-time-default-load-average nil)
-  (display-time-mode 1)
-  (unless (daemonp)
-    (doom-modeline-mode 1)))
+  (doom-modeline-mode 1)
+  :custom
+  (doom-modeline-height 28)
+  (doom-modeline-icon t)
+  (doom-modeline-minor-modes nil)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-vcs-max-length 24))
 
 ;; Clean modeline padding
 (use-package spacious-padding
@@ -276,7 +269,7 @@
   (defun my/tab-line-buffer-group (buffer)
     "Group tabs by project."
     (with-current-buffer buffer
-      (if-let ((proj (and (fboundp 'projectile-project-root)
+      (if-let* ((proj (and (fboundp 'projectile-project-root)
                           (projectile-project-root))))
           proj
         "general")))
@@ -330,56 +323,75 @@
 ;; Terminal: use terminal's own background colors
 ;; ============================================================
 (defun my/terminal-setup ()
-  "Configure Emacs for terminal frames."
+  "Configure Emacs for terminal frames.
+Keeps base16-black-metal-immortal foreground/syntax colors but lets the
+terminal supply its own background (transparent)."
   (unless (display-graphic-p)
-    ;; Disable pitch-black overlay so all its #000000 backgrounds go away
-    (disable-theme 'my-pitch-black)
-    ;; Disable solaire-mode so it doesn't re-apply backgrounds to non-file buffers
-    (when (bound-and-true-p solaire-global-mode)
-      (solaire-global-mode -1))
-    ;; Use terminal's own background — clear all faces with explicit backgrounds
-    ;; Preserve region highlight so selections remain visible
-    (dolist (face (face-list))
-      (when (and (face-background face nil nil)
-                 (not (memq face '(region))))
-        (set-face-background face "unspecified-bg")))
-    ;; Disable GUI-only modes that create padding/borders in terminal
+    (let ((frame (selected-frame)))
+      ;; Only clear the default face background so the terminal's own
+      ;; background (transparency) shows through. Leave all other faces
+      ;; (including mode-line) using their theme colors — kitty supports
+      ;; 24-bit color so they render correctly.
+      ;; "unspecified-bg" is the Emacs sentinel for "use terminal's own background".
+      ;; The symbol 'unspecified only means "inherit from parent face/theme" and
+      ;; would fall back to whatever the active theme set (e.g. #000000 from pitch-black).
+      (set-face-attribute 'default frame :background "unspecified-bg"))
+    ;; Disable hl-line — it still tints even with unspecified-bg on some terminals
+    (global-hl-line-mode -1)
+    ;; Disable GUI-only modes
     (when (bound-and-true-p spacious-padding-mode)
       (spacious-padding-mode -1))
     (when (bound-and-true-p breadcrumb-mode)
       (breadcrumb-mode -1))
-    (when (bound-and-true-p visual-fill-column-mode)
-      (visual-fill-column-mode -1))
-    ;; Disable tab line (clicks cause buffer switching)
+    (when (bound-and-true-p solaire-global-mode)
+      (solaire-global-mode -1))
     (global-tab-line-mode -1)
     (xterm-mouse-mode 1)))
 
-;; window-setup-hook fires after init file + themes are loaded (unlike tty-setup-hook)
-(add-hook 'window-setup-hook #'my/terminal-setup)
-;; Also run for daemon frames created via emacsclient -t
-(add-hook 'after-make-frame-functions
-          (lambda (frame)
-            (with-selected-frame frame
-              (my/terminal-setup))))
+;; ============================================================
+;; Frame setup: apply theme + display modes per frame type
+;; ============================================================
+
+(defun my/setup-frame (frame)
+  "Apply pitch-black theme for graphical frames, terminal setup for TTY."
+  (if (frame-parameter frame 'window-system)
+      (progn
+        (enable-theme 'my-pitch-black)
+        (set-frame-parameter frame 'background-color "#000000")
+        (force-mode-line-update t))
+    ;; Terminal frame: transparent mode-line, matching the buffer background.
+    ;; nil frame = all frames, above-theme priority but below graphical frame-local.
+    (set-face-attribute 'mode-line nil :background "unspecified-bg" :box nil)
+    (set-face-attribute 'mode-line-active nil :background "unspecified-bg" :box nil)
+    (set-face-attribute 'mode-line-inactive nil :background "unspecified-bg" :box nil)
+    (with-selected-frame frame
+      (my/terminal-setup)
+      (force-mode-line-update t))))
+
+;; Fires for every new frame: daemon emacsclient connections and
+;; additional frames in a running session.
+(add-hook 'after-make-frame-functions #'my/setup-frame)
+
+;; Fires after init for the initial frame in non-daemon graphical mode.
+(unless (daemonp)
+  (add-hook 'window-setup-hook
+            (lambda () (my/setup-frame (selected-frame)))))
 
 ;; ============================================================
-;; Daemon: defer display modes until first frame is created
+;; Daemon: one-time heavy setup on first graphical frame
 ;; ============================================================
 (when (daemonp)
   (defvar my/daemon-display-initialized nil)
-  (defun my/daemon-setup-display (frame)
-    "Activate display-dependent modes on first frame creation."
-    (unless my/daemon-display-initialized
-      (setq my/daemon-display-initialized t)
-      (with-selected-frame frame
-        (fontaine-set-preset 'regular)
-        (doom-modeline-mode 1)
-        (when (display-graphic-p)
-          (spacious-padding-mode 1)
-          (solaire-global-mode +1)
-          (breadcrumb-mode 1)
-          (global-tab-line-mode 1)))))
   (add-hook 'server-after-make-frame-hook
-            (lambda () (my/daemon-setup-display (selected-frame)))))
+            (lambda ()
+              (when (and (display-graphic-p)
+                         (not my/daemon-display-initialized))
+                (setq my/daemon-display-initialized t)
+                (fontaine-set-preset 'regular)
+                (spacious-padding-mode 1)
+                (solaire-global-mode +1)
+                (breadcrumb-mode 1)
+                (global-tab-line-mode 1)
+                (my/setup-frame (selected-frame))))))
 
 (provide 'init.appearance)

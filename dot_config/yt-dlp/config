@@ -11,6 +11,7 @@
 --progress
 --embed-thumbnail
 --geo-bypass
+--no-download-archive
 --compat-options no-live-chat,filename-sanitization
 --format-sort vcodec:h264,res:1080,tbr~3000
 --sponsorblock-remove all

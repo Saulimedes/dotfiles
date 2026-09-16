@@ -177,16 +177,24 @@
 ;; Completion sources
 (use-package cape
   :demand t
-  :init
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   :config
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
 
 ;; Tmux pane completion - complete words visible in other tmux panes
+(defun my/tmux-live-p ()
+  "Return non-nil if a tmux server is reachable.
+Checking `getenv' for \"TMUX\" is unreliable under the Emacs
+daemon: that reflects whatever environment the long-lived daemon
+process happened to inherit at its own startup, not the tmux pane
+you are actually connecting from with emacsclient right now.
+Probing the server directly works regardless of which process (or
+which pane) is asking."
+  (and (executable-find "tmux")
+       (= 0 (call-process "tmux" nil nil nil "list-sessions"))))
+
 (defun my/tmux-pane-words ()
   "Collect words from all panes across all tmux sessions."
-  (when (getenv "TMUX")
+  (when (my/tmux-live-p)
     (let ((words '()))
       (dolist (pane (split-string
                      (shell-command-to-string
@@ -200,7 +208,7 @@
 
 (defun my/cape-tmux ()
   "Completion-at-point function for tmux pane content."
-  (when (getenv "TMUX")
+  (when (my/tmux-live-p)
     (let ((bounds (cape--bounds 'word)))
       (when bounds
         `(,(car bounds) ,(cdr bounds)
@@ -208,8 +216,47 @@
             (lambda (_) (my/tmux-pane-words)))
           :exclusive no)))))
 
-(with-eval-after-load 'cape
-  (add-to-list 'completion-at-point-functions #'my/cape-tmux))
+;; Many major modes set completion-at-point-functions buffer-locally,
+;; replacing rather than extending the global default - so adding cape
+;; sources to the default value (as above, via :init/add-to-list) never
+;; actually reaches real file buffers. after-change-major-mode-hook runs
+;; after the major mode (and its own CAPF setup) is fully done, so
+;; appending here, buffer-locally, is what actually works.
+(defvar-local my/cape-extra-capfs-added nil
+  "Non-nil once `my/cape-add-extra-capfs' has run in this buffer.
+Both wrapping an already-wrapped capf again and re-adding cape-file
+etc. as fresh entries are silently harmless-looking but compound on
+every re-run (after-change-major-mode-hook can fire more than once
+for the same buffer), so this must be idempotent.")
+
+(defun my/cape-add-extra-capfs ()
+  (unless my/cape-extra-capfs-added
+    (setq my/cape-extra-capfs-added t)
+    ;; The mode's own capf (e.g. elisp-completion-at-point) claims the
+    ;; position exclusively by default: if it has zero matching candidates
+    ;; for what you typed, completion stops right there instead of trying
+    ;; the sources below at all. cape-wrap-nonexclusive fixes that - but it
+    ;; calls its argument immediately (see its docstring: "Call CAPF..."),
+    ;; so it must be applied as :around advice on the existing function
+    ;; (lazy, invoked later whenever that capf actually runs), never
+    ;; mapped directly over the capf list, which would call each capf
+    ;; right now, at setup time, and store whatever one-off result that
+    ;; happened to produce - including nil - as a permanent list entry.
+    (dolist (f completion-at-point-functions)
+      (when (and (functionp f)
+                 (not (advice-member-p #'cape-wrap-nonexclusive f)))
+        (advice-add f :around #'cape-wrap-nonexclusive)))
+    (add-hook 'completion-at-point-functions #'cape-file 90 t)
+    (add-hook 'completion-at-point-functions #'cape-dabbrev 90 t)
+    (add-hook 'completion-at-point-functions #'my/cape-tmux 90 t)))
+(add-hook 'after-change-major-mode-hook #'my/cape-add-extra-capfs)
+
+;; *scratch* is created by Emacs itself at bootstrap, before this file (and
+;; the hook above) ever loads, so it never gets the hook treatment on any
+;; startup. Apply it here, once, directly.
+(when (get-buffer "*scratch*")
+  (with-current-buffer "*scratch*"
+    (my/cape-add-extra-capfs)))
 
 ;; Icons for corfu
 (use-package nerd-icons-corfu
@@ -266,31 +313,6 @@
   :config
   (add-to-list 'yas-snippet-dirs yasnippet-snippets-dir t)
   (yas-reload-all))
-
-;; ============================================================
-;; Snippets: Tempel (faster, simpler than yasnippet)
-;; ============================================================
-
-(use-package tempel
-  :bind (("M-+" . tempel-complete)
-         ("M-*" . tempel-insert))
-  :bind (:map tempel-map
-              ("M-]" . tempel-next)
-              ("M-[" . tempel-previous)
-              ("C-g" . tempel-abort))
-  :init
-  ;; Setup completion at point
-  (defun tempel-setup-capf ()
-    (setq-local completion-at-point-functions
-                (cons #'tempel-complete
-                      completion-at-point-functions)))
-  (add-hook 'prog-mode-hook 'tempel-setup-capf)
-  (add-hook 'text-mode-hook 'tempel-setup-capf)
-  (add-hook 'org-mode-hook 'tempel-setup-capf))
-
-;; Community template collection
-(use-package tempel-collection
-  :after tempel)
 
 ;; ============================================================
 ;; Wgrep - Writable grep results

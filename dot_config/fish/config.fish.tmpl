@@ -1,0 +1,99 @@
+# GPG: Pin SSH_AUTH_SOCK to default ~/.gnupg gpg-agent (SSH key lives there)
+set -gx _GPG_AGENT_SSH_SOCK (GNUPGHOME=~/.gnupg gpgconf --list-dirs agent-ssh-socket)
+
+# PATH (fish_add_path deduplicates automatically)
+fish_add_path $HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications
+fish_add_path /var/lib/flatpak/exports/bin $HOME/.cargo/bin /usr/local/bin
+
+# Flatpak XDG integration
+if type -q flatpak
+    set -gx XDG_DATA_DIRS "/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
+end
+
+# Exports
+set -gx EDITOR {{ .editor | quote }}
+set -gx VISUAL {{ .visual | quote }}
+set -gx ALTERNATE_EDITOR ""
+set -gx SUDO_EDITOR "emacsclient -t"
+set -gx GPG_TTY (tty)
+set -gx INSIDE_EMACS 1
+set -gx RIPGREP_CONFIG_PATH "$HOME/.config/ripgrep/ripgreprc"
+
+# FZF
+set -gx FZF_DEFAULT_COMMAND 'rg --files --follow --no-messages'
+set -gx FZF_DEFAULT_OPTS '--height 40% --layout=reverse --color=fg:7,bg:-1,hl:4,fg+:7,bg+:-1,hl+:4'
+set -gx FZF_ALT_C_OPTS "--preview 'eza -l --group-directories-first {} | head -200'"
+
+# AI widget system prompt (used by _ai_toggle_widget, bound to Ctrl+O)
+set -gx _AI_SYSTEM_PROMPT "You are a fish shell command generator on Gentoo Linux. Rules:
+- Output ONLY the command. No explanation, no markdown, no code fences, no comments.
+- If the input is a natural language prompt, generate the appropriate command.
+- If the input is a command with errors (typos, wrong flags, bad syntax), output the corrected command.
+- If multiple commands are needed, chain them with && or pipes.
+- Prefer common tools: eza over ls, bat over cat, rg over grep, fd over find.
+- Respond with nothing but the command."
+
+## Tool integrations
+mise activate fish | source
+zoxide init --cmd cd fish | source
+atuin init fish --disable-up-arrow | source
+direnv hook fish | source
+starship init fish | source
+
+# FZF shell integration (fish 3.7+ built-in, falls back silently)
+if type -q fzf
+    fzf --fish 2>/dev/null | source
+end
+
+# Completions from external tools
+if type -q kubectl
+    kubectl completion fish | source
+end
+if type -q chezmoi
+    chezmoi completion fish | source
+end
+if type -q opencode
+    opencode completion fish | source
+end
+
+# Re-apply keyboard patch if Cinnamon reset it after .xprofile
+if test -n "$DISPLAY"
+    if xkbcomp :0 - 2>/dev/null | grep -q '\bsemicolon\b'
+        source ~/.xprofile
+    end
+end
+
+# GPG TTY update before each command (keeps default ~/.gnupg agent's TTY current)
+function _gpg_update_default_agent_tty --on-event fish_preexec
+    gpg-connect-agent --homedir ~/.gnupg UPDATESTARTUPTTY /bye &>/dev/null
+end
+
+# Aliases
+alias e $EDITOR
+alias cp "cp -airv"
+alias cat bat
+alias dd "sudo dd status=progress bs=4M oflag=sync"
+alias fdisk "sudo fdisk -l"
+alias mkdir "mkdir -p"
+alias nohist "fish --private"
+alias back prevd
+alias ls "ls --color=auto"
+alias la "eza -a --group-directories-first"
+alias ll "eza -la --group-directories-first --icons"
+alias l "eza -la --group-directories-first --icons"
+alias l. "eza -a | grep -E '^\\.'"
+alias lg "eza -l --group-directories-first --ignore-glob='.git' --icons"
+alias lt "eza -T --group-directories-first --level=4"
+alias mv "mv -iv"
+alias rm "rm -rf"
+alias ln "ln -vi"
+alias rg "rg --color always"
+alias getip "curl -s -4 ifconfig.me"
+alias getip6 "curl -s -6 ifconfig.me"
+alias docker podman
+alias ff fastfetch
+alias ".." "cd .."
+alias "..." "cd ../.."
+alias ".3" "cd ../../.."
+alias ".4" "cd ../../../.."
+alias ".5" "cd ../../../../.."

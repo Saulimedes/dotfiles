@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Modern Terminal Experience
 
 ;; Inherits environment variables from the shell

@@ -3,22 +3,40 @@
 # Format: same as /etc/portage/package.use entries
 
 # Media
-media-video/ffmpeg samba
+media-video/ffmpeg samba vpx lame opus x265
 
 # Network filesystems
-gnome-base/gvfs samba fuse nfs
+gnome-base/gvfs samba fuse nfs mtp
 
 # Graphics
 x11-libs/libdrm video_cards_radeon
+media-libs/mesa vaapi
 
 # Networking
 net-firewall/iptables nftables
+net-firewall/nftables json
+net-libs/ngtcp2 gnutls
 
 # Editors
-app-editors/emacs libxml2 tree-sitter harfbuzz
+app-editors/emacs libxml2 tree-sitter harfbuzz lucid -gtk -gtk3
 
 # Pinentry
 app-crypt/pinentry emacs
 
-# System
-sys-apps/systemd boot cryptsetup
+# Android
+dev-util/android-tools udev
+
+# aircrack-ng: lorcon python constraint broken on python3_13 in pentoo
+net-wireless/aircrack-ng -airdrop-ng
+
+# hashcat requires minizip
+sys-libs/zlib minizip
+
+# Misc
+app-misc/fastfetch chafa imagemagick
+
+# System (OpenRC)
+sys-apps/dbus -systemd elogind
+sys-apps/openrc -sysvinit sysv-utils
+sys-kernel/dracut -systemd
+sys-fs/eudev -systemd

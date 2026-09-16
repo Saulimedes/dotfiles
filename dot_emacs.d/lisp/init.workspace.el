@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t; -*-
 ;; Persistent workspace management
 ;; Save and restore window configurations and buffers
 

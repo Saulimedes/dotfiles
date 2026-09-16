@@ -1,0 +1,6 @@
+#!/bin/sh
+# Called by udev when keyboard reconnects — re-applies xkb-patch in the user's X session
+export DISPLAY=:0
+export XAUTHORITY=/home/becker/.Xauthority
+sleep 1
+su becker -c "/home/becker/.local/bin/xkb-patch"

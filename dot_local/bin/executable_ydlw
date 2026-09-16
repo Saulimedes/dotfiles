@@ -1,7 +1,6 @@
 #!/bin/bash
 
 PLAYLIST_FILE=$(mktemp /tmp/playlist.XXXXXX)
-LAST=""
 ABORTED=false
 
 echo "Monitoring clipboard via 'paste'..."
@@ -38,7 +37,6 @@ while true; do
     if [[ -n "$CURRENT" && "$CURRENT" =~ ^https?:// && ! $(grep -Fx "$CURRENT" "$PLAYLIST_FILE") ]]; then
         echo "$CURRENT" >> "$PLAYLIST_FILE"
         echo "Added: $CURRENT"
-        LAST="$CURRENT"
     fi
 
     # Read input with timeout

@@ -37,7 +37,16 @@ abbr "eu"="sudo emerge --update --deep --newuse @world"
 abbr "ei"="sudo emerge"
 abbr "es"="eix"
 
+# Rsync
+abbr "rsc"="rsync -avz --progress"
+abbr "rsm"="rsync -avz --progress --remove-source-files"
+abbr "rss"="rsync -avzu --progress"
+abbr "rsd"="rsync -avzn --progress"
+
+# Mise
+abbr "mr"="mise run"
+
 # System
 abbr "s"="sudo"
-abbr "se"="sudo edit"
+abbr "se"="sudoedit"
 abbr "sy"="sudo systemctl"

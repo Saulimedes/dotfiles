@@ -2,21 +2,18 @@ ControlMaster auto
 ControlPath ~/.ssh/%h_%p_%r
 ControlPersist 1h
 AddKeysToAgent yes
-Compression yes
 VerifyHostKeyDNS yes
 
-# accept-new = auto-accept new hosts, warn on key changes
-StrictHostKeyChecking accept-new
-
-# Local networks: silently accept key changes
-Host 192.168.178.* 192.168.1.* 192.168.23.*
+Host 192.168.178.*
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
 
 # Keep Alive
 TCPKeepAlive yes
-ServerAliveCountMax 10
-ServerAliveInterval 300
+ServerAliveCountMax 6
+ServerAliveInterval 15
+
+StrictHostKeyChecking accept-new
 
 # Hardening
 MACs hmac-sha2-512,hmac-sha2-256

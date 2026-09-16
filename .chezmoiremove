@@ -1,0 +1,8 @@
+.zsh/functions/kctx
+.zsh/functions/kns
+.zsh/functions/killport
+.zsh/functions/podclean
+.config/fish/functions/kctx.fish
+.config/fish/functions/kns.fish
+.config/fish/functions/killport.fish
+.config/fish/functions/podclean.fish

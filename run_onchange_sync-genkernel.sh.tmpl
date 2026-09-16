@@ -1,0 +1,14 @@
+#!/bin/bash
+# Sync genkernel.conf to /etc/genkernel.conf
+# Re-runs automatically when genkernel.conf changes
+# genkernel.conf hash: {{ include "genkernel.conf" | sha256sum }}
+set -euo pipefail
+
+if [[ ! -f /etc/gentoo-release ]]; then
+    echo "[!] Not Gentoo, skipping genkernel.conf sync"
+    exit 0
+fi
+
+echo "[*] Syncing genkernel.conf..."
+sudo tee /etc/genkernel.conf < "{{ .chezmoi.sourceDir }}/genkernel.conf" > /dev/null
+echo "[*] Done"

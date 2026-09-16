@@ -12,6 +12,7 @@ shopt -s histappend
 export EDITOR=nvim
 export VISUAL="emacsclient -c -a emacs"
 export MANPAGER='nvim +Man!'
+export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
 
 # mise (formerly asdf-compatible toolchains)
 case $- in

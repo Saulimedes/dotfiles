@@ -14,6 +14,11 @@
   (setq magit-repository-directories '(("~/Projects/" . 1))) ; Set the default Magit repository search path
   (setq magit-auto-revert-mode t)) ; Auto-revert buffers when files change on disk
 
+;; Jujutsu (jj) - Magit-style interface via majutsu
+(use-package majutsu
+  :straight (:host github :repo "0WD0/majutsu")
+  :bind ("M-g j" . majutsu))
+
 ;; Git blame information in the modeline with blamer
 (use-package blamer
   :bind (("M-g B" . blamer-mode))  ; Toggle permanent inline blame
@@ -40,11 +45,6 @@
   (diff-hl-margin-mode)
   :config
   (setq diff-hl-draw-borders nil))
-
-;; Add git info to modeline
-(use-package minions
-  :config
-  (minions-mode 1))
 
 ;; Git timemachine for navigating through git history
 (use-package git-timemachine

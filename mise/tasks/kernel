@@ -10,6 +10,9 @@ else
     echo "[!] No saved config at ${CONFIG}, using existing /usr/src/linux/.config"
 fi
 
+sudo make -C /usr/src/linux olddefconfig
+echo "[*] olddefconfig applied"
+
 sudo make -C /usr/src/linux -j"$(nproc)"
 sudo make -C /usr/src/linux modules_install
 sudo make -C /usr/src/linux install
@@ -27,8 +30,15 @@ VMLINUZ="vmlinuz-${VER}"
 INITRAMFS="initramfs-${VER}.img"
 
 CMDLINE=$(awk '/cmdline:/{print; exit}' /boot/limine.conf | sed 's/.*cmdline: //')
-OLD_LABEL=$(awk '/^\//{sub(/^\//, ""); label=$0} /kernel_path:/{print label; exit}' /boot/limine.conf)
 OLD_KERNEL=$(awk '/kernel_path:/{print $2; exit}' /boot/limine.conf | sed 's|boot():/||')
+
+if [[ "$OLD_KERNEL" == "$VMLINUZ" ]]; then
+    echo "[*] Same kernel version (${VER}), limine.conf unchanged."
+    echo "[*] Done. Reboot to use the new kernel."
+    exit 0
+fi
+
+OLD_LABEL=$(awk '/^\//{sub(/^\//, ""); label=$0} /kernel_path:/{print label; exit}' /boot/limine.conf)
 OLD_INITRAMFS=$(awk '/module_path:/{print $2; exit}' /boot/limine.conf | sed 's|boot():/||')
 
 sudo tee /boot/limine.conf > /dev/null <<LIMINE

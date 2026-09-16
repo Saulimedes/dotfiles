@@ -49,3 +49,9 @@ log "LibreOffice installed"
 
 flatpak install --user --noninteractive flathub org.jdownloader.JDownloader
 log "JDownloader installed"
+
+flatpak install --user --noninteractive flathub org.kde.krita
+log "Krita installed"
+
+flatpak install --user --noninteractive flathub com.obsproject.Studio
+log "OBS Studio installed"

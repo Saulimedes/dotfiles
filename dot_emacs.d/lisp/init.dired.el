@@ -1,8 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-;; sidebar
-(use-package dired-sidebar
-  :bind ("C-c s" . dired-sidebar-toggle-sidebar))
-
+;; sidebar (treemacs; see init.projectile.el for treemacs-projectile)
 (use-package nerd-icons-dired
   :hook (dired-mode . nerd-icons-dired-mode))
 
@@ -21,7 +18,7 @@
 
 (add-hook 'delete-frame-functions
   (lambda (frame)
-    (when-let ((file (frame-parameter frame 'my/dired-exit-file)))
+    (when-let* ((file (frame-parameter frame 'my/dired-exit-file)))
       (with-selected-frame frame
         (let ((dir (if (derived-mode-p 'dired-mode)
                        (expand-file-name dired-directory)

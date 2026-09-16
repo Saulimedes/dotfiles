@@ -1,0 +1,69 @@
+[tasks.apply]
+description = "Apply chezmoi dotfiles and sync configs"
+run = "chezmoi apply"
+
+[tasks.emacs]
+description = "Apply Emacs config and update packages via straight.el"
+run = """
+chezmoi apply ~/.emacs.d
+emacs --batch --eval "(progn
+  (load user-init-file)
+  (straight-pull-all)
+  (straight-rebuild-all))"
+echo "[*] Emacs packages updated."
+"""
+
+[tasks.fonts]
+description = "Update fonts from external git repo"
+run = """
+chezmoi update --include=externals
+fc-cache -fv
+echo "[*] Fonts updated."
+"""
+
+[tasks.tmux]
+description = "Update tmux plugins via TPM"
+run = """
+chezmoi apply ~/.tmux.conf
+~/.tmux/plugins/tpm/bin/update_plugins all
+echo "[*] Tmux plugins updated."
+"""
+
+[tasks.pip]
+description = "Update all pip packages"
+run = """
+pip list --outdated --format=freeze | grep -v '^-e' | cut -d= -f1 | xargs -r pip install --upgrade
+echo "[*] pip packages updated."
+"""
+
+[tasks.antidote]
+description = "Update antidote and zsh plugins"
+run = """
+antidote update
+echo "[*] Zsh plugins updated. Restart your shell."
+"""
+
+[tasks.flatpak]
+description = "Update Flatpak apps"
+run = """
+flatpak update -y
+echo "[*] Flatpak apps updated."
+"""
+
+[tasks.mise]
+description = "Update mise itself and all managed tools"
+run = """
+mise self-update
+mise upgrade
+echo "[*] mise and tools updated."
+"""
+
+[tasks.update]
+description = "Update Gentoo system packages"
+run = """
+set -euo pipefail
+sudo emerge --sync
+sudo emerge --update --deep --newuse @world
+sudo emerge --depclean
+sudo perl-cleaner --all || true
+"""

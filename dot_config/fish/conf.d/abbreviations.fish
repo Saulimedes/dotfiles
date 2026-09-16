@@ -1,0 +1,53 @@
+# Git (forgit provides: ga, gd, glo, gcb, gss, grh, gclean)
+abbr g git
+abbr gc --set-cursor "git commit -m \"%\""
+abbr gdc "git diff --cached"
+abbr gdf "git diff --name-only"
+abbr gdx "git rm -r"
+abbr gf "git fetch"
+abbr gm "git merge"
+abbr gox "git open"
+abbr gp "git pull"
+abbr gpx "git push"
+abbr gr "git restore"
+abbr grb "git rebase"
+abbr grx "git rm -r"
+abbr gl "git log"
+abbr gs "git status"
+abbr gb "forgit_branch"
+
+# Kubernetes
+abbr k kubectl
+abbr ka "kubectl apply -f"
+abbr kd "kubectl describe"
+abbr kde "kubectl delete"
+abbr kex --set-cursor "kubectl exec -it % /bin/bash"
+abbr kg "kubectl get"
+abbr kgd "kubectl get deployments -o wide"
+abbr kge "kubectl get events --watch"
+abbr kgw --set-cursor "kubectl get pod % --watch"
+abbr kgh "kubectl get hr -o wide"
+abbr kgp "kubectl get pod"
+abbr kgs "kubectl get service"
+abbr kgsv "kubectl get service -o wide"
+abbr kl "kubectl logs -f"
+abbr kw "watch kubectl get -f"
+
+# Portage
+abbr eu "sudo emerge --update --deep --newuse @world"
+abbr ei "sudo emerge"
+abbr es eix
+
+# Rsync
+abbr rsc "rsync -avz --progress"
+abbr rsm "rsync -avz --progress --remove-source-files"
+abbr rss "rsync -avzu --progress"
+abbr rsd "rsync -avzn --progress"
+
+# Mise
+abbr mr "mise run"
+
+# System
+abbr s sudo
+abbr se sudoedit
+abbr sy "sudo rc-service"

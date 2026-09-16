@@ -17,21 +17,22 @@ for arg in "$@"; do
         *.7z)        7z x "${arg}"          ;;
         *.xz)        unxz "${arg}"          ;;
         *.exe)       cabextract "${arg}"    ;;
-        *.deb)       mkdir -p "$extract_dir/control"
+        *.deb)       extract_dir="${arg%.deb}"
+                      mkdir -p "$extract_dir/control"
                       mkdir -p "$extract_dir/data"
-                      cd "$extract_dir"
+                      cd "$extract_dir" || exit 1
                       ar vx "../${arg}" > /dev/null
-                      cd control
+                      cd control || exit 1
                       tar xzvf ../control.tar.gz
-                      cd ../data
+                      cd ../data || exit 1
                       extract ../data.tar.*
                       cd ..
-                      rm *.tar.* debian-binary
+                      rm -f ./*.tar.* debian-binary
                       cd .. ;;
         *)           echo "extract: '${arg}' - unknown archive method" ;;
       esac
   else
-      echo "Error: "${arg}" - file does not exist"
+      echo "Error: '${arg}' - file does not exist"
       exit 1
   fi
 done
