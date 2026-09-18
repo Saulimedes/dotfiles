@@ -55,6 +55,13 @@
   '((t :inherit shadow :slant italic))
   "Face for secondary celestial info.")
 
+(defface my/dashboard-quote
+  '((t :inherit shadow :slant italic))
+  "Face for the dashboard quote.")
+
+(defvar my/dashboard-quotes-file (expand-file-name "~/.emacs.d/quotes.txt")
+  "Path to the newline-delimited quotes file for the dashboard.")
+
 (defvar my/dashboard-items
   '((projects . 6)
     (recents . 6)
@@ -78,6 +85,26 @@
   (insert "    ")
   (insert (propertize (make-string 60 ?─) 'face 'my/dashboard-separator))
   (insert "\n"))
+
+(defun my/dashboard--random-quote ()
+  "Return a random line from `my/dashboard-quotes-file', or nil."
+  (when (file-exists-p my/dashboard-quotes-file)
+    (with-temp-buffer
+      (insert-file-contents my/dashboard-quotes-file)
+      (let ((lines (split-string (buffer-string) "\n" t)))
+        (when lines
+          (nth (random (length lines)) lines))))))
+
+(defun my/dashboard--insert-quote ()
+  "Insert a random quote, wrapped to fit the window."
+  (when-let* ((quote (my/dashboard--random-quote)))
+    (let ((fill-prefix "    ")
+          (fill-column (max 40 (- (window-width) 8))))
+      (insert fill-prefix)
+      (let ((start (point)))
+        (insert (propertize quote 'face 'my/dashboard-quote))
+        (fill-region start (point))))
+    (insert "\n")))
 
 (defun my/dashboard--section-icon (section)
   "Return icon for SECTION if nerd-icons available."
@@ -505,12 +532,23 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     (erase-buffer)
 
     ;; ASCII banner
-    (dolist (line '("     ___  _ __ ___   __ _  ___ ___"
-                    "    / _ \\| '_ ` _ \\ / _` |/ __/ __|"
-                    "   |  __/| | | | | | (_| | (__\\__ \\"
-                    "    \\___||_| |_| |_|\\__,_|\\___|___/"))
-      (insert (propertize line 'face 'my/dashboard-banner))
-      (insert "\n"))
+    (let* ((banner-lines '("⠀⠀⠀⠀⠀⢀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                           "⠀⠀⠀⠀⠀⠠⠔⠅⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                           "⠀⠀⠀⠀⣩⣃⠀⠀⠠⠒⠒⠒⠦⣄⠀⠀⠀⠀⠀⣀⡠⠴⠶⣦⣶⠶⠄⠀⠀"
+                           "⠀⠀⠀⢀⠤⠶⠒⡈⠀⠀⠀⠀⣀⣬⣧⠀⠀⠀⣼⡏⠀⠀⠀⠈⢷⠦⡀⠀⠀"
+                           "⠀⣠⠎⠀⠀⠀⠀⠉⠁⠀⠀⣾⣿⣿⣿⡄⡠⠾⠛⡠⣼⢆⡀⠀⠈⠂⠈⡆⠀"
+                           "⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣯⠤⠤⠤⠿⠃⠀⣳⠀⠀⣆⠀⢉⡁"
+                           "⠀⠀⠓⠒⠒⠒⠒⠒⠒⢺⣿⣿⡿⣿⣿⡗⠒⠒⠒⠒⠖⠒⠙⠒⠊⠀⠁⠚⠁"))
+           (banner-width (apply #'max (mapcar #'string-width banner-lines)))
+           (pad (make-string (max 0 (/ (- (window-width) banner-width) 2)) ?\s)))
+      (dolist (line banner-lines)
+        (insert pad)
+        (insert (propertize line 'face 'my/dashboard-banner))
+        (insert "\n")))
+    (insert "\n")
+
+    ;; Quote
+    (my/dashboard--insert-quote)
     (insert "\n")
 
     ;; Occult celestial header

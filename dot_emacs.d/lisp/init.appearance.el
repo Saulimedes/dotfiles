@@ -26,64 +26,28 @@
     (fontaine-set-preset 'regular)))
 
 (setq-default line-spacing 1)
-;; Base16 Black Metal (Immortal) - true black (base00) across the whole
-;; palette by construction, not patched black on top of a theme designed
-;; around some other background. All black-metal-* variants share the same
-;; base00-base07 grayscale (mode-line/tab-line/UI chrome), so this is
-;; internally consistent instead of clashing like the Tron Legacy overlay did.
-(use-package base16-theme
+;; Doom IR Black - pure black background (bg #000000), based on the classic
+;; ir_black theme, with a clearly distinct mode-line (not blended into bg
+;; like doom-homage-black's minimal "homage" design). doom-ir-black-brighter-
+;; comments is the theme's own supported customization (not a hand-picked
+;; hex patch) taking comment contrast from 3.4:1 to 6.6:1.
+(use-package doom-themes
   :demand t
+  :init
+  (setq doom-ir-black-brighter-comments t)
   :config
-  (load-theme 'base16-black-metal-immortal t))
+  (load-theme 'doom-ir-black t))
 
-;; Define pitch-black as a proper overlay theme (cleanly toggleable)
-(deftheme my-pitch-black "Pitch black background overlay.")
-(custom-theme-set-faces
- 'my-pitch-black
- ;; Core backgrounds
- '(default ((t :background "#000000")))
- '(fringe ((t :background "#000000")))
- '(cursor ((t :background "#ffffff")))
- '(hl-line ((t :background "#0e0e0e")))
- '(region ((t :background "#2F3C42")))
- '(vertical-border ((t :foreground "#1a1a1a")))
- ;; Window dividers (spacious-padding right-divider-width 16)
- '(window-divider ((t :foreground "#1a1a1a")))
- '(window-divider-first-pixel ((t :foreground "#1a1a1a")))
- '(window-divider-last-pixel ((t :foreground "#1a1a1a")))
- '(internal-border ((t :background "#000000")))
- ;; Line numbers
- '(line-number ((t :background "#000000")))
- '(line-number-current-line ((t :background "#0e0e0e")))
- ;; Header / tab line
- '(header-line ((t :background "#000000" :foreground "#7B9099" :box nil)))
- '(tab-line ((t :background "#111111" :foreground "#7B9099" :box nil)))
- '(tab-line-tab ((t :background "#1a1a1a" :foreground "#7B9099" :box nil)))
- '(tab-line-tab-current ((t :background "#2a2a2a" :foreground "#D4D7D6" :box nil)))
- '(tab-line-tab-inactive ((t :background "#111111" :foreground "#41535B" :box nil)))
- '(tab-line-highlight ((t :background "#222222" :foreground "#D4D7D6" :box nil)))
- ;; Minibuffer
- '(minibuffer-prompt ((t :background "#000000")))
- ;; Modeline - base faces doom-modeline builds its segments on top of
- '(mode-line ((t :background "#1c1c1c" :foreground "#D4D7D6" :overline nil :underline nil :box nil)))
- '(mode-line-active ((t :background "#1c1c1c" :foreground "#D4D7D6" :overline nil :underline nil :box nil)))
- '(mode-line-inactive ((t :background "#111111" :foreground "#7B9099" :overline nil :underline nil :box nil)))
- ;; doom-modeline accent
- '(doom-modeline-bar ((t :background "#5e81ac")))
- '(doom-modeline-bar-inactive ((t :background "#1c1c1c")))
- ;; Solaire (non-file buffers)
- '(solaire-default-face ((t :background "#000000")))
- '(solaire-fringe-face ((t :background "#000000")))
- '(solaire-header-line-face ((t :background "#000000")))
- '(solaire-mode-line-face ((t :background "#1c1c1c")))
- '(solaire-mode-line-inactive-face ((t :background "#111111"))))
-(provide-theme 'my-pitch-black)
-(when (display-graphic-p)
-  (enable-theme 'my-pitch-black)
-  ;; Ensure frame background-color parameter matches the default face,
-  ;; since my/terminal-setup can corrupt it via set-face-attribute on the initial frame.
-  (dolist (frame (frame-list))
-    (set-frame-parameter frame 'background-color "#000000")))
+;; doom-ir-black's own hl-line (bg-alt, #121212) is only ~1.1:1 contrast
+;; against pure black - barely visible. This is the one deliberate manual
+;; override: keep it monochrome (no colored tint, unlike the old pitch-black
+;; overlay's navy-ish choices), just bright enough to actually see. GUI only:
+;; terminal frames already disable global-hl-line-mode in my/terminal-setup.
+;; with-eval-after-load, not a plain set-face-attribute here: the hl-line
+;; face doesn't exist until hl-line.el actually loads (later in this file),
+;; so calling this directly at top level fails with "Invalid face: hl-line".
+(with-eval-after-load 'hl-line
+  (set-face-attribute 'hl-line nil :background "#1a1a1a" :extend t))
 
 
 ;; Man-mode colors
@@ -324,7 +288,7 @@
 ;; ============================================================
 (defun my/terminal-setup ()
   "Configure Emacs for terminal frames.
-Keeps base16-black-metal-immortal foreground/syntax colors but lets the
+Keeps doom-homage-black foreground/syntax colors but lets the
 terminal supply its own background (transparent)."
   (unless (display-graphic-p)
     (let ((frame (selected-frame)))
@@ -353,10 +317,12 @@ terminal supply its own background (transparent)."
 ;; ============================================================
 
 (defun my/setup-frame (frame)
-  "Apply pitch-black theme for graphical frames, terminal setup for TTY."
+  "Apply GUI/terminal-specific tweaks per frame type.
+doom-homage-black is already pure black on its own (no overlay theme
+needed), so the graphical branch only needs to match the frame chrome
+to that, not introduce a color of its own."
   (if (frame-parameter frame 'window-system)
       (progn
-        (enable-theme 'my-pitch-black)
         (set-frame-parameter frame 'background-color "#000000")
         (force-mode-line-update t))
     ;; Terminal frame: transparent mode-line, matching the buffer background.
