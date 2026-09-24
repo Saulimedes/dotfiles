@@ -243,13 +243,19 @@
 ;; ============================================================
 ;; pass - password-store frontend
 ;; ============================================================
+;; Store is gopass, not the standard pass CLI, and lives outside the default
+;; ~/.password-store path both pass.el and auth-source-pass expect - point
+;; them at it explicitly (the on-disk format is pass-compatible either way).
 (use-package pass
   :commands (pass)
-  :bind ("C-c P" . pass))
+  :bind ("C-c P" . pass)
+  :init
+  (setq password-store-dir "~/.local/share/gopass/stores/root"))
 
 (use-package auth-source-pass
   :ensure nil
   :config
+  (setq auth-source-pass-filename "~/.local/share/gopass/stores/root")
   (auth-source-pass-enable))
 
 ;; ============================================================
@@ -294,6 +300,14 @@
   (epa-file-enable))
 
 (setq epg-gpg-program "gpg2")
+
+;; pinentry-emacs (external gpg-agent pinentry program) routes passphrase
+;; prompts into this Emacs's minibuffer instead of a GUI popup or a bare
+;; terminal. Requires gpg-agent.conf: pinentry-program pinentry-emacs +
+;; allow-emacs-pinentry. Falls back to ncurses if this Emacs isn't running.
+(use-package pinentry
+  :config
+  (pinentry-start))
 
 ;; Set INSIDE_EMACS for child processes (vterm, eshell) so they inherit it.
 ;; Use emacs-major/minor-version to avoid the newline embedded in emacs-version.

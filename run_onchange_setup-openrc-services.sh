@@ -52,6 +52,15 @@ enable_service autofs
 # Sync
 enable_service syncthing
 
+# Local LLM
+# ollama-bin's ebuild doesn't create its log dir (unlike the source ebuild), so the
+# service dies silently on first start unless this exists beforehand.
+if [[ -f /etc/init.d/ollama-bin && ! -d /var/log/ollama ]]; then
+    sudo install -d -o ollama -g ollama -m 750 /var/log/ollama
+fi
+enable_service ollama-bin
+start_service ollama-bin
+
 # Start chronyd now if not running
 if [[ -f /etc/init.d/chronyd ]]; then
     if ! rc-service chronyd status &>/dev/null; then

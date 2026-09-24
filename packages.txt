@@ -196,3 +196,7 @@ app-misc/tealdeer
 app-portage/genlop
 app-portage/eix
 # jq, yq managed by mise
+
+# AI / local LLM
+# ~amd64 in guru overlay; keyword accepted in /etc/portage/package.accept_keywords/ollama
+sci-ml/ollama-bin

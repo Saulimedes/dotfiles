@@ -41,6 +41,14 @@
      '("'" . vertico-repeat)
      '("u" . universal-argument)
 
+     ;; AI (gptel + agent-shell/opencode)
+     '("a" . (keymap))
+     '("ag" . gptel)
+     '("ar" . gptel-rewrite)
+     '("ac" . my/gptel-add-comments)
+     '("ae" . my/gptel-explain-code)
+     '("ao" . agent-shell-opencode-start-agent)
+
      ;; Files
      '("f" . (keymap))
      '("ff" . find-file)

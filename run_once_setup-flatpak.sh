@@ -55,3 +55,6 @@ log "Krita installed"
 
 flatpak install --user --noninteractive flathub com.obsproject.Studio
 log "OBS Studio installed"
+
+flatpak install --user --noninteractive flathub org.localsend.localsend_app
+log "LocalSend installed"

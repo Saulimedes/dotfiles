@@ -23,7 +23,7 @@
 
   ;; sudo on remote: /ssh:host|sudo:host:/etc/config
   (add-to-list 'tramp-default-proxies-alist
-               '((regexp-quote (system-name)) nil nil)))
+               `(,(regexp-quote (system-name)) nil nil)))
 
 ;; Helper: open file on remote as root
 (defun my/tramp-sudo-remote (host file)

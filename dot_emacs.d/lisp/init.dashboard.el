@@ -55,12 +55,28 @@
   '((t :inherit shadow :slant italic))
   "Face for secondary celestial info.")
 
+(defface my/dashboard-moon-glyph
+  '((t :inherit my/dashboard-celestial))
+  "Face for the moon phase sigil. No :height override - the emoji
+glyph already renders at full size via its color emoji font fallback.")
+
 (defface my/dashboard-quote
   '((t :inherit shadow :slant italic))
   "Face for the dashboard quote.")
 
+(defface my/dashboard-quote-bar
+  '((t :inherit shadow))
+  "Face for the blockquote-style bar to the left of the dashboard quote.")
+
+(defface my/dashboard-quote-author
+  '((t :inherit shadow :slant italic))
+  "Face for the dashboard quote's attribution line.")
+
 (defvar my/dashboard-quotes-file (expand-file-name "~/.emacs.d/quotes.txt")
   "Path to the newline-delimited quotes file for the dashboard.")
+
+(defvar my/dashboard-banner-image (expand-file-name "~/.emacs.d/snoopy.png")
+  "Path to the dashboard banner image, used in GUI frames only.")
 
 (defvar my/dashboard-items
   '((projects . 6)
@@ -80,10 +96,14 @@
     (insert (make-string pad ?\s))
     (insert text)))
 
+(defconst my/dashboard--footer-text
+  "[f] find  [p] project  [r] recent  [a] agenda  [m] magit  [t] term  [c] capture  [s] config  [g] refresh  [q] quit"
+  "Plain-text mirror of the footer quick-actions line, for measuring width.")
+
 (defun my/dashboard--insert-separator ()
-  "Insert a subtle separator line."
+  "Insert a subtle separator line, as wide as the footer quick-actions line."
   (insert "    ")
-  (insert (propertize (make-string 60 ?─) 'face 'my/dashboard-separator))
+  (insert (propertize (make-string (string-width my/dashboard--footer-text) ?─) 'face 'my/dashboard-separator))
   (insert "\n"))
 
 (defun my/dashboard--random-quote ()
@@ -95,15 +115,37 @@
         (when lines
           (nth (random (length lines)) lines))))))
 
+(defun my/dashboard--split-quote-attribution (text)
+  "Split TEXT into (QUOTE . AUTHOR) if it ends with a \" — Name\" attribution,
+else (TEXT . nil). Only em-dash is treated as an attribution marker - plain
+hyphens are used too inconsistently elsewhere in the quotes file to trust."
+  (if (string-match "\\(.*\\) — \\([A-Z][^—\n]\\{1,40\\}\\)\\'" text)
+      (cons (string-trim (match-string 1 text)) (string-trim (match-string 2 text)))
+    (cons text nil)))
+
 (defun my/dashboard--insert-quote ()
-  "Insert a random quote, wrapped to fit the window."
-  (when-let* ((quote (my/dashboard--random-quote)))
-    (let ((fill-prefix "    ")
-          (fill-column (max 40 (- (window-width) 8))))
+  "Insert a random quote, wrapped to fit the window, as a blockquote with a
+left accent bar. If it has a detected attribution, show it right-aligned on
+the line below instead of inline."
+  (when-let* ((raw (my/dashboard--random-quote)))
+    (let* ((bar (propertize "▍" 'face 'my/dashboard-quote-bar))
+           (fill-prefix (concat "    " bar " "))
+           (fill-column (max 40 (- (window-width) 10)))
+           (split (my/dashboard--split-quote-attribution raw))
+           (quote (car split))
+           (author (cdr split)))
       (insert fill-prefix)
       (let ((start (point)))
         (insert (propertize quote 'face 'my/dashboard-quote))
-        (fill-region start (point))))
+        (fill-region start (point)))
+      (when author
+        (insert "\n")
+        (let* ((label (concat "— " author))
+               (prefix (concat "    " bar " "))
+               (pad-width (max 0 (- fill-column (string-width label) (string-width prefix)))))
+          (insert prefix)
+          (insert (make-string pad-width ?\s))
+          (insert (propertize label 'face 'my/dashboard-quote-author)))))
     (insert "\n")))
 
 (defun my/dashboard--section-icon (section)
@@ -385,10 +427,14 @@
 ;; ============================================================
 
 (defvar my/moon-sigils
-  '((0 . "●")    ; new moon
-    (1 . "◑")    ; first quarter
-    (2 . "○")    ; full moon
-    (3 . "◐"))   ; last quarter
+  ;; Emoji moon-phase glyphs, not plain geometric-shapes-block circles: the
+  ;; latter render tiny (BerkeleyMono draws them at bullet-point size), while
+  ;; emoji codepoints fall back to a color emoji font at full glyph size,
+  ;; matching the zodiac/planet symbols' visual weight.
+  '((0 . "🌑")   ; new moon
+    (1 . "🌓")   ; first quarter
+    (2 . "🌕")   ; full moon
+    (3 . "🌗"))  ; last quarter
   "Moon phase sigils.")
 
 (defvar my/zodiac-glyphs
@@ -490,21 +536,19 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
          (day-glyph (my/planet-glyph (or day-planet "Sun")))
          (hour-glyph (when p-hour (my/planet-glyph (nth 0 p-hour)))))
 
-    ;; Line 1: Main celestial status
+    ;; Line 1: Moon info + astrology info together (phase, sign, zodiac,
+    ;; planetary hour, house) - no Discordian/sun-time data here.
     (insert "    ")
-    (insert (propertize (format "%s %s in %s"
-                                moon-sigil
+    (insert (propertize moon-sigil 'face 'my/dashboard-moon-glyph))
+    (insert (propertize (format " %s in %s"
                                 (or (nth 0 moon-info) "Moon")
                                 sun-sign)
                         'face 'my/dashboard-celestial))
     (when (nth 1 moon-info)
       (insert (propertize (format "  %dd to %s" (nth 1 moon-info) (nth 2 moon-info))
                           'face 'my/dashboard-celestial-dim)))
-    (insert "\n")
-
-    ;; Line 2: Planetary hours + house
-    (insert "    ")
-    (insert (propertize (format "%s %s  %s %s  House %s"
+    (insert (propertize "  •" 'face 'my/dashboard-celestial-dim))
+    (insert (propertize (format "  %s %s  %s %s  House %s"
                                 sun-glyph (or sun-sign "?")
                                 day-glyph (or day-planet "?")
                                 (if house (number-to-string house) "?"))
@@ -517,7 +561,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
                           'face 'my/dashboard-celestial-dim)))
     (insert "\n")
 
-    ;; Line 3: Sun times + Discordian date
+    ;; Line 2: Sun times + Discordian date, kept separate from astrology.
     (insert "    ")
     (when sun-times
       (insert (propertize (format "rise %s  set %s" (nth 0 sun-times) (nth 1 sun-times))
@@ -531,20 +575,28 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
   (let ((inhibit-read-only t))
     (erase-buffer)
 
-    ;; ASCII banner
-    (let* ((banner-lines '("⠀⠀⠀⠀⠀⢀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-                           "⠀⠀⠀⠀⠀⠠⠔⠅⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
-                           "⠀⠀⠀⠀⣩⣃⠀⠀⠠⠒⠒⠒⠦⣄⠀⠀⠀⠀⠀⣀⡠⠴⠶⣦⣶⠶⠄⠀⠀"
-                           "⠀⠀⠀⢀⠤⠶⠒⡈⠀⠀⠀⠀⣀⣬⣧⠀⠀⠀⣼⡏⠀⠀⠀⠈⢷⠦⡀⠀⠀"
-                           "⠀⣠⠎⠀⠀⠀⠀⠉⠁⠀⠀⣾⣿⣿⣿⡄⡠⠾⠛⡠⣼⢆⡀⠀⠈⠂⠈⡆⠀"
-                           "⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣯⠤⠤⠤⠿⠃⠀⣳⠀⠀⣆⠀⢉⡁"
-                           "⠀⠀⠓⠒⠒⠒⠒⠒⠒⢺⣿⣿⡿⣿⣿⡗⠒⠒⠒⠒⠖⠒⠙⠒⠊⠀⠁⠚⠁"))
-           (banner-width (apply #'max (mapcar #'string-width banner-lines)))
-           (pad (make-string (max 0 (/ (- (window-width) banner-width) 2)) ?\s)))
-      (dolist (line banner-lines)
-        (insert pad)
-        (insert (propertize line 'face 'my/dashboard-banner))
-        (insert "\n")))
+    ;; Banner - PNG in GUI, braille ASCII art in terminal (an image spec
+    ;; is meaningless on a tty anyway).
+    (if (and (display-graphic-p) (file-exists-p my/dashboard-banner-image))
+        (let* ((image (create-image my/dashboard-banner-image nil nil :max-width 280))
+               (cols (ceiling (/ (float (car (image-size image t))) (frame-char-width))))
+               (pad (make-string (max 0 (/ (- (window-width) cols) 2)) ?\s)))
+          (insert pad)
+          (insert-image image)
+          (insert "\n"))
+      (let* ((banner-lines '("⠀⠀⠀⠀⠀⢀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                             "⠀⠀⠀⠀⠀⠠⠔⠅⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+                             "⠀⠀⠀⠀⣩⣃⠀⠀⠠⠒⠒⠒⠦⣄⠀⠀⠀⠀⠀⣀⡠⠴⠶⣦⣶⠶⠄⠀⠀"
+                             "⠀⠀⠀⢀⠤⠶⠒⡈⠀⠀⠀⠀⣀⣬⣧⠀⠀⠀⣼⡏⠀⠀⠀⠈⢷⠦⡀⠀⠀"
+                             "⠀⣠⠎⠀⠀⠀⠀⠉⠁⠀⠀⣾⣿⣿⣿⡄⡠⠾⠛⡠⣼⢆⡀⠀⠈⠂⠈⡆⠀"
+                             "⣿⣧⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣯⠤⠤⠤⠿⠃⠀⣳⠀⠀⣆⠀⢉⡁"
+                             "⠀⠀⠓⠒⠒⠒⠒⠒⠒⢺⣿⣿⡿⣿⣿⡗⠒⠒⠒⠒⠖⠒⠙⠒⠊⠀⠁⠚⠁"))
+             (banner-width (apply #'max (mapcar #'string-width banner-lines)))
+             (pad (make-string (max 0 (/ (- (window-width) banner-width) 2)) ?\s)))
+        (dolist (line banner-lines)
+          (insert pad)
+          (insert (propertize line 'face 'my/dashboard-banner))
+          (insert "\n"))))
     (insert "\n")
 
     ;; Quote
@@ -577,12 +629,16 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     (insert "    ")
     (insert (propertize (format "%.2fs  %d packages  %s"
                                 (float-time (time-subtract after-init-time before-init-time))
-                                (length package-activated-list)
+                                ;; package-activated-list is always empty here -
+                                ;; this config uses straight.el, not package.el.
+                                (if (bound-and-true-p straight--build-cache)
+                                    (hash-table-count straight--build-cache)
+                                  0)
                                 (format "Emacs %s" emacs-version))
                         'face 'my/dashboard-dim))
     (insert "\n\n")
 
-    ;; Quick actions in two lines
+    ;; Quick actions, all on one line
     (insert "    ")
     (insert (propertize "[f]" 'face 'my/dashboard-shortcut))
     (insert (propertize " find  " 'face 'my/dashboard-dim))
@@ -593,10 +649,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     (insert (propertize "[a]" 'face 'my/dashboard-shortcut))
     (insert (propertize " agenda  " 'face 'my/dashboard-dim))
     (insert (propertize "[m]" 'face 'my/dashboard-shortcut))
-    (insert (propertize " magit" 'face 'my/dashboard-dim))
-    (insert "\n")
-
-    (insert "    ")
+    (insert (propertize " magit  " 'face 'my/dashboard-dim))
     (insert (propertize "[t]" 'face 'my/dashboard-shortcut))
     (insert (propertize " term  " 'face 'my/dashboard-dim))
     (insert (propertize "[c]" 'face 'my/dashboard-shortcut))
@@ -678,17 +731,11 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
 ;; Startup integration
 ;; ============================================================
 
-(defvar my/dashboard-shown nil
-  "Track if dashboard has been shown.")
-
-(defun my/dashboard-init ()
-  "Initialize dashboard on startup."
-  (when (and (not my/dashboard-shown)
-             (< (length command-line-args) 2))
-    (setq my/dashboard-shown t)
-    (my/show-dashboard)))
-
-(add-hook 'emacs-startup-hook #'my/dashboard-init)
+;; initial-buffer-choice is the standard mechanism for this: emacsclient with
+;; no target file obeys it directly, and it leaves an explicit file/dir
+;; target alone (unlike a hook, which needs a manual "was *scratch* still
+;; current" check). Works uniformly for daemon and non-daemon starts.
+(setq initial-buffer-choice #'my/create-dashboard)
 
 (global-set-key (kbd "C-c d") #'my/show-dashboard)
 

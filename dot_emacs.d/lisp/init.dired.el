@@ -6,6 +6,28 @@
 (use-package treemacs
   :bind ("C-c S" . treemacs))
 
+;; dired-open - RET on a file opens it externally instead of visiting it as
+;; an Emacs buffer, when the extension matches. Audio/video go to mpv;
+;; anything else not covered falls through to xdg-open (dired-open-xdg),
+;; which was missing entirely before - dired had no external-open path at
+;; all, hence media files just opening as raw buffers in Emacs.
+(use-package dired-open
+  :after dired
+  :custom
+  (dired-open-extensions '(("m4b" . "mpv")
+                            ("mp3" . "mpv")
+                            ("m4a" . "mpv")
+                            ("flac" . "mpv")
+                            ("ogg" . "mpv")
+                            ("opus" . "mpv")
+                            ("wav" . "mpv")
+                            ("mp4" . "mpv")
+                            ("mkv" . "mpv")
+                            ("webm" . "mpv")
+                            ("avi" . "mpv")
+                            ("mov" . "mpv")))
+  (dired-open-functions '(dired-open-by-extension dired-open-subdir dired-open-xdg)))
+
 ;; Track dired directory for shell cd-on-exit
 (defvar my/dired-exit-file-pending nil
   "Temp file path to assign to the next created frame.")

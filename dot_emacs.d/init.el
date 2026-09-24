@@ -96,6 +96,19 @@
 (setq select-enable-clipboard t
       select-enable-primary t)
 
+;; Identity - read from git config rather than duplicating name/email into a
+;; second place. git config is already the canonical, chezmoi-templated
+;; source (dot_gitconfig.tmpl -> .chezmoi.toml.tmpl prompt). Magit itself
+;; needs no separate setup, it reads git config directly; this is for the
+;; two standard Emacs variables that don't: epa-file-encrypt-to and the
+;; org #+AUTHOR: templates in init.project-manager.el/init.projectile.el.
+(let ((git-name (string-trim (shell-command-to-string "git config --get user.name")))
+      (git-email (string-trim (shell-command-to-string "git config --get user.email"))))
+  (unless (string-empty-p git-name)
+    (setq user-full-name git-name))
+  (unless (string-empty-p git-email)
+    (setq user-mail-address git-email)))
+
 ;; Misc better defaults
 (setopt use-short-answers t)
 (setq confirm-kill-processes nil)
@@ -106,6 +119,7 @@
         context-menu-region
         context-menu-undo
         context-menu-dictionary))
+(context-menu-mode 1)
 
 ;; Tree-sitter support (built-in for Emacs 29+)
 (when (fboundp 'treesit-available-p)
