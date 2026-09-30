@@ -1,5 +1,5 @@
 ;; -*- lexical-binding: t; -*-
-;; DevOps: Kubernetes + AWS + Docker + Terraform/OpenTofu
+;; DevOps: Kubernetes + AWS + GCP + Vault + Docker + Terraform/OpenTofu
 
 ;; ============================================================
 ;; Terraform / OpenTofu Mode
@@ -278,6 +278,147 @@
       (switch-to-buffer buffer))))
 
 ;; ============================================================
+;; GCP CLI Integration
+;; ============================================================
+
+(defun gcp-get-projects ()
+  "Get list of GCP projects."
+  (split-string (shell-command-to-string
+                 "gcloud projects list --format='value(projectId)' 2>/dev/null") "\n" t))
+
+(defun gcp-get-regions ()
+  "Common GCP regions."
+  '("us-central1" "us-east1" "us-east4" "us-west1" "us-west2"
+    "europe-west1" "europe-west3" "europe-north1"
+    "asia-east1" "asia-southeast1" "asia-northeast1"))
+
+(defun gcp-set-project ()
+  "Set GCP project for current session."
+  (interactive)
+  (let ((project (completing-read "GCP Project: " (gcp-get-projects) nil t)))
+    (shell-command (format "gcloud config set project %s" project))
+    (message "GCP project: %s" project)))
+
+(defun gcp-set-region ()
+  "Set GCP compute region for current session."
+  (interactive)
+  (let ((region (completing-read "GCP Region: " (gcp-get-regions) nil t)))
+    (shell-command (format "gcloud config set compute/region %s" region))
+    (message "GCP region: %s" region)))
+
+(defun gcp-whoami ()
+  "Show current GCP account and project."
+  (interactive)
+  (message "%s" (string-trim (shell-command-to-string "gcloud config list 2>/dev/null"))))
+
+(defun gcp-get-clusters ()
+  "Get list of GKE clusters as \"name\\tlocation\" entries."
+  (split-string (shell-command-to-string
+                 "gcloud container clusters list --format='value(name,location)' 2>/dev/null") "\n" t))
+
+(defun gcp-gke-clusters ()
+  "List GKE clusters in a buffer."
+  (interactive)
+  (let ((buffer "*gcp-gke*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string
+               "gcloud container clusters list --format='table(name,location,status,currentMasterVersion)' 2>/dev/null"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun gcp-gke-get-credentials ()
+  "Fetch kubectl credentials for a GKE cluster."
+  (interactive)
+  (let* ((cluster (completing-read "Cluster: " (gcp-get-clusters) nil t))
+         (parts (split-string cluster "\t"))
+         (name (car parts))
+         (location (cadr parts)))
+    (shell-command (format "gcloud container clusters get-credentials %s --region %s" name location))
+    (message "kubectl configured for GKE cluster: %s" name)))
+
+(defun gcp-storage-buckets ()
+  "List GCS buckets."
+  (interactive)
+  (let ((buffer "*gcp-storage*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string "gcloud storage ls 2>/dev/null"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun gcp-logs ()
+  "List Cloud Logging log names."
+  (interactive)
+  (let ((buffer "*gcp-logs*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string "gcloud logging logs list --format='table(name)' 2>/dev/null"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+;; ============================================================
+;; Vault Integration
+;; ============================================================
+
+(defun vault-set-address ()
+  "Set VAULT_ADDR for current session."
+  (interactive)
+  (let ((addr (read-string "Vault address: " (or (getenv "VAULT_ADDR") "https://vault:8200"))))
+    (setenv "VAULT_ADDR" addr)
+    (message "VAULT_ADDR=%s" addr)))
+
+(defun vault-status ()
+  "Show vault status in a buffer."
+  (interactive)
+  (let ((buffer "*vault-status*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string "vault status 2>&1"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun vault-whoami ()
+  "Show current vault token info in a buffer."
+  (interactive)
+  (let ((buffer "*vault-whoami*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string "vault token lookup 2>&1"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun vault-login ()
+  "Log in to vault with a chosen auth method."
+  (interactive)
+  (let ((method (completing-read "Auth method: " '("oidc" "token" "userpass" "ldap") nil t "oidc")))
+    (if (featurep 'vterm)
+        (progn
+          (vterm-other-window "*vault-login*")
+          (vterm-send-string (format "vault login -method=%s\n" method)))
+      (async-shell-command (format "vault login -method=%s" method) "*vault-login*"))))
+
+(defun vault-kv-list (path)
+  "List secrets under PATH."
+  (interactive "sVault path: ")
+  (let ((buffer "*vault-kv-list*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string (format "vault kv list %s 2>&1" (shell-quote-argument path))))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun vault-kv-get (path)
+  "Get secret at PATH."
+  (interactive "sVault path: ")
+  (let ((buffer "*vault-kv-get*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string (format "vault kv get %s 2>&1" (shell-quote-argument path))))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+;; ============================================================
 ;; Docker Integration
 ;; ============================================================
 
@@ -334,6 +475,31 @@
     ["Connect"
      ("c" "SSM connect" aws-ssm-connect)])
 
+  ;; GCP menu
+  (transient-define-prefix gcp-menu ()
+    "GCP commands"
+    ["Project & Region"
+     ("p" "Set project" gcp-set-project)
+     ("r" "Set region" gcp-set-region)
+     ("w" "Whoami" gcp-whoami)]
+    ["Services"
+     ("k" "GKE clusters" gcp-gke-clusters)
+     ("c" "GKE get-credentials" gcp-gke-get-credentials)
+     ("s" "Storage buckets" gcp-storage-buckets)
+     ("l" "Logs" gcp-logs)])
+
+  ;; Vault menu
+  (transient-define-prefix vault-menu ()
+    "Vault commands"
+    ["Connection"
+     ("a" "Set address" vault-set-address)
+     ("s" "Status" vault-status)
+     ("w" "Whoami" vault-whoami)
+     ("l" "Login" vault-login)]
+    ["KV Secrets"
+     ("k" "List path" vault-kv-list)
+     ("g" "Get secret" vault-kv-get)])
+
   ;; DevOps master menu
   (transient-define-prefix devops-menu ()
     "DevOps commands"
@@ -342,6 +508,10 @@
       ("K" "Kubel" kubel)]
      ["AWS"
       ("a" "AWS menu" aws-menu)]
+     ["GCP"
+      ("g" "GCP menu" gcp-menu)]
+     ["Vault"
+      ("v" "Vault menu" vault-menu)]
      ["Terraform"
       ("t" "Terraform menu" terraform-menu)]
      ["Helm"
@@ -349,7 +519,8 @@
       ("H" "Lint" helm-lint)]
      ["Mise"
       ("m" "Current" mise-current)
-      ("M" "List" mise-list)]
+      ("M" "List" mise-list)
+      ("n" "New project" mise-new-project)]
      ["Docker"
       ("d" "Docker" docker)
       ("D" "Docker ps" docker-ps)]]))
@@ -429,9 +600,44 @@
   (interactive)
   (message "%s" (string-trim (shell-command-to-string "mise current 2>&1"))))
 
+(defun mise-new-project (dir)
+  "Scaffold a per-project mise.toml + .envrc + identity dirs in DIR.
+Mirrors the rtl-style setup: isolated GNUPGHOME, AWS creds, kube
+configs, OCI config and pass store, all rooted under DIR so they
+never bleed into the global ones."
+  (interactive "DProject directory: ")
+  (unless (file-exists-p dir) (make-directory dir t))
+  (let* ((default-directory dir)
+         (email (read-string "Git author email: " user-mail-address))
+         (vault-addr (read-string "Vault address (blank to skip): "))
+         (gnupg-dir (expand-file-name ".gnupg" dir)))
+    (dolist (sub '(".gnupg" ".aws" ".kube" ".oci" "pass"))
+      (make-directory (expand-file-name sub dir) t))
+    (set-file-modes gnupg-dir #o700)
+    (with-temp-file (expand-file-name "mise.toml" dir)
+      (insert "[env]\n")
+      (insert (format "GIT_AUTHOR_EMAIL = \"%s\"\n" email))
+      (insert (format "GIT_COMMITTER_EMAIL = \"%s\"\n" email))
+      (insert "GNUPGHOME = \"{{config_root}}/.gnupg\"\n")
+      (insert "PASSWORD_STORE_DIR = \"{{config_root}}/pass\"\n")
+      (insert "AWS_DIR = \"{{config_root}}/.aws\"\n")
+      (insert "AWS_SHARED_CREDENTIALS_FILE = \"{{env.AWS_DIR}}/credentials\"\n")
+      (insert "AWS_CONFIG_FILE = \"{{env.AWS_DIR}}/config\"\n")
+      (insert "KUBECONFIG = '''{{ exec(command=\"echo \" ~ config_root ~ \"/.kube/*.yaml | tr ' ' ':'\") }}'''\n")
+      (insert "OCI_CONFIG_FILE = \"{{config_root}}/.oci/config\"\n")
+      (insert "OCI_PRIVATE_KEY_PATH = \"{{config_root}}/.oci/id_rsa\"\n")
+      (unless (string-empty-p vault-addr)
+        (insert (format "VAULT_ADDR = \"%s\"\n" vault-addr))))
+    (with-temp-file (expand-file-name ".envrc" dir)
+      (insert "use mise\n"))
+    (shell-command (format "direnv allow %s" (shell-quote-argument dir)))
+    (message "Scaffolded %s - drop kubeconfigs into .kube/, aws creds into .aws/" dir)))
+
 ;; Global bindings
 (global-set-key (kbd "C-c k") 'kubectl-menu)
 (global-set-key (kbd "C-c a") 'aws-menu)
+(global-set-key (kbd "C-c G") 'gcp-menu)
+(global-set-key (kbd "C-c v") 'vault-menu)
 (global-set-key (kbd "C-c K") 'devops-menu)
 
 ;; ============================================================
@@ -461,6 +667,27 @@
    '("Kc" . aws-ssm-connect)
    '("Kw" . aws-whoami)
 
+   ;; GCP
+   '("G" . (keymap))
+   '("Gg" . gcp-menu)
+   '("Gp" . gcp-set-project)
+   '("Gr" . gcp-set-region)
+   '("Gw" . gcp-whoami)
+   '("Gk" . gcp-gke-clusters)
+   '("Gc" . gcp-gke-get-credentials)
+   '("Gs" . gcp-storage-buckets)
+   '("Gl" . gcp-logs)
+
+   ;; Vault
+   '("v" . (keymap))
+   '("vv" . vault-menu)
+   '("va" . vault-set-address)
+   '("vs" . vault-status)
+   '("vw" . vault-whoami)
+   '("vl" . vault-login)
+   '("vk" . vault-kv-list)
+   '("vg" . vault-kv-get)
+
    ;; Terraform
    '("T" . (keymap))
    '("Tm" . terraform-menu)
@@ -481,6 +708,7 @@
    '("Mc" . mise-current)
    '("Ml" . mise-list)
    '("Mi" . mise-install)
-   '("Mu" . mise-use)))
+   '("Mu" . mise-use)
+   '("Mn" . mise-new-project)))
 
 (provide 'init.devops)

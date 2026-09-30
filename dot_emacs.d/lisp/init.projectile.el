@@ -11,7 +11,10 @@
   :demand t
   :init
   (setq projectile-project-search-path '("~/Projects")
-        projectile-switch-project-action #'projectile-find-file
+        ;; projectile-find-file was a second prompt after picking the
+        ;; project - easy to cancel out of and never land in a real buffer,
+        ;; so envrc never visibly kicks in. dired lands immediately, one step.
+        projectile-switch-project-action #'projectile-dired
         projectile-enable-caching t
         projectile-completion-system 'default ; Use Vertico/Marginalia instead of Ivy
         projectile-indexing-method 'alien

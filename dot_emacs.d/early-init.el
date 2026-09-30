@@ -59,9 +59,14 @@
       frame-inhibit-implied-resize t
       frame-resize-pixelwise t)
 
-;; Set background early to prevent white flash
-(push '(background-color . "#000000") default-frame-alist)
-(push '(foreground-color . "#ffffff") default-frame-alist)
+;; No hardcoded background-color/foreground-color here anymore - this was
+;; white-on-black to avoid a flash while the old dark theme loaded, but
+;; early-init.el runs before any theme, so it can't know if the active
+;; theme is even dark. With a light theme (doom-earl-grey) these stale
+;; values instead caused a white-on-black flash AND made faces that
+;; plainly inherit `default' (before the theme corrects it) briefly
+;; wrong. init.appearance.el's my/setup-frame corrects both per-frame
+;; from the theme's real colors once it's known, which works either way.
 
 ;; ============================================================
 ;; Misc suppressions

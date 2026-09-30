@@ -16,6 +16,20 @@
         (kill-buffer (current-buffer)))
     (kill-buffer (current-buffer))))
 
+;; clipmon: syncs system clipboard into kill-ring, browse with M-y
+(use-package clipmon
+  :config
+  (clipmon-mode 1)
+  (clipmon-persist))
+
+;; Re-copy a past kill-ring entry to the clipboard, no insert
+(defun my/clipboard-select ()
+  (interactive)
+  (let ((entry (completing-read "Clipboard: " kill-ring nil t)))
+    (kill-new entry)
+    (message "Copied: %s" (truncate-string-to-width entry 60))))
+(global-set-key (kbd "C-c y") #'my/clipboard-select)
+
 ;; ============================================================
 ;; wcopy — watch clipboard and collect entries into a buffer
 ;; ============================================================

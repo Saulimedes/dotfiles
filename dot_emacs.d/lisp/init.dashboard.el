@@ -97,7 +97,7 @@ glyph already renders at full size via its color emoji font fallback.")
     (insert text)))
 
 (defconst my/dashboard--footer-text
-  "[f] find  [p] project  [r] recent  [a] agenda  [m] magit  [t] term  [c] capture  [s] config  [g] refresh  [q] quit"
+  "[f] find  [p] project  [r] recent  [a] agenda  [m] magit  [t] term  [v] vterm  [c] capture  [s] config  [g] refresh  [q] quit"
   "Plain-text mirror of the footer quick-actions line, for measuring width.")
 
 (defun my/dashboard--insert-separator ()
@@ -578,7 +578,9 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     ;; Banner - PNG in GUI, braille ASCII art in terminal (an image spec
     ;; is meaningless on a tty anyway).
     (if (and (display-graphic-p) (file-exists-p my/dashboard-banner-image))
-        (let* ((image (create-image my/dashboard-banner-image nil nil :max-width 280))
+        (let* ((image (create-image my/dashboard-banner-image nil nil
+                                     :max-width 280
+                                     :background (face-background 'default nil t)))
                (cols (ceiling (/ (float (car (image-size image t))) (frame-char-width))))
                (pad (make-string (max 0 (/ (- (window-width) cols) 2)) ?\s)))
           (insert pad)
@@ -652,6 +654,8 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     (insert (propertize " magit  " 'face 'my/dashboard-dim))
     (insert (propertize "[t]" 'face 'my/dashboard-shortcut))
     (insert (propertize " term  " 'face 'my/dashboard-dim))
+    (insert (propertize "[v]" 'face 'my/dashboard-shortcut))
+    (insert (propertize " vterm  " 'face 'my/dashboard-dim))
     (insert (propertize "[c]" 'face 'my/dashboard-shortcut))
     (insert (propertize " capture  " 'face 'my/dashboard-dim))
     (insert (propertize "[s]" 'face 'my/dashboard-shortcut))
@@ -683,6 +687,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
   (local-set-key (kbd "a") #'org-agenda)
   (local-set-key (kbd "c") #'org-capture)
   (local-set-key (kbd "t") #'eshell)
+  (local-set-key (kbd "v") #'vterm-project-root)
   (local-set-key (kbd "m") #'magit-status)
 
   (local-set-key (kbd "s") (lambda () (interactive)
@@ -703,7 +708,8 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
   "Major mode for the dashboard."
   (setq buffer-read-only t
         cursor-type nil
-        truncate-lines t)
+        truncate-lines t
+        default-directory (expand-file-name "~/"))
   (my/dashboard--setup-keys)
   (when (fboundp 'meow-motion-mode) (meow-motion-mode 1)))
 

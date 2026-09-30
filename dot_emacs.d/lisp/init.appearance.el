@@ -26,26 +26,28 @@
     (fontaine-set-preset 'regular)))
 
 (setq-default line-spacing 1)
-;; Doom Homage Black - pure black background (bg #000000), muted/minimal
-;; palette (single accent colors: green comments, orange strings, blue
-;; functions/highlights - most syntax is plain fg, not a rainbow). Switched
-;; from doom-ir-black, whose classic ir_black neon green/yellow/magenta
-;; palette read as dated ("horrible retro") once the black-bg requirement
-;; was already satisfied by either theme.
+
 (use-package doom-themes
   :demand t
   :config
-  (load-theme 'doom-homage-black t))
+  (load-theme 'doom-xcode t))
 
-;; doom-homage-black's own hl-line (highlight darkened 75% toward black) is
-;; near-invisible against pure black. Same deliberate override as before:
-;; monochrome, just bright enough to see. GUI only: terminal frames already
-;; disable global-hl-line-mode in my/terminal-setup. with-eval-after-load,
-;; not a plain set-face-attribute here: the hl-line face doesn't exist until
-;; hl-line.el actually loads (later in this file), so calling this directly
-;; at top level fails with "Invalid face: hl-line".
-(with-eval-after-load 'hl-line
-  (set-face-attribute 'hl-line nil :background "#1a1a1a" :extend t))
+(defun my/fix-menu-face (&rest _)
+  "Lucid toolkit menus don't follow the theme unless `menu' is styled."
+  (set-face-attribute 'menu nil
+                       :background (face-background 'default nil t)
+                       :foreground (face-foreground 'default nil t)))
+(my/fix-menu-face)
+(add-hook 'after-make-frame-functions #'my/fix-menu-face)
+
+(defun my/fix-doom-modeline-time-face (&rest _)
+  "doom-modeline-time has no explicit fg/bg of its own - the analogue
+clock icon's SVG needs concrete colors, not 'unspecified."
+  (when (facep 'doom-modeline-time)
+    (set-face-attribute 'doom-modeline-time nil
+                         :foreground (face-foreground 'default nil t)
+                         :background (face-background 'mode-line-active nil t))))
+(add-hook 'after-make-frame-functions #'my/fix-doom-modeline-time-face)
 
 
 ;; Man-mode colors
@@ -87,13 +89,20 @@
   :diminish beacon-mode
   :init
   (setq beacon-size 40              ; Size of the beacon
-        beacon-color "#5e81ac"      ; Nord-ish blue, change to your theme
         beacon-blink-duration 0.3   ; How long the trail lasts
         beacon-blink-delay 0.1      ; Delay before blinking
         beacon-blink-when-window-scrolls t
         beacon-blink-when-window-changes t
         beacon-blink-when-point-moves-vertically 3) ; Only on big jumps (3+ lines)
   :config
+  ;; beacon-color as a number is supposed to auto-derive from the theme but
+  ;; beacon's own light/dark detection is broken; derive it ourselves.
+  (defun my/beacon-sync-color (&rest _)
+    (let ((fg (face-foreground 'default nil t)))
+      (when (and (stringp fg) (not (string-prefix-p "unspecified" fg)))
+        (setq beacon-color fg))))
+  (my/beacon-sync-color)
+  (add-hook 'after-make-frame-functions #'my/beacon-sync-color)
   (beacon-mode 1)
   ;; Don't beacon in these modes
   (add-to-list 'beacon-dont-blink-major-modes 'vterm-mode)
@@ -166,40 +175,28 @@ with a Roman numeral, keeping the original face."
 ;; marker only moves a couple pixels even across a full scroll, so it reads
 ;; as static. Not worth the extra height it'd take to make it legible.
 
-;; mode-line-highlight (mouse hover on clickable segments like buffer-name)
-;; defaults to a stark white box + the theme's raw blue highlight color -
-;; jarring against the muted palette. Scoped to this face only, not the
-;; generic `highlight' used elsewhere (dired, completion, etc).
+;; mode-line-highlight defaults to a stark white box + raw theme blue -
+;; jarring. Derive a subtle hover shade from the theme instead of a fixed hex.
+(require 'color)
 (defun my/fix-mode-line-highlight (&rest _)
-  "Apply the muted mode-line-highlight override.
-`set-face-attribute' overrides like this get wiped by any
-`disable-theme'/`enable-theme' cycle (theme re-enable resets faces to
-their defface default first, then reapplies only what the theme itself
-styles - and doom-homage-black doesn't touch `mode-line-highlight', so
-it reverts to Emacs's stock white-box-on-blue spec). Re-run on both new
-frames and theme re-enables so it can't drift out of sync again."
-  (set-face-attribute 'mode-line-highlight nil
-                       :box nil
-                       :background "#3a3f47"
-                       :foreground 'unspecified
-                       :inherit nil))
+  (when-let* ((bg (face-background 'mode-line-active nil t))
+              (_ (stringp bg)))
+    (let ((dark-p (< (color-distance bg "black") (color-distance bg "white"))))
+      (set-face-attribute 'mode-line-highlight nil
+                           :box nil
+                           :background (if dark-p (color-lighten-name bg 15) (color-darken-name bg 10))
+                           :foreground 'unspecified
+                           :inherit nil))))
 (with-eval-after-load 'doom-modeline
   (my/fix-mode-line-highlight))
 (add-hook 'after-make-frame-functions #'my/fix-mode-line-highlight)
-(add-hook 'enable-theme-functions #'my/fix-mode-line-highlight)
 
-;; Generic `highlight' face (mouse hover on text-buttons - dashboard
-;; project/recent-file links, dired, completion, etc): theme's blue
-;; background is fine, but its dark foreground is illegible against it.
-;; Keep the background, fix only the foreground.
+;; `highlight' face (hover on buttons/dired/completion): theme's dark
+;; foreground is illegible on its own blue background.
 (defun my/fix-highlight-face (&rest _)
-  "Fix `highlight' face contrast: keep the blue background, use a light
-foreground instead of the theme's dark one. Same reset risk and same
-two hooks as `my/fix-mode-line-highlight'."
   (set-face-attribute 'highlight nil :foreground "#ffffff"))
 (my/fix-highlight-face)
 (add-hook 'after-make-frame-functions #'my/fix-highlight-face)
-(add-hook 'enable-theme-functions #'my/fix-highlight-face)
 
 ;; time segment is part of doom-modeline's default layout but stays blank
 ;; until display-time-mode is actually on.
@@ -393,12 +390,24 @@ terminal supply its own background (transparent)."
 
 (defun my/setup-frame (frame)
   "Apply GUI/terminal-specific tweaks per frame type.
-doom-homage-black is already pure black on its own (no overlay theme
-needed), so the graphical branch only needs to match the frame chrome
-to that, not introduce a color of its own."
+The graphical branch matches the frame chrome (visible briefly before
+the theme paints the buffer) to the current theme's actual colors, read
+live rather than hardcoded - stays correct across theme switches.
+Both foreground and background: `early-init.el' hard-codes both in
+`default-frame-alist' (white-on-black, to avoid a flash-of-white on the
+old dark theme) as the very first values a new frame gets, before any
+theme loads. A frame's `default' face background does get corrected by
+the theme itself once it paints, but the *foreground* half of that
+stale pair doesn't reliably get overridden the same way - faces that
+plainly inherit `default' (like `my/dashboard-item') were rendering
+white-on-light and unreadable under doom-earl-grey until this also
+set foreground-color explicitly, not just background-color."
   (if (frame-parameter frame 'window-system)
       (progn
-        (set-frame-parameter frame 'background-color "#000000")
+        (set-frame-parameter frame 'background-color
+                              (face-background 'default frame t))
+        (set-frame-parameter frame 'foreground-color
+                              (face-foreground 'default frame t))
         (force-mode-line-update t))
     ;; Terminal frame: transparent mode-line, matching the buffer background.
     ;; nil frame = all frames, above-theme priority but below graphical frame-local.

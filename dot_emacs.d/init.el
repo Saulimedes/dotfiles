@@ -112,6 +112,12 @@
 ;; Misc better defaults
 (setopt use-short-answers t)
 (setq confirm-kill-processes nil)
+;; Daemon mode + multiple emacsclient frames/terminals: without this, a
+;; minibuffer/recursive-edit active on one terminal puts Emacs into
+;; "single keyboard" mode, and a *new* emacsclient connecting from another
+;; terminal while that's active hits "Terminal N is locked, cannot read
+;; from it" instead of just working independently.
+(setq multiple-terminals-merge-keyboards t)
 (global-auto-revert-mode t)
 (setq context-menu-functions
       '(context-menu-ffap

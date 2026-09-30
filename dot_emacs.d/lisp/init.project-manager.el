@@ -210,7 +210,26 @@
   :init
   (setq envrc-show-summary-in-minibuffer t)
   :config
+  (require 'cl-lib)
   (envrc-global-mode)
+  ;; Dedupes stale entries and fixes PWD, which direnv never touches, so
+  ;; subshells spawned here see the right cwd instead of falling back globally.
+  (defun my/fixup-process-environment (&rest _)
+    (when (local-variable-p 'process-environment)
+      (let ((seen (make-hash-table :test 'equal)) result
+            (pwd (directory-file-name default-directory)))
+        (dolist (entry process-environment)
+          (let ((key (if (string-match "\\`\\([^=]+\\)=" entry) (match-string 1 entry) entry)))
+            (unless (gethash key seen)
+              (puthash key t seen)
+              (push (if (string= key "PWD") (concat "PWD=" pwd) entry) result))))
+        (unless (gethash "PWD" seen)
+          (push (concat "PWD=" pwd) result))
+        (setq-local process-environment (nreverse result)))))
+  (add-hook 'envrc-mode-hook #'my/fixup-process-environment)
+  ;; envrc only advises shell-command, but shell-command-to-string switches
+  ;; buffers before calling it, so the env capture happens too late there too.
+  (advice-add 'shell-command-to-string :around #'envrc-propagate-environment)
   :bind-keymap ("C-c E" . envrc-command-map))
 
 ;; Persist project-specific variables

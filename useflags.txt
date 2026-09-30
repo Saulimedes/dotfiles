@@ -18,7 +18,7 @@ net-firewall/nftables json
 net-libs/ngtcp2 gnutls
 
 # Editors
-app-editors/emacs libxml2 tree-sitter harfbuzz lucid -gtk -gtk3
+app-editors/emacs libxml2 tree-sitter harfbuzz athena dynamic-loading -gtk -gtk3
 
 # Pinentry
 app-crypt/pinentry emacs

@@ -14,18 +14,21 @@
   :custom
   (vterm-max-scrollback 10000)
   (vterm-buffer-name-string "vterm: %s")
-  (vterm-shell "/usr/bin/fish")  ; Use fish as preferred shell
+  (vterm-shell "/usr/bin/zsh")  ; fish isn't installed on this system
+  (vterm-always-compile-module t) ; auto-build the native module, no prompt
   :config
   ;; Make vterm files directory tracking work with zsh/bash/fish
   (setq vterm-tramp-shells '(("ssh" "/bin/bash")
                              ("ssh" "/usr/bin/zsh")
                              ("ssh" "/usr/bin/fish"))))
 
-;; Multiple vterms management
+;; Multiple vterms management. "t" and "h" avoided under C-c t: meow uses
+;; mode-specific-map (C-c) as its leader keymap, so SPC t t/th already claim
+;; those two slots for consult-theme/hl-line-mode.
 (use-package multi-vterm
   :after vterm
   :bind
-  (("C-c t t" . multi-vterm-project)
+  (("C-c t o" . multi-vterm-project)
    ("C-c t n" . multi-vterm-next)
    ("C-c t p" . multi-vterm-prev)))
 
@@ -48,16 +51,18 @@
   (other-window 1)
   (vterm))
 
-;; Keybindings to open vterm in horizontal or vertical split
-(global-set-key (kbd "C-c t h") 'split-horizontal-and-run-vterm)
+;; Keybindings to open vterm in horizontal or vertical split (2/3 mirror
+;; C-x 2/C-x 3's split meaning; C-c t h is claimed by meow's SPC t h).
+(global-set-key (kbd "C-c t 2") 'split-horizontal-and-run-vterm)
 (global-set-key (kbd "C-c t v") 'split-vertical-and-run-vterm)
 
 ;; Project-aware terminal
 (defun vterm-project-root ()
-  "Open vterm in the project root."
+  "Open vterm in the project root, or `default-directory' if not in one."
   (interactive)
-  (if (fboundp 'projectile-project-root)
-      (let ((default-directory (projectile-project-root)))
+  (if-let* (((fboundp 'projectile-project-root))
+            (root (projectile-project-root)))
+      (let ((default-directory root))
         (vterm))
     (vterm)))
 
