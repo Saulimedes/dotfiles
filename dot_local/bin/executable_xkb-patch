@@ -2,5 +2,5 @@
 # Re-apply XKB keymap patch after session startup.
 # Remaps: ; → dead_diaeresis (so ;a → ä, ;; → ;)
 xkbcomp "$DISPLAY" - 2>/dev/null \
-  | sed 's/\(\s*key <AC10>\s*{\s*\[\s*\)semicolon/\1dead_diaeresis/' \
+  | perl -0777 -pe 's/(key <AC10> \{[^}]*?symbols\[Group1\]=\s*\[\s*)semicolon/\1dead_diaeresis/s' \
   | xkbcomp -w 0 - "$DISPLAY" 2>/dev/null

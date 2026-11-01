@@ -130,10 +130,14 @@
   :config
   (org-roam-db-autosync-mode))
 
-;; Flyspell for prose (comments in prog-mode)
-(when (executable-find "aspell")
-  (setq ispell-program-name "aspell")
-  (add-hook 'prog-mode-hook 'flyspell-prog-mode))
+;; Flyspell for prose (comments in prog-mode), checks English + German at once
+(when (executable-find "hunspell")
+  (setq ispell-program-name "hunspell"
+        ispell-dictionary "en_US,de_DE")
+  (ispell-set-spellchecker-params)
+  (ispell-hunspell-add-multi-dic "en_US,de_DE")
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+  (add-hook 'text-mode-hook 'flyspell-mode))
 
 ;; ============================================================
 ;; Org-Pomodoro - Pomodoro technique for org tasks
@@ -160,5 +164,11 @@
 ;; ============================================================
 (use-package ox-epub
   :after ox)
+
+(with-eval-after-load 'meow
+  (meow-leader-define-key
+   '("S" . (keymap))
+   '("Sb" . flyspell-buffer)
+   '("Sn" . flyspell-goto-next-error)))
 
 (provide 'init.org)

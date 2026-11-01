@@ -1,5 +1,6 @@
 editor = "emacsclient -t -a ''"
 visual = "emacsclient -c -a ''"
+browser = "brave"
 
 # name/email intentionally not here: they're prompted for at `chezmoi init`
 # time and stored locally in ~/.config/chezmoi/chezmoi.toml (untracked), via

@@ -6,7 +6,7 @@ setxkbmap -layout us,de -variant "altgr-weur," -option ctrl:nocaps -option grp:a
 # Patch XKB keymap:
 # - ; → dead_diaeresis (prefix for accented chars: ;a → ä, ;; → ;)
 xkbcomp :0 - 2>/dev/null \
-  | sed 's/\[       semicolon,           colon,     ocircumflex,     Ocircumflex \]/[ dead_diaeresis,           colon,     ocircumflex,     Ocircumflex ]/' \
+  | perl -0777 -pe 's/(key <AC10> \{[^}]*?symbols\[Group1\]=\s*\[\s*)semicolon/\1dead_diaeresis/s' \
   | xkbcomp -w 0 - :0 2>/dev/null
 
 xset b off

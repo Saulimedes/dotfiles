@@ -43,11 +43,13 @@ awscli = "latest"
 zls = "latest"
 rust-analyzer = "latest"
 terraform-ls = "latest"
+"npm:@ansible/ansible-language-server" = "latest"
 
 # Dev tools
 jj = "latest"
 direnv = "latest"
 github-cli = "latest"
+glab = "latest"
 yarn = "latest"
 opencode = "latest"
 jq = "latest"

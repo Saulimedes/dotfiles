@@ -23,6 +23,7 @@ app-misc/tmux
 
 # Editors
 app-editors/emacs
+app-editors/neovim
 
 # Tree-sitter grammars (for Emacs 29+ ts-modes)
 dev-libs/tree-sitter-python
@@ -163,6 +164,8 @@ x11-misc/xdg-utils
 # Flatpak / AppImage
 sys-apps/flatpak
 sys-fs/fuse:0
+sys-apps/xdg-desktop-portal
+sys-apps/xdg-desktop-portal-gtk
 
 # Gaming
 games-util/game-device-udev-rules
@@ -179,8 +182,9 @@ sys-power/tlp
 dev-debug/strace
 
 # Spell checking
-app-text/aspell
-app-dicts/aspell-en
+app-text/hunspell
+app-dicts/myspell-en
+app-dicts/myspell-de
 
 # Boot / Kernel
 sys-boot/limine

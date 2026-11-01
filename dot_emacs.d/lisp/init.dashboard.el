@@ -47,19 +47,6 @@
   '((t :inherit shadow))
   "Face for de-emphasized text.")
 
-(defface my/dashboard-celestial
-  '((t :inherit font-lock-string-face))
-  "Face for celestial/astrological info.")
-
-(defface my/dashboard-celestial-dim
-  '((t :inherit shadow :slant italic))
-  "Face for secondary celestial info.")
-
-(defface my/dashboard-moon-glyph
-  '((t :inherit my/dashboard-celestial))
-  "Face for the moon phase sigil. No :height override - the emoji
-glyph already renders at full size via its color emoji font fallback.")
-
 (defface my/dashboard-quote
   '((t :inherit shadow :slant italic))
   "Face for the dashboard quote.")
@@ -124,16 +111,17 @@ hyphens are used too inconsistently elsewhere in the quotes file to trust."
     (cons text nil)))
 
 (defun my/dashboard--insert-quote ()
-  "Insert a random quote, wrapped to fit the window, as a blockquote with a
-left accent bar. If it has a detected attribution, show it right-aligned on
-the line below instead of inline."
+  "Insert a random quote, wrapped to fit the window, with a single leading
+marker glyph on its first line only (no per-line bar to keep visually
+connected across wraps). If it has a detected attribution, show it
+right-aligned on the line below instead of inline."
   (when-let* ((raw (my/dashboard--random-quote)))
-    (let* ((bar (propertize "▍" 'face 'my/dashboard-quote-bar))
-           (fill-prefix (concat "    " bar " "))
+    (let* ((fill-prefix "      ")
            (fill-column (max 40 (- (window-width) 10)))
            (split (my/dashboard--split-quote-attribution raw))
            (quote (car split))
-           (author (cdr split)))
+           (author (cdr split))
+           (block-start (point)))
       (insert fill-prefix)
       (let ((start (point)))
         (insert (propertize quote 'face 'my/dashboard-quote))
@@ -141,11 +129,17 @@ the line below instead of inline."
       (when author
         (insert "\n")
         (let* ((label (concat "— " author))
-               (prefix (concat "    " bar " "))
-               (pad-width (max 0 (- fill-column (string-width label) (string-width prefix)))))
-          (insert prefix)
+               (pad-width (max 0 (- fill-column (string-width label) (string-width fill-prefix)))))
+          (insert fill-prefix)
           (insert (make-string pad-width ?\s))
-          (insert (propertize label 'face 'my/dashboard-quote-author)))))
+          (insert (propertize label 'face 'my/dashboard-quote-author))))
+      (save-excursion
+        (goto-char block-start)
+        (forward-char 4)
+        (delete-char 1)
+        (insert (if (fboundp 'nerd-icons-faicon)
+                    (nerd-icons-faicon "nf-fa-quote_left" :face 'my/dashboard-heading :height 1.1)
+                  (propertize "❝" 'face 'my/dashboard-heading)))))
     (insert "\n")))
 
 (defun my/dashboard--section-icon (section)
@@ -409,19 +403,6 @@ the line below instead of inline."
           (list planet (1+ (mod hour-num 12)) is-day))
       (list "unknown" 0 t))))
 
-(defun my/celestial--sunrise-sunset ()
-  "Return (SUNRISE SUNSET) as formatted strings."
-  (require 'solar)
-  (let* ((now (decode-time))
-         (date (list (nth 4 now) (nth 3 now) (nth 5 now)))
-         (solar-data (ignore-errors (solar-sunrise-sunset date)))
-         (sunrise (when solar-data (car (car solar-data))))
-         (sunset (when solar-data (car (cadr solar-data)))))
-    (if (and sunrise sunset)
-        (list (format "%d:%02d" (floor sunrise) (round (* (mod sunrise 1) 60)))
-              (format "%d:%02d" (floor sunset) (round (* (mod sunset 1) 60))))
-      (list "?" "?"))))
-
 ;; ============================================================
 ;; Main dashboard
 ;; ============================================================
@@ -447,39 +428,6 @@ the line below instead of inline."
   '(("Sun" . "☉") ("Moon" . "☽") ("Mars" . "♂") ("Mercury" . "☿")
     ("Jupiter" . "♃") ("Venus" . "♀") ("Saturn" . "♄"))
   "Unicode planet glyphs.")
-
-(defvar my/discordian-seasons
-  '("Chaos" "Discord" "Confusion" "Bureaucracy" "The Aftermath")
-  "Discordian season names.")
-
-(defvar my/discordian-days
-  '("Sweetmorn" "Boomtime" "Pungenday" "Prickle-Prickle" "Setting Orange")
-  "Discordian day names.")
-
-(defun my/discordian-date ()
-  "Return the current Discordian date as a string."
-  (let* ((now (decode-time))
-         (day (nth 3 now))
-         (month (nth 4 now))
-         (year (nth 5 now))
-         (yday (1- (time-to-day-in-year (encode-time now))))
-         (dyear (+ year 1166))
-         (leap (date-leap-year-p year)))
-    ;; St. Tib's Day
-    (if (and leap (= month 2) (= day 29))
-        (format "St. Tib's Day, YOLD %d" dyear)
-      (let* ((adj-yday (if (and leap (> yday 59)) (1- yday) yday))
-             (season (/ adj-yday 73))
-             (sday (1+ (mod adj-yday 73)))
-             (wday (mod adj-yday 5)))
-        (format "%s, %s %d, %s YOLD %d"
-                (nth wday my/discordian-days)
-                (nth season my/discordian-seasons)
-                sday
-                (cond ((= sday 5) "| Apostle: Mungday")
-                      ((= sday 50) "| Holyday: Chaoflux")
-                      (t ""))
-                dyear)))))
 
 (defun my/zodiac-glyph (name)
   "Get zodiac glyph for NAME."
@@ -513,62 +461,25 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
             (+ 7 (floor (/ (+ (- 1440 sunset) current-minutes) night-house-len))))))
       1)))
 
-(defun my/dashboard--insert-occult-header ()
-  "Insert compact occult header with celestial data."
-  (let* ((moon-info (ignore-errors (my/celestial--moon-phase-info)))
-         (phase-idx (if moon-info
-                        (pcase (nth 0 moon-info)
-                          ((pred (string-prefix-p "New")) 0)
-                          ((pred (string-prefix-p "First")) 1)
-                          ((pred (string-prefix-p "Full")) 2)
-                          ((pred (string-prefix-p "Last")) 3)
-                          (_ 0))
-                      0))
-         (moon-sigil (cdr (assq phase-idx my/moon-sigils)))
-         (sun-sign (ignore-errors (my/celestial--sun-sign)))
+(defun my/show-astrology ()
+  "Show the astrology info removed from the dashboard (sign, house, planetary hour)."
+  (interactive)
+  (let* ((sun-sign (ignore-errors (my/celestial--sun-sign)))
          (p-hour (ignore-errors (my/celestial--planetary-hour)))
-         (sun-times (ignore-errors (my/celestial--sunrise-sunset)))
          (dow (nth 6 (decode-time)))
          (day-planet (car (cdr (assq dow my/planetary-days))))
-         (house (ignore-errors (my/celestial--current-house)))
-         (ddate (ignore-errors (my/discordian-date)))
-         (sun-glyph (my/zodiac-glyph (or sun-sign "Aries")))
-         (day-glyph (my/planet-glyph (or day-planet "Sun")))
-         (hour-glyph (when p-hour (my/planet-glyph (nth 0 p-hour)))))
-
-    ;; Line 1: Moon info + astrology info together (phase, sign, zodiac,
-    ;; planetary hour, house) - no Discordian/sun-time data here.
-    (insert "    ")
-    (insert (propertize moon-sigil 'face 'my/dashboard-moon-glyph))
-    (insert (propertize (format " %s in %s"
-                                (or (nth 0 moon-info) "Moon")
-                                sun-sign)
-                        'face 'my/dashboard-celestial))
-    (when (nth 1 moon-info)
-      (insert (propertize (format "  %dd to %s" (nth 1 moon-info) (nth 2 moon-info))
-                          'face 'my/dashboard-celestial-dim)))
-    (insert (propertize "  •" 'face 'my/dashboard-celestial-dim))
-    (insert (propertize (format "  %s %s  %s %s  House %s"
-                                sun-glyph (or sun-sign "?")
-                                day-glyph (or day-planet "?")
-                                (if house (number-to-string house) "?"))
-                        'face 'my/dashboard-celestial))
-    (when p-hour
-      (insert (propertize (format "  %s h%d %s"
-                                  hour-glyph
-                                  (nth 1 p-hour)
-                                  (if (nth 2 p-hour) "day" "night"))
-                          'face 'my/dashboard-celestial-dim)))
-    (insert "\n")
-
-    ;; Line 2: Sun times + Discordian date, kept separate from astrology.
-    (insert "    ")
-    (when sun-times
-      (insert (propertize (format "rise %s  set %s" (nth 0 sun-times) (nth 1 sun-times))
-                          'face 'my/dashboard-celestial-dim)))
-    (when ddate
-      (insert (propertize (format "  %s" ddate) 'face 'my/dashboard-celestial-dim)))
-    (insert "\n")))
+         (house (ignore-errors (my/celestial--current-house))))
+    (message "%s %s  %s %s  House %s%s"
+             (my/zodiac-glyph (or sun-sign "Aries")) (or sun-sign "?")
+             (my/planet-glyph (or day-planet "Sun")) (or day-planet "?")
+             (if house (number-to-string house) "?")
+             (if p-hour
+                 (format "  %s h%d %s"
+                         (my/planet-glyph (nth 0 p-hour))
+                         (nth 1 p-hour)
+                         (if (nth 2 p-hour) "day" "night"))
+               ""))))
+(global-set-key (kbd "C-c D") #'my/show-astrology)
 
 (defun my/dashboard--render ()
   "Render the dashboard content."
@@ -603,10 +514,6 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
 
     ;; Quote
     (my/dashboard--insert-quote)
-    (insert "\n")
-
-    ;; Occult celestial header
-    (my/dashboard--insert-occult-header)
     (insert "\n")
 
     ;; Sections
@@ -709,6 +616,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
   (setq buffer-read-only t
         cursor-type nil
         truncate-lines t
+        line-spacing 0
         default-directory (expand-file-name "~/"))
   (my/dashboard--setup-keys)
   (when (fboundp 'meow-motion-mode) (meow-motion-mode 1)))

@@ -14,18 +14,20 @@
   (setq fontaine-presets
         '((regular
            :default-family "BerkeleyMono Nerd Font"
-           :default-height 115
+           :default-weight regular
+           :default-height 120
            :variable-pitch-family "BerkeleyMono Nerd Font"
            :variable-pitch-height 125
            :fixed-pitch-family "BerkeleyMono Nerd Font"
-           :fixed-pitch-height 115
-           :line-spacing 1))))
+           :fixed-pitch-weight regular
+           :fixed-pitch-height 120
+           :line-spacing 0.2))))
 
 (unless (daemonp)
   (when (display-graphic-p)
     (fontaine-set-preset 'regular)))
 
-(setq-default line-spacing 1)
+(setq-default line-spacing 0.2)
 
 (use-package doom-themes
   :demand t
@@ -88,12 +90,13 @@ clock icon's SVG needs concrete colors, not 'unspecified."
 (use-package beacon
   :diminish beacon-mode
   :init
-  (setq beacon-size 40              ; Size of the beacon
-        beacon-blink-duration 0.3   ; How long the trail lasts
-        beacon-blink-delay 0.1      ; Delay before blinking
+  (setq beacon-size 60               ; Size of the beacon
+        beacon-blink-duration 0.5    ; How long the trail lasts
+        beacon-blink-delay 0         ; Delay before blinking
         beacon-blink-when-window-scrolls t
         beacon-blink-when-window-changes t
-        beacon-blink-when-point-moves-vertically 3) ; Only on big jumps (3+ lines)
+        beacon-blink-when-point-moves-vertically 1   ; Any vertical move
+        beacon-blink-when-point-moves-horizontally 1) ; Any horizontal move
   :config
   ;; beacon-color as a number is supposed to auto-derive from the theme but
   ;; beacon's own light/dark detection is broken; derive it ourselves.
@@ -274,7 +277,13 @@ with a Roman numeral, keeping the original face."
                              "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
                              "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
                              "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-                             "\\\\" "://")))
+                             "\\\\" "://"
+                             "/\\" "=:" "\\/" "tt" "!!!" "&&&" "..=" "/**"
+                             ";;;" "|->" "|||"
+                             "!~" "&=" ":?" "=~" "&&=" "//=" ":?>" "<-|" "<:<" "<=|"
+                             "=<=" "=>=" "??=" "???" "|=>" "||-" "--}}" "<#--" "{{--"
+                             "<!---" "Ef" "Et" "Hf" "Ht" "ff" "fff"
+                             "th" "fi" "fl" "ft" "ffi" "ffl" "ri")))
 
 ;; mode-line
 

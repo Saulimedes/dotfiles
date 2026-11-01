@@ -1,17 +1,66 @@
 #!/bin/sh
 NO_PLAYLIST=0
 VIDEO=""
+BATCH=""
 
 for arg in "$@"; do
     case "$arg" in
         n)
             NO_PLAYLIST=1
             ;;
+        --batch-file=*)
+            BATCH="${arg#--batch-file=}"
+            ;;
         *)
             VIDEO="$arg"
             ;;
     esac
 done
+
+# Sites that need their own login cookies (kept out of the repo, mode 600).
+# Prints extra yt-dlp args for a URL, nothing for other sites.
+cookie_args() {
+    case "$1" in
+        *://*spankbang.com/*)
+            f="$HOME/.config/yt-dlp/cookies/spankbang.txt"
+            [ -f "$f" ] && printf '%s\n' --no-cookies-from-browser --cookies "$f"
+            ;;
+        *://*pornhubpremium.com/*)
+            # the firefox premium login expired; brave's is valid
+            printf '%s\n' --cookies-from-browser brave
+            ;;
+    esac
+}
+
+# Some sites (e.g. erome) list the same media file several times in one album.
+# Print a --playlist-items value that keeps only the first entry per media URL.
+unique_items() {
+    yt-dlp $(cookie_args "$1") --flat-playlist -j "$1" 2>/dev/null | jq -r '.url // empty' | awk '
+        { n++; if (!seen[$0]++) items = items (items ? "," : "") n }
+        END { if (n > 1 && items) print items }'
+}
+
+download() {
+    items=""
+    ck="$(cookie_args "$1")"
+    [ "$NO_PLAYLIST" -eq 0 ] && items="$(unique_items "$1")"
+    if [ "$NO_PLAYLIST" -eq 1 ]; then
+        yt-dlp $ck --no-playlist "$1"
+    elif [ -n "$items" ]; then
+        yt-dlp $ck --playlist-items "$items" "$1"
+    else
+        yt-dlp $ck "$1"
+    fi
+}
+
+if [ -n "$BATCH" ]; then
+    status=0
+    while IFS= read -r url; do
+        case "$url" in ""|"#"*) continue ;; esac
+        download "$url" || status=1
+    done < "$BATCH"
+    exit "$status"
+fi
 
 [ -z "$VIDEO" ] && VIDEO="$(paste)"
 
@@ -20,9 +69,4 @@ done
     exit 1
 }
 
-if [ "$NO_PLAYLIST" -eq 1 ]; then
-    yt-dlp --no-playlist "$VIDEO"
-else
-    yt-dlp "$VIDEO"
-fi
-
+download "$VIDEO"

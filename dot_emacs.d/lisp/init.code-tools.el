@@ -412,6 +412,7 @@
   (elfeed-search-filter "@2-weeks-ago +unread")
   (elfeed-search-title-max-width 80)
   (elfeed-search-trailing-width 30)
+  (elfeed-use-curl t)
   :config
   (setq elfeed-feeds
         '(;; Emacs blogs
@@ -421,7 +422,12 @@
           ("https://irreal.org/blog/?feed=rss2" emacs irreal)
           ("https://karthinks.com/index.xml" emacs karthink)
           ("https://systemcrafters.net/rss/news.xml" emacs systemcrafters)
-          ("https://planet.emacslife.com/rss.xml" emacs planet)))
+          ("https://planet.emacslife.com/rss.xml" emacs planet)
+          ;; FreshRSS, via the greader protocol (see init.wallabag.el's
+          ;; comment for the matching `pass' entry convention)
+          ("freshrss+https://FRESHRSS_USER@FRESHRSS_HOST"
+           :api-url "https://FRESHRSS_HOST/api/greader.php"
+           :password (lambda () (auth-source-pick-first-password :host "FRESHRSS_HOST")))))
 
   ;; Faces for tags
   (defface elfeed-search-emacs-tag '((t :foreground "#81a2be"))
@@ -433,6 +439,19 @@
     (visual-line-mode 1)
     (setq-local shr-width 80))
   (add-hook 'elfeed-show-mode-hook #'my/elfeed-setup))
+
+(use-package elfeed-protocol
+  :after elfeed
+  :custom
+  (elfeed-protocol-enabled-protocols '(freshrss))
+  :config
+  (elfeed-protocol-enable))
+
+(use-package elfeed-protocol-freshrss
+  :after elfeed
+  :straight (:type git :repo "https://codeberg.org/lou/elfeed-protocol-freshrss")
+  :config
+  (elfeed-protocol-freshrss-register-protocol))
 
 ;; ============================================================
 ;; Emoji & Unicode
