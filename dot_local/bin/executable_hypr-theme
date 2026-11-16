@@ -44,5 +44,12 @@ sed -i \
     "$mako_conf" 2>/dev/null
 makoctl reload 2>/dev/null
 
-hyprctl keyword general:col.active_border "rgba(${accent}ff)" 2>/dev/null
-hyprctl keyword general:col.inactive_border "rgba(${muted}aa)" 2>/dev/null
+# hyprctl keyword can't set options under the Lua config parser, so eval
+# a hl.config() call directly through the IPC socket instead.
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+sig=$(command ls "$runtime_dir/hypr" 2>/dev/null | head -1)
+sock="$runtime_dir/hypr/$sig/.socket.sock"
+if [ -S "$sock" ]; then
+    printf '%s' "dispatch hl.config({general = {[\"col.active_border\"] = \"rgba(${accent}ff)\", [\"col.inactive_border\"] = \"rgba(${muted}aa)\"}})" \
+        | socat - UNIX-CONNECT:"$sock" >/dev/null 2>&1
+fi
