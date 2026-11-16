@@ -1,5 +1,8 @@
 { lib, ... }:
 {
+  # enables SSH for remote rebuilds and admin from another machine on the LAN
+  services.openssh.enable = true;
+
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
