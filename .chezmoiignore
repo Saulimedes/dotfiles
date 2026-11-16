@@ -57,6 +57,4 @@ sync-useflags.sh
 .zsh
 
 .config/mise
-run_onchange_mise-install
-run_once_setup-direnv-mise.sh
 {{- end }}
