@@ -64,5 +64,4 @@ if [[ -f $identity ]]; then
   nixos-enter --root /mnt -c "runuser -u becker -- sh -c 'mkdir -p /home/becker/.config/chezmoi && cat > /home/becker/.config/chezmoi/chezmoi.toml'" < "$identity"
 fi
 
-echo "done. hosts/$host/{disk-device,hardware-configuration}.nix were generated in $here"
-echo "copy them back into the repo, then reboot."
+echo "done. hosts/$host/hardware-configuration.nix was generated in $here, copy it back into the repo, then reboot."

@@ -1,11 +1,5 @@
 # luks passphrase is read from /tmp/luks-password at format time only
 { lib, ... }:
-let
-  btrfsOpts = [
-    "compress=zstd"
-    "noatime"
-  ];
-in
 {
   disko.devices.disk.main = {
     type = "disk";
@@ -41,24 +35,11 @@ in
                 "-L"
                 "nixos"
               ];
-              subvolumes = {
-                "@" = {
-                  mountpoint = "/";
-                  mountOptions = btrfsOpts;
-                };
-                "@home" = {
-                  mountpoint = "/home";
-                  mountOptions = btrfsOpts;
-                };
-                "@nix" = {
-                  mountpoint = "/nix";
-                  mountOptions = btrfsOpts;
-                };
-                "@log" = {
-                  mountpoint = "/var/log";
-                  mountOptions = btrfsOpts;
-                };
-              };
+              mountpoint = "/";
+              mountOptions = [
+                "compress=zstd"
+                "noatime"
+              ];
             };
           };
         };

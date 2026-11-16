@@ -27,7 +27,7 @@ cd nixos && sudo ./install.sh notebook /dev/nvme0n1
 
 Without the password files the script prompts. All three files are shredded when it exits.
 
-Afterwards copy `hosts/notebook/{disk-device,hardware-configuration}.nix` back into the repo.
+Afterwards copy `hosts/notebook/hardware-configuration.nix` back into the repo. `disk-device.nix` stays local (git-ignored).
 The installed system has the flake in `/etc/nixos`, so `sudo nixos-rebuild switch` works as is.
 
 ## Dotfiles hook
