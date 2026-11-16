@@ -4,7 +4,7 @@
 set -e
 grep -q '^sshd:' /etc/passwd || echo 'sshd:x:59001:59001:sshd privsep:/var/empty:/run/current-system/sw/bin/nologin' >> /etc/passwd
 grep -q '^sshd:' /etc/group || echo 'sshd:x:59001:' >> /etc/group
-mkdir -p /var/empty && chmod 711 /var/empty
+[ -d /var/empty ] || { mkdir -p /var/empty && chmod 711 /var/empty; }
 d=$(mktemp -d)
 nix --extra-experimental-features "nix-command flakes" shell nixpkgs#openssh --command sh -c "
   ssh-keygen -q -t ed25519 -f '$d/hostkey' -N ''
