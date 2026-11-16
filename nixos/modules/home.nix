@@ -15,6 +15,14 @@ in
         home.stateVersion = "26.05";
         home.packages = [ pkgs.chezmoi ];
 
+        home.pointerCursor = {
+          package = pkgs.bibata-cursors;
+          name = "Bibata-Modern-Classic";
+          size = 24;
+          gtk.enable = true;
+          x11.enable = true;
+        };
+
         home.activation.chezmoi = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           export PATH=/run/current-system/sw/bin:/etc/profiles/per-user/becker/bin:${
             lib.makeBinPath (

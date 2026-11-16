@@ -19,6 +19,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("pa-applet")
 end)
 
+hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 
