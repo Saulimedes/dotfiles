@@ -449,7 +449,7 @@
 
 (use-package elfeed-protocol-freshrss
   :after elfeed
-  :straight (:type git :repo "https://codeberg.org/lou/elfeed-protocol-freshrss")
+  :straight (:host codeberg :repo "lou/elfeed-protocol-freshrss")
   :config
   (elfeed-protocol-freshrss-register-protocol))
 
