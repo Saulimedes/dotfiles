@@ -53,9 +53,10 @@
     "text/markdown" = "emacsclient.desktop";
     "application/json" = "emacsclient.desktop";
     "application/x-shellscript" = "emacsclient.desktop";
-    "x-scheme-handler/http" = "brave-browser.desktop";
-    "x-scheme-handler/https" = "brave-browser.desktop";
-    "text/html" = "brave-browser.desktop";
+    "x-scheme-handler/http" = "brave-origin.desktop";
+    "x-scheme-handler/https" = "brave-origin.desktop";
+    "text/html" = "brave-origin.desktop";
+    "inode/directory" = "thunar.desktop";
   };
 
   environment.sessionVariables = {
@@ -124,8 +125,14 @@
     wiremix
     networkmanagerapplet
 
+    thunar
+    thunar-archive-plugin
+    thunar-volman
+    xfce4-settings
+    tumbler
+
     kitty
-    brave
+    brave-origin
     telegram-desktop
     session-desktop
   ];

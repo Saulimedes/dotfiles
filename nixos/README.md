@@ -38,6 +38,20 @@ The installed system has the flake in `/etc/nixos`, so `sudo nixos-rebuild switc
 Failures never break the activation; a private externals repo that cannot be cloned is skipped.
 Edit dotfiles in the chezmoi source and push, not in `~`: `apply` overwrites local changes.
 
+## Tasks
+
+Repo maintenance tasks live as flake apps instead of mise (mise stays Gentoo-only):
+
+```sh
+nix run .#apply     # chezmoi apply
+nix run .#emacs     # rebuild Emacs packages via straight.el
+nix run .#fonts     # update externally-synced fonts
+nix run .#tmux      # update tmux plugins
+nix run .#pip       # upgrade outdated pip packages
+nix run .#flatpak   # update Flatpak apps
+nix run .#update    # nixos-rebuild switch + garbage collect
+```
+
 ## Add a machine
 
 1. `hosts/<name>/default.nix` importing the modules it needs, plus `hardware-configuration.nix`

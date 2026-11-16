@@ -53,4 +53,10 @@ sync-useflags.sh
 .local/bin/emacs-popup
 .emacs.d/lisp/init.hyprland.el
 .emacs.d/lisp/init.0-nixos.el
+.zshrc
+.zsh
+
+.config/mise
+run_onchange_mise-install
+run_once_setup-direnv-mise.sh
 {{- end }}

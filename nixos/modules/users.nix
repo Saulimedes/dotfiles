@@ -5,7 +5,7 @@
   users.users.becker = {
     isNormalUser = true;
     description = "becker";
-    shell = pkgs.zsh;
+    shell = pkgs.fish;
     extraGroups = [
       "wheel"
       "networkmanager"

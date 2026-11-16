@@ -24,6 +24,14 @@
       ...
     }@inputs:
     let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+      mkTask =
+        name: text:
+        {
+          type = "app";
+          program = "${pkgs.writeShellScript name text}";
+        };
       mkHost =
         hostname:
         {
@@ -54,6 +62,45 @@
       nixosConfigurations = {
         notebook = mkHost "notebook" { };
         genmifo1 = mkHost "genmifo1" { };
+      };
+
+      apps.${system} = {
+        apply = mkTask "apply" ''
+          chezmoi apply
+        '';
+        emacs = mkTask "emacs" ''
+          chezmoi apply ~/.emacs.d
+          emacs --batch --eval "(progn
+            (load user-init-file)
+            (straight-pull-all)
+            (straight-rebuild-all))"
+          echo "[*] Emacs packages updated."
+        '';
+        fonts = mkTask "fonts" ''
+          chezmoi update --include=externals
+          fc-cache -fv
+          echo "[*] Fonts updated."
+        '';
+        tmux = mkTask "tmux" ''
+          chezmoi apply ~/.tmux.conf
+          ~/.tmux/plugins/tpm/bin/update_plugins all
+          echo "[*] Tmux plugins updated."
+        '';
+        pip = mkTask "pip" ''
+          pip list --outdated --format=freeze | grep -v '^-e' | cut -d= -f1 | xargs -r pip install --upgrade
+          echo "[*] pip packages updated."
+        '';
+        flatpak = mkTask "flatpak" ''
+          flatpak update -y
+          echo "[*] Flatpak apps updated."
+        '';
+        update = mkTask "update" ''
+          set -e
+          host=$(hostname)
+          sudo nixos-rebuild switch --flake "/etc/nixos#$host"
+          sudo nix-collect-garbage --delete-older-than 21d
+          echo "[*] $host rebuilt and garbage collected."
+        '';
       };
     };
 }

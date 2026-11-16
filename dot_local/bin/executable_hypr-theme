@@ -1,0 +1,48 @@
+#!/bin/sh
+# hypr-theme [next|apply-current]: cycles border/waybar/mako colors together
+state="$HOME/.cache/hypr-theme-current"
+waybar_colors="$HOME/.config/waybar/colors.css"
+mako_conf="$HOME/.config/mako/config"
+
+palette() {
+    case "$1" in
+        0) echo "000000 c0caf5 565f89 7aa2f7 e0af68 f7768e" ;;
+        1) echo "2e3440 d8dee9 4c566a 88c0d0 ebcb8b bf616a" ;;
+        2) echo "282828 ebdbb2 928374 d79921 fabd2f fb4934" ;;
+    esac
+}
+
+idx=$(cat "$state" 2>/dev/null || echo 0)
+case "$1" in
+    next) idx=$(( (idx + 1) % 3 )) ;;
+esac
+echo "$idx" > "$state"
+
+set -- $(palette "$idx")
+bg=$1
+fg=$2
+muted=$3
+accent=$4
+warning=$5
+critical=$6
+
+mkdir -p "$(dirname "$waybar_colors")"
+cat > "$waybar_colors" << EOF
+@define-color bg #$bg;
+@define-color fg #$fg;
+@define-color muted #$muted;
+@define-color accent #$accent;
+@define-color warning #$warning;
+@define-color critical #$critical;
+EOF
+pkill -SIGUSR2 waybar 2>/dev/null
+
+sed -i \
+    -e "s/^background-color=.*/background-color=#${bg}ee/" \
+    -e "s/^text-color=.*/text-color=#$fg/" \
+    -e "s/^border-color=.*/border-color=#$accent/" \
+    "$mako_conf" 2>/dev/null
+makoctl reload 2>/dev/null
+
+hyprctl keyword general:col.active_border "rgba(${accent}ff)" 2>/dev/null
+hyprctl keyword general:col.inactive_border "rgba(${muted}aa)" 2>/dev/null

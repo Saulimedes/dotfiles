@@ -1,6 +1,6 @@
 local mainMod  = "SUPER"
 local terminal = "kitty"
-local browser  = "brave"
+local browser  = "brave-origin"
 local popup    = "emacs-popup"
 
 hl.monitor({
@@ -11,6 +11,7 @@ hl.monitor({
 })
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("hypr-theme apply-current")
     hl.exec_cmd("waybar")
     hl.exec_cmd("mako")
     hl.exec_cmd("hypridle")
@@ -31,7 +32,7 @@ hl.config({
         },
         resize_on_border = true,
         allow_tearing    = false,
-        layout           = "dwindle",
+        layout           = "master",
     },
 
     decoration = {
@@ -44,8 +45,10 @@ hl.config({
         enabled = false,
     },
 
-    dwindle = {
-        preserve_split = true,
+    master = {
+        new_status      = "slave",
+        mfact            = 0.55,
+        orientation      = "left",
     },
 
     misc = {
@@ -107,6 +110,15 @@ hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P",         hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + T",         hl.dsp.layout("togglesplit"))
 
+-- master layout (dwm-style master/stack)
+hl.bind(mainMod .. " + M",            hl.dsp.layout("cyclenext"))
+hl.bind(mainMod .. " + SHIFT + M",    hl.dsp.layout("swapwithmaster"))
+hl.bind(mainMod .. " + bracketleft",  hl.dsp.layout("mfact -0.05"))
+hl.bind(mainMod .. " + bracketright", hl.dsp.layout("mfact +0.05"))
+
+-- theming: cycle border/waybar/mako palette
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("hypr-theme next"))
+
 local dirs = {
     { key = "left",  vim = "H", dir = "left"  },
     { key = "down",  vim = "J", dir = "down"  },
@@ -151,6 +163,20 @@ hl.bind("XF86AudioPrev",         hl.dsp.exec_cmd("playerctl previous"),   { lock
 hl.window_rule({
     name  = "emacs-popups",
     match = { initial_title = "^emacs-(launcher|windows|capture|power)$" },
+    float  = true,
+    center = true,
+})
+
+hl.window_rule({
+    name  = "float-utilities",
+    match = { class = "^(nm-connection-editor|\\.blueman-manager-wrapped|org\\.pulseaudio\\.pavucontrol)$" },
+    float  = true,
+    center = true,
+})
+
+hl.window_rule({
+    name  = "float-dialogs",
+    match = { initial_title = "^(Open File|Save File|Save As|Open Folder|File Operation Progress)$" },
     float  = true,
     center = true,
 })

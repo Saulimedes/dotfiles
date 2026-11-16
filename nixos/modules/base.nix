@@ -80,11 +80,6 @@
   services.envfs.enable = true;
   programs.nix-ld.enable = true;
 
-  programs.zsh = {
-    enable = true;
-    promptInit = "";
-    enableGlobalCompInit = false;
-  };
   programs.fish.enable = true;
   programs.direnv = {
     enable = true;
@@ -119,7 +114,6 @@
     yq-go
     tree
     tealdeer
-    mise
 
     btop
     fastfetch
