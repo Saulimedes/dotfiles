@@ -1,0 +1,26 @@
+#!/bin/sh
+# usage: emacs-popup launcher|windows|capture|power|frame|dired|vterm
+
+kind=${1:-}
+
+case $kind in
+  launcher) size='(minibuffer . only) (width . 90) (height . 14)';  expr='(my/popup-launcher)' ;;
+  windows)  size='(minibuffer . only) (width . 110) (height . 14)'; expr='(my/popup-windows)' ;;
+  power)    size='(minibuffer . only) (width . 50) (height . 8)';   expr='(my/popup-power)' ;;
+  capture)  size='(width . 100) (height . 28)';                     expr='(my/popup-capture)' ;;
+  frame)    exec emacsclient --no-wait --create-frame ;;
+  dired)    exec emacsclient --no-wait --create-frame --eval '(my/popup-dired)' ;;
+  vterm)    exec emacsclient --no-wait --create-frame --eval '(vterm (generate-new-buffer-name "*vterm*"))' ;;
+  *)
+    echo "usage: emacs-popup launcher|windows|capture|power|frame|dired|vterm" >&2
+    exit 2
+    ;;
+esac
+
+emacsclient --no-wait --create-frame \
+  --frame-parameters="((name . \"emacs-$kind\") (title . \"emacs-$kind\") $size)" \
+  --eval "$expr" >/dev/null 2>&1 && exit 0
+
+command -v notify-send >/dev/null 2>&1 &&
+  notify-send -u critical "emacs-popup $kind" "Emacs daemon not reachable (systemctl --user status emacs)"
+exit 1
