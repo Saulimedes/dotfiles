@@ -5,8 +5,11 @@ end
 
 # PATH (fish_add_path deduplicates automatically, ignores non-existent dirs)
 # NixOS: these aren't always inherited outside a graphical login session
-# (e.g. a non-interactive SSH command), so set them explicitly here too.
-fish_add_path /run/current-system/sw/bin /etc/profiles/per-user/$USER/bin
+# (e.g. a non-interactive SSH command), and fish_user_paths isn't reliably
+# picked up there either, so set them directly instead.
+if test -d /run/current-system/sw/bin
+    set -gx PATH /run/current-system/sw/bin /etc/profiles/per-user/$USER/bin $PATH
+end
 fish_add_path $HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications
 fish_add_path /var/lib/flatpak/exports/bin $HOME/.cargo/bin /usr/local/bin
 # Drop entries that do not exist (kubectl warns about each one in `plugin list`)
