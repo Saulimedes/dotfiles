@@ -4,4 +4,7 @@ function fish_user_key_bindings
 
     # Ctrl+X Ctrl+E: edit command line in $EDITOR
     bind \cx\ce edit_command_buffer
+
+    # Ctrl+Delete: kill the word after the cursor (zsh: ^[[3;5~ kill-word)
+    bind ctrl-delete kill-word
 end

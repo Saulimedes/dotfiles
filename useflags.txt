@@ -35,6 +35,9 @@ sys-libs/zlib minizip
 # Misc
 app-misc/fastfetch chafa imagemagick
 
+# mediainfo: CLI only for dirvish previews (the GUI would build wxGTK)
+media-video/mediainfo -wxwidgets
+
 # System (OpenRC)
 sys-apps/dbus -systemd elogind
 sys-apps/openrc -sysvinit sysv-utils

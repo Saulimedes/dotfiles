@@ -1,42 +1,79 @@
 ;; -*- lexical-binding: t; -*-
 ;; Better TAB key handling and autocompletion by filetype
 
-;; Smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
+;; TAB: indent first, complete when already indented (Corfu popup)
+(setq tab-always-indent 'complete
+      tab-first-completion 'word-or-paren-or-punct)
 
-;; Make TAB actually insert a tab character when needed
+(defvar my/indent-significant-modes
+  '(yaml-mode yaml-ts-mode python-base-mode)
+  "Modes where indentation is structure, not style.
+`indent-region' re-derives every line's column from the line above, which
+flattens a pasted or selected block in these modes, so TAB and S-TAB on a
+region move the whole block by one level instead.")
+
+(defun my/indent-significant-p ()
+  (apply #'derived-mode-p my/indent-significant-modes))
+
+(defun my/indent-step ()
+  "Columns one indentation level is worth in this buffer."
+  (cond ((derived-mode-p 'yaml-mode 'yaml-ts-mode)
+         (if (boundp 'yaml-indent-offset) yaml-indent-offset 2))
+        ((derived-mode-p 'python-base-mode) python-indent-offset)
+        (t tab-width)))
+
+(defun my/shift-lines (beg end levels)
+  "Shift the lines from BEG to END by LEVELS indentation levels.
+Whole lines only (BEG is moved back to the start of its line), blank lines
+are left alone, and the region stays active so the key can be repeated."
+  (let ((beg (save-excursion (goto-char beg) (line-beginning-position))))
+    (indent-rigidly beg end (* levels (my/indent-step)))))
+
 (defun my/tab-dwim ()
-  "Do-what-I-mean for TAB key:
-- If region is active, indent the region
-- If at beginning of line, insert a tab character
-- If point is at a word or after a word, attempt completion
-- Otherwise, indent the current line"
+  "Do-what-I-mean for TAB.
+- Region active: shift the block one level in indentation-significant modes
+  (yaml, python), re-indent it by syntax everywhere else.
+- Read-only buffer (dired, elfeed, special modes...): jump to the next
+  button/link instead of erroring, or say there is nothing to do.
+- Otherwise: `indent-for-tab-command', which indents to the mode's correct
+  column (spaces, never a hard tab: python/yaml/lisp all break on those) and,
+  because `tab-always-indent' is `complete', completes when already indented.
+  yaml-mode cycles deeper-to-shallower on repeated TAB."
   (interactive)
   (cond
-   ;; If region is active, indent it
    ((use-region-p)
-    (indent-region (region-beginning) (region-end)))
-   ;; At beginning of line, insert a real tab
-   ((bolp)
-    (insert "\t"))
-   ;; If a completion popup is actually active, accept/expand it.
-   ;; completion-in-region-mode is required here: corfu-mode being
-   ;; enabled just means corfu *can* pop up, not that it currently
-   ;; has. Calling corfu-complete without a live session crashes
-   ;; with wrong-type-argument, since it reads bounds from a nil
-   ;; completion-in-region--data.
-   ((and (bound-and-true-p corfu-mode)
-         completion-in-region-mode
-         (or (looking-at "\\>")
-             (looking-back "\\w" 1)))
-    (or (corfu-complete)
-        (indent-for-tab-command)))
-   ;; Otherwise indent
+    (if (my/indent-significant-p)
+        (my/shift-lines (region-beginning) (region-end) 1)
+      (indent-region (region-beginning) (region-end))))
+   (buffer-read-only
+    (condition-case nil
+        (forward-button 1)
+      (error (message "TAB: no buttons or links in this read-only buffer"))))
    (t
     (indent-for-tab-command))))
 
-;; Bind TAB key to our smart function and ensure indentation works by file type
+;; Global fallback; modes with their own TAB (org, magit, dirvish, help,
+;; vterm, eshell, corfu popup, minibuffer) keep theirs because their keymaps
+;; take precedence over this one.
 (global-set-key (kbd "TAB") 'my/tab-dwim)
+
+(defun my/backtab-dwim ()
+  "Shift+TAB: previous button in read-only buffers, otherwise dedent.
+Dedents by one indentation level in yaml/python, by a tab stop elsewhere."
+  (interactive)
+  (cond
+   (buffer-read-only
+    (condition-case nil
+        (backward-button 1)
+      (error (message "S-TAB: no buttons or links in this read-only buffer"))))
+   (t
+    (let ((beg (if (use-region-p) (region-beginning) (line-beginning-position)))
+          (end (if (use-region-p) (region-end) (line-end-position))))
+      (if (my/indent-significant-p)
+          (my/shift-lines beg end -1)
+        (indent-rigidly-left-to-tab-stop beg end))))))
+
+(global-set-key (kbd "<backtab>") 'my/backtab-dwim)
 
 ;; Filetype-specific indentation settings
 (setq-default indent-tabs-mode nil   ; Use spaces by default

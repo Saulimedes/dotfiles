@@ -132,10 +132,14 @@
 
 ;; Flyspell for prose (comments in prog-mode), checks English + German at once
 (when (executable-find "hunspell")
-  (setq ispell-program-name "hunspell"
-        ispell-dictionary "en_US,de_DE")
-  (ispell-set-spellchecker-params)
-  (ispell-hunspell-add-multi-dic "en_US,de_DE")
+  ;; ispell-set-spellchecker-params is not autoloaded: calling it at top level
+  ;; raised void-function and aborted the rest of this file (pomodoro, epub
+  ;; export, the SPC S keys), so it has to wait for ispell.el.
+  (with-eval-after-load 'ispell
+    (setq ispell-program-name "hunspell"
+          ispell-dictionary "en_US,de_DE")
+    (ispell-set-spellchecker-params)
+    (ispell-hunspell-add-multi-dic "en_US,de_DE"))
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   (add-hook 'text-mode-hook 'flyspell-mode))
 

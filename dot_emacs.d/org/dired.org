@@ -1,0 +1,596 @@
+#+TITLE: Dired and dirvish
+#+PROPERTY: header-args:emacs-lisp :tangle ../lisp/init.dired.el :comments no
+
+Tangled to =~/.emacs.d/lisp/init.dired.el= by =run_onchange_after_tangle-emacs-config.sh.tmpl=
+(or by hand: =chezmoi execute-template < run_onchange_after_tangle-emacs-config.sh.tmpl | bash=).
+Edit this file, not the generated =.el=.
+
+dirvish makes dired a yazi-like file manager (parent | current | preview). The
+old yazi setup is in git history (=50c559e^:dot_config/yazi=, =y.zsh=); each
+piece below names the yazi setting it reproduces. The sidebar tree
+(=dirvish-side=, =SPC e=) has its own section further down.
+
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
+;; Generated from org/dired.org by org-babel-tangle: edit that file, not this one.
+#+end_src
+
+* dired
+
+Listing order, symlinks, refreshing and dragging files out of Emacs.
+
+#+begin_src emacs-lisp
+(use-package dired
+  :ensure nil
+  :straight nil
+  :custom
+  ;; sort_by = "mtime", sort_reverse, sort_dir_first (-t lists newest first)
+  (dired-listing-switches "-lAh --group-directories-first --no-group -t")
+  ;; show_symlink = true
+  (dired-hide-details-hide-symlink-targets nil)
+  ;; follow changes on disk, so there is no need for `g' to refresh
+  (dired-auto-revert-buffer #'dired-directory-changed-p)
+  ;; dragon replacement: hold the left button on a file (or on one of several
+  ;; marked files) and drag it into another program. Dropping files from other
+  ;; programs onto a dired window copies/moves them in (built in, asks first).
+  ;; Plain click still works; C-drag = copy, S-drag = move, M-drag = link.
+  (dired-mouse-drag-files t))
+#+end_src
+
+* dired-x (hidden files)
+
+=show_hidden = false=; =.= toggles, like yazi. Only dotfiles are hidden (the
+default omit-extensions list would also hide =.log=, =.pyc=, =.elc= and so on).
+
+#+begin_src emacs-lisp
+(use-package dired-x
+  :ensure nil
+  :straight nil
+  :hook (dired-mode . dired-omit-mode)
+  :custom
+  (dired-omit-verbose nil)
+  (dired-omit-extensions nil)
+  :config
+  (setq dired-omit-files (concat dired-omit-files "\\|^\\.")))
+#+end_src
+
+* dirvish
+
+Layout, columns shown, and the per-pane settings: =scrolloff = 5=, mouse
+events (a left click expands a folder or opens a file; a click must not count
+as following a link for that, hence the local =mouse-1= setting), and no line
+numbers or tab line in the panes. =dirvish-reuse-session= is =t= because the
+default =open= kills the index buffer on quit, so hiding the sidebar threw
+away its expanded folders and cursor position.
+
+#+begin_src emacs-lisp
+(use-package dirvish
+  :init (dirvish-override-dired-mode)
+  :custom
+  ;; ratio = [1, 4, 3]: parent 1/8, preview 3/8, current gets the other half
+  (dirvish-default-layout '(1 0.125 0.375))
+  ;; linemode = "size", plus icons and the folder arrows of TAB
+  (dirvish-attributes '(nerd-icons subtree-state file-size))
+  (dirvish-mode-line-format '(:left (sort symlink) :right (omit yank index)))
+  ;; the default `open' kills the index buffer on quit, so hiding the sidebar
+  ;; threw away its expanded folders and cursor position
+  (dirvish-reuse-session t)
+  :config
+  ;; scrolloff = 5; mouse_events: left click expands a folder or opens a file
+  ;; (a click must not count as following a link for that, hence the local
+  ;; mouse-1 setting); no line numbers or tab line in the panes
+  (add-hook 'dirvish-setup-hook
+            (lambda ()
+              ;; line-spacing 0: with spacing the vertical subtree guides
+              ;; (" │") show a gap between every row
+              (setq-local scroll-margin 5
+                          mouse-1-click-follows-link nil
+                          display-line-numbers nil
+                          line-spacing 0
+                          tab-line-exclude t)
+              (when (bound-and-true-p tab-line-mode) (tab-line-mode -1))))
+  (add-hook 'dirvish-preview-setup-hook
+            (lambda ()
+              (setq-local display-line-numbers nil tab-line-exclude t)
+              (when (bound-and-true-p tab-line-mode) (tab-line-mode -1))))
+  (dolist (hook '(dirvish-directory-view-mode-hook dirvish-special-preview-mode-hook
+                  dirvish-misc-mode-hook))
+    (add-hook hook (lambda () (setq-local display-line-numbers nil line-spacing 0))))
+  (with-eval-after-load 'tab-line
+    (dolist (mode '(dirvish-directory-view-mode dirvish-special-preview-mode
+                    dirvish-misc-mode))
+      (add-to-list 'tab-line-exclude-modes mode))))
+#+end_src
+
+The rest of the dirvish setup used to be one long =:config=; it is split into
+sections below, each run once dirvish is loaded and in the original order.
+
+* Yank, cut and paste
+
+The yazi keymap helpers. =y= and =x= only choose what =p= does; the files to
+move are the marked ones (=m= / =u= / =U=), or the file at point when none is
+marked.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defvar my/dirvish-paste-fn #'dirvish-yank
+    "What `my/dirvish-paste' does: `dirvish-yank' (copy) or `dirvish-move' (cut).")
+
+  (defun my/dirvish--marked-files ()
+    "Files marked in this buffer, or nil when nothing is marked."
+    (save-excursion
+      (goto-char (point-min))
+      (when (re-search-forward (dired-marker-regexp) nil t)
+        (dired-get-marked-files))))
+
+  (defun my/dirvish--stage (fn what)
+    "Remember FN for the next paste and publish the files as file:// URIs."
+    (unless (my/dirvish--marked-files)
+      (save-excursion (dired-mark 1)))
+    (let ((files (dired-get-marked-files)))
+      (setq my/dirvish-paste-fn fn)
+      ;; same as the yazi binding: the URIs also go to the system clipboard
+      (when-let* ((copy (executable-find "copy")))
+        (with-temp-buffer
+          (dolist (f files) (insert "file://" f "\n"))
+          (call-process-region (point-min) (point-max) copy nil 0)))
+      (message "%s %d file%s, p pastes" what (length files)
+               (if (cdr files) "s" ""))))
+
+  (defun my/dirvish-yank ()
+    "Yank (copy) the marked files, or the file at point. y in yazi."
+    (interactive)
+    (my/dirvish--stage #'dirvish-yank "Yanked"))
+
+  (defun my/dirvish-cut ()
+    "Cut (move) the marked files, or the file at point. x in yazi."
+    (interactive)
+    (my/dirvish--stage #'dirvish-move "Cut"))
+
+  (defun my/dirvish-paste ()
+    "Paste into the directory at point, or the current one (smart-paste)."
+    (interactive)
+    (let* ((file (dired-get-filename nil t))
+           (dest (if (and file (file-directory-p file))
+                     (file-name-as-directory file)
+                   (dired-current-directory))))
+      (funcall my/dirvish-paste-fn dest))))
+#+end_src
+
+* Small commands
+
+jump-to-char, first/last entry, create, git root, diff of two files and
+mounting a partition (the yazi plugins of the same names).
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defun my/dirvish-jump-to-char (char)
+    "Jump to the next entry whose name starts with CHAR (jump-to-char)."
+    (interactive (list (read-char "Jump to char: ")))
+    (let ((str (char-to-string char))
+          (next (line-beginning-position 2))
+          found)
+      (dolist (range (list (cons next (point-max)) (cons (point-min) next)))
+        (unless found
+          (save-excursion
+            (goto-char (car range))
+            (while (and (not found) (< (point) (cdr range)))
+              (let ((name (dired-get-filename 'verbatim t)))
+                (when (and name (string-prefix-p str name t))
+                  (setq found (point))))
+              (forward-line 1)))))
+      (if found
+          (progn (goto-char found) (dired-move-to-filename))
+        (message "No entry starting with %c" char))))
+
+  (defun my/dirvish-goto-edge (last)
+    "Go to the first entry, or to the LAST one (gg and G)."
+    (interactive)
+    (goto-char (if last (point-max) (point-min)))
+    (when last (forward-line -1))
+    (while (and (not (dired-get-filename nil t))
+                (not (if last (bobp) (eobp))))
+      (forward-line (if last -1 1)))
+    (dired-move-to-filename))
+
+  (defun my/dirvish-create (name)
+    "Create NAME here: a directory if it ends in a slash, else an empty file."
+    (interactive "sCreate (end with / for a directory): ")
+    (let ((path (expand-file-name name (dired-current-directory))))
+      (if (directory-name-p name)
+          (make-directory path t)
+        (make-directory (file-name-directory path) t)
+        (write-region "" nil path nil 'quiet nil 'excl))
+      (revert-buffer)
+      (dired-goto-file (directory-file-name path))))
+
+  (defun my/dirvish-git-root ()
+    "Open the git root of the current directory (gr)."
+    (interactive)
+    (if-let* ((root (locate-dominating-file default-directory ".git")))
+        (dired root)
+      (user-error "Not in a git repository")))
+
+  (defun my/dired-diff-marked ()
+    "Diff the marked file against the file at point (the diff plugin)."
+    (interactive)
+    (let ((here (dired-get-filename nil t))
+          (marked (my/dirvish--marked-files)))
+      (pcase marked
+        (`(,a) (if (equal a here)
+                   (user-error "Move to another file to diff against")
+                 (diff a here)))
+        (`(,a ,b) (diff a b))
+        (_ (user-error "Mark one file, then move to the file to compare")))))
+
+  (defun my/dirvish-mount ()
+    "Mount a partition and open it, or open it when mounted (mount plugin).
+With a prefix argument, unmount instead."
+    (interactive)
+    (let* ((json (json-parse-string
+                  (shell-command-to-string
+                   "lsblk -Jpo NAME,TYPE,FSTYPE,SIZE,LABEL,MOUNTPOINTS")
+                  :object-type 'alist :array-type 'list :null-object nil))
+           (devs nil))
+      (cl-labels ((walk (nodes)
+                    (dolist (n nodes)
+                      (when (alist-get 'fstype n)
+                        (push n devs))
+                      (walk (alist-get 'children n)))))
+        (walk (alist-get 'blockdevices json)))
+      (setq devs (nreverse devs))
+      (let* ((table
+              (mapcar
+               (lambda (d)
+                 (let ((mps (delq nil (alist-get 'mountpoints d))))
+                   (cons (format "%-14s %7s  %-6s %-16s %s"
+                                 (alist-get 'name d) (alist-get 'size d)
+                                 (alist-get 'fstype d)
+                                 (or (alist-get 'label d) "")
+                                 (if mps (concat "mounted at " (car mps)) ""))
+                         (cons (alist-get 'name d) (car mps)))))
+               devs))
+             (pick (cdr (assoc (completing-read
+                                (if current-prefix-arg "Unmount: " "Mount: ")
+                                table nil t)
+                               table)))
+             (name (car pick))
+             (mp (cdr pick)))
+        (cond
+         (current-prefix-arg
+          (if mp
+              (progn (call-process "udisksctl" nil nil nil "unmount" "-b" name)
+                     (message "Unmounted %s" name))
+            (user-error "%s is not mounted" name)))
+         (mp (dired mp))
+         (t
+          (let ((out (with-output-to-string
+                       (call-process "udisksctl" nil standard-output nil
+                                     "mount" "-b" name))))
+            (if (string-match " at \\(.+?\\)\\.?$" out)
+                (dired (match-string 1 out))
+              (user-error "Mount failed: %s" (string-trim out))))))))))
+#+end_src
+
+* The g prefix
+
+=gg= top, =gr= git root, =gc= git changes, plus the yazi defaults =gh= (home)
+and =gd= (Downloads).
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defvar-keymap my/dirvish-g-map
+    :doc "The yazi g prefix in dirvish."
+    "g" (lambda () (interactive) (my/dirvish-goto-edge nil))
+    "r" #'my/dirvish-git-root
+    "c" #'magit-status
+    "h" (lambda () (interactive) (dired "~/"))
+    "d" (lambda () (interactive) (dired "~/Downloads/"))
+    "e" (lambda () (interactive) (dired "/etc/"))
+    "t" (lambda () (interactive) (dired "/tmp/"))))
+#+end_src
+
+* Collapsing subtrees
+
+=dirvish-subtree-remove= and =-up= step to the parent line with
+=dired-previous-line= from column 0, where the hidden details make it run on to
+the header when the parent is the first entry. Step by line instead.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defun my/dirvish--subtree-step-by-line (orig &rest args)
+    (cl-letf (((symbol-function 'dired-previous-line)
+               (lambda (n) (forward-line (- n)) (dired-move-to-filename))))
+      (apply orig args)))
+  (dolist (fn '(dirvish-subtree-remove dirvish-subtree-up))
+    (advice-add fn :around #'my/dirvish--subtree-step-by-line)))
+#+end_src
+
+* The filter (F)
+
+dirvish only swaps the lines while you type and never redraws the pane, so
+icons, sizes and the preview of the old rows stay on top of the few remaining
+ones. Redraw after each change and jump to the first match; =C-g= brings the
+full listing back.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defvar my/dirvish--narrow-timer nil)
+
+  (defun my/dirvish--narrow-refresh ()
+    (when-let* ((mw (active-minibuffer-window))
+                (dv (with-current-buffer (window-buffer mw) (dirvish-curr)))
+                (win (dv-root-window dv))
+                ((window-live-p win)))
+      (with-selected-window win
+        (goto-char (point-min))
+        (while (and (not (eobp)) (not (dired-move-to-filename)))
+          (forward-line 1))
+        (dirvish--redisplay))))
+
+  (define-advice dirvish-narrow-update-h (:after (&rest _) redraw)
+    (when (timerp my/dirvish--narrow-timer) (cancel-timer my/dirvish--narrow-timer))
+    (setq my/dirvish--narrow-timer
+          (run-with-timer 0.15 nil #'my/dirvish--narrow-refresh)))
+
+  (define-advice dirvish-narrow (:around (orig &rest args) restore-on-quit)
+    (let ((buf (current-buffer))
+          (idx (ignore-errors (dired-get-filename nil t))))
+      (condition-case err (apply orig args)
+        (quit (with-current-buffer buf
+                (revert-buffer)
+                (when idx (dired-goto-file idx)))
+              (signal (car err) (cdr err)))))))
+#+end_src
+
+* cd on exit
+
+yazi's cd-on-exit: leaving dirvish makes the folder you were browsing the
+=default-directory= of the buffer you return to (=find-file=, terminals and
+projectile then start there).
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (define-advice dirvish-quit (:around (orig &rest args) cd-on-quit)
+    (let* ((dv (dirvish-curr))
+           (dir (and dv (not (eq (dv-type dv) 'side))
+                     (not (file-remote-p default-directory))
+                     (dired-current-directory))))
+      (apply orig args)
+      (when (and dir (not (derived-mode-p 'dired-mode)))
+        (setq default-directory (file-name-as-directory dir))))))
+#+end_src
+
+* Find (/)
+
+yazi's =/= is a find, not a filter: every entry stays visible, the cursor
+jumps to a match and the other matches are highlighted (isearch limited to
+file names; =C-s= / =C-r= step, =RET= stays on the match, =C-g= returns). =n=
+and =N= repeat the last find afterwards. =F= is the filter that hides
+non-matches.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defvar my/dirvish--find-string nil
+    "Last string searched with `my/dirvish-find', repeated by n and N.")
+
+  (defun my/dirvish-find ()
+    "Search forward over file names, keeping all entries visible."
+    (interactive)
+    (dired-isearch-filenames))
+
+  (add-hook 'isearch-mode-end-hook
+            (lambda ()
+              (when (and (derived-mode-p 'dired-mode)
+                         (not isearch-mode-end-hook-quit)
+                         (not (string-empty-p isearch-string)))
+                (setq my/dirvish--find-string isearch-string))))
+
+  (defun my/dirvish--find-matches (str)
+    "Line starts of all entries whose name contains STR (smart case)."
+    (let ((case-fold-search (isearch-no-upper-case-p str nil)) all)
+      (save-excursion
+        (goto-char (point-min))
+        (while (not (eobp))
+          (when-let* ((name (dired-get-filename 'verbatim t))
+                      ((string-match-p (regexp-quote str) name)))
+            (push (line-beginning-position) all))
+          (forward-line 1)))
+      (nreverse all)))
+
+  (defun my/dirvish-find-next (&optional backward)
+    "Jump to the next entry matching the last find (previous with BACKWARD)."
+    (interactive)
+    (unless my/dirvish--find-string (user-error "No find yet, search with /"))
+    (let* ((all (my/dirvish--find-matches my/dirvish--find-string))
+           (cur (line-beginning-position))
+           (pos (if backward
+                    (or (car (last (seq-filter (lambda (p) (< p cur)) all)))
+                        (car (last all)))
+                  (or (seq-find (lambda (p) (> p cur)) all) (car all)))))
+      (if pos
+          (progn (goto-char pos) (dired-move-to-filename))
+        (message "No match for \"%s\"" my/dirvish--find-string))))
+
+  (defun my/dirvish-find-prev ()
+    (interactive)
+    (my/dirvish-find-next t)))
+#+end_src
+
+* h and l
+
+Plain dirvish is yazi-like: =l= enters a folder (or opens the file), =h= goes to
+the parent. In the sidebar a folder must not replace the whole tree, so there
+=l= expands it in place (or steps into it when open), and =h= collapses it, or
+jumps to the parent entry. The arrow keys mirror =h= and =l=.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (defun my/dirvish-side-p ()
+    (when-let* ((dv (dirvish-curr))) (eq (dv-type dv) 'side)))
+
+  (defun my/dirvish-l ()
+    "Enter the folder at point or open the file; expand folders in the sidebar."
+    (interactive)
+    (let ((file (dired-get-filename nil t)))
+      (if (and file (file-directory-p file) (my/dirvish-side-p))
+          (if (dirvish-subtree--expanded-p)
+              (dired-next-line 1)
+            (dirvish-subtree-toggle))
+        (call-interactively #'dired-open-file))))
+
+  (defun my/dirvish-h ()
+    "Go up a folder; in the sidebar collapse the open folder or jump to its parent."
+    (interactive)
+    (let ((file (dired-get-filename nil t)))
+      (cond ((not (my/dirvish-side-p)) (dired-up-directory))
+            ((and file (file-directory-p file) (dirvish-subtree--expanded-p))
+             (dirvish-subtree-toggle))
+            ((> (dirvish-subtree--depth) 0) (dirvish-subtree-up))
+            (t (dired-up-directory))))))
+#+end_src
+
+* Keys
+
+The yazi keymap, on top of =dirvish-mode-map=.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'dirvish
+  (let ((map dirvish-mode-map))
+    (keymap-set map "h" #'my/dirvish-h)             ; leave / collapse
+    (keymap-set map "l" #'my/dirvish-l)             ; smart-enter (via dired-open)
+    (keymap-set map "RET" #'my/dirvish-l)
+    (keymap-set map "<left>" #'my/dirvish-h)        ; arrow keys mirror h / l
+    (keymap-set map "<right>" #'my/dirvish-l)
+    (keymap-set map "." #'dired-omit-mode)
+    (keymap-set map "H" #'dirvish-history-go-backward)
+    (keymap-set map "L" #'dirvish-history-go-forward)
+    (keymap-set map "T" #'dirvish-layout-toggle)    ; toggle-pane
+    (keymap-set map "TAB" #'dirvish-subtree-toggle)
+    (keymap-set map "<backtab>" #'dirvish-subtree-clear)
+    (keymap-set map "/" #'my/dirvish-find)           ; find (focus, keep all)
+    (keymap-set map "F" #'dirvish-narrow)            ; filter (hide the rest)
+    (keymap-set map "n" #'my/dirvish-find-next)
+    (keymap-set map "N" #'my/dirvish-find-prev)
+    (keymap-set map "s" #'dirvish-fd)
+    (keymap-set map "," #'dirvish-quicksort)
+    (keymap-set map "?" #'dirvish-dispatch)
+    (keymap-set map "z" #'find-file-zoxide)
+    (keymap-set map "f" #'my/dirvish-jump-to-char)  ; jump-to-char
+    (keymap-set map "y" #'my/dirvish-yank)
+    (keymap-set map "x" #'my/dirvish-cut)
+    (keymap-set map "p" #'my/dirvish-paste)         ; smart-paste
+    (keymap-set map "a" #'my/dirvish-create)
+    (keymap-set map "r" #'dired-do-rename)
+    (keymap-set map "G" (lambda () (interactive) (my/dirvish-goto-edge t)))
+    (keymap-set map "g" my/dirvish-g-map)
+    (keymap-set map "M" #'my/dirvish-mount)         ; mount
+    (keymap-set map "C-d" #'my/dired-diff-marked)   ; diff
+    (keymap-set map "<mouse-1>" #'dirvish-subtree-toggle-or-open)
+    (keymap-set map "<mouse-3>" #'dired-mouse-find-file)))
+#+end_src
+
+* Sidebar tree (SPC e)
+
+Replaces the old treemacs one: left side, 35 columns, the selection follows
+the visited file, git status colors. A hidden sidebar used to reopen on the
+project root of the current buffer, which undid =h= (root moved up) and every
+other root change. It now reopens where it was left, unless the current buffer
+lives outside that folder.
+
+#+begin_src emacs-lisp
+(use-package dirvish-side
+  :ensure nil
+  :straight nil
+  :after dirvish
+  :custom
+  (dirvish-side-width 35)
+  (dirvish-side-attributes '(nerd-icons vc-state subtree-state))
+  (dirvish-side-mode-line-format nil)
+  :config
+  (dirvish-side-follow-mode 1)
+  ;; A hidden sidebar reopens on the project root of the current buffer, which
+  ;; undid `h' (root moved up) and every other root change. Reopen where it
+  ;; was left instead, unless the current buffer lives outside that folder.
+  (define-advice dirvish-side (:around (orig &optional path) resume-root)
+    (let* ((dv (and (not path) (not (dirvish-side--session-visible-p))
+                    (dirvish--get-session 'type 'side)))
+           (buf (and dv (cdr (dv-index dv))))
+           (root (and buf (buffer-live-p buf)
+                      (buffer-local-value 'default-directory buf)))
+           (here (or buffer-file-name default-directory)))
+      (funcall orig (and root (not (file-remote-p here))
+                         (file-in-directory-p here root)
+                         root)))))
+#+end_src
+
+* Opening files externally (dired-open)
+
+=RET= on a file opens it externally instead of visiting it as an Emacs buffer,
+when the extension matches. Audio and video go to mpv; other files Emacs cannot
+show itself (office documents, binaries, ...) go to xdg-open. Text, images, PDF
+and EPUB stay in Emacs. The stock =dired-open-xdg= returns nil, so dired also
+visited the file and every =RET= (or sidebar click) on a source file fired
+xdg-open next to it.
+
+#+begin_src emacs-lisp
+(defun my/dired-open-xdg ()
+  "Open the file at point with xdg-open unless Emacs shows it itself."
+  (when-let* ((file (ignore-errors (dired-get-file-for-visit)))
+              ((not (file-directory-p file)))
+              ((executable-find "xdg-open"))
+              (truename (file-truename file))
+              (type (ignore-errors
+                      (car (process-lines "file" "--brief" "--mime-type" truename))))
+              ((not (string-match-p
+                     (concat "\\`\\(text/\\|image/\\|inode/\\|application/"
+                             "\\(json\\|xml\\|javascript\\|pdf\\|epub\\+zip\\|toml"
+                             "\\|x-ndjson\\|x-shellscript\\|sql\\)\\)")
+                     type))))
+    (call-process "xdg-open" nil 0 nil truename)
+    t))
+
+(use-package dired-open
+  :after dired
+  :custom
+  (dired-open-extensions '(("m4b" . "mpv")
+                            ("mp3" . "mpv")
+                            ("m4a" . "mpv")
+                            ("flac" . "mpv")
+                            ("ogg" . "mpv")
+                            ("opus" . "mpv")
+                            ("wav" . "mpv")
+                            ("mp4" . "mpv")
+                            ("mkv" . "mpv")
+                            ("webm" . "mpv")
+                            ("avi" . "mpv")
+                            ("mov" . "mpv")))
+  (dired-open-functions '(dired-open-by-extension dired-open-subdir my/dired-open-xdg)))
+#+end_src
+
+* Shell cd-on-exit
+
+Track the dired directory for the shell helper (=d= in =dot_config/fish/functions/=):
+the frame it opened writes the directory it ended in to a temp file.
+
+#+begin_src emacs-lisp
+(defvar my/dired-exit-file-pending nil
+  "Temp file path to assign to the next created frame.")
+
+(add-hook 'after-make-frame-functions
+  (lambda (frame)
+    (when my/dired-exit-file-pending
+      (set-frame-parameter frame 'my/dired-exit-file my/dired-exit-file-pending)
+      (setq my/dired-exit-file-pending nil))))
+
+(add-hook 'delete-frame-functions
+  (lambda (frame)
+    (when-let* ((file (frame-parameter frame 'my/dired-exit-file)))
+      (with-selected-frame frame
+        (let ((dir (if (derived-mode-p 'dired-mode)
+                       (expand-file-name dired-directory)
+                     (expand-file-name default-directory))))
+          (write-region dir nil file nil 'quiet))))))
+
+(provide 'init.dired)
+#+end_src

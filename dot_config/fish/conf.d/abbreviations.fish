@@ -14,7 +14,7 @@ abbr grb "git rebase"
 abbr grx "git rm -r"
 abbr gl "git log"
 abbr gs "git status"
-abbr gb "forgit_branch"
+abbr gb "git-forgit switch_branch"
 
 # Kubernetes
 abbr k kubectl

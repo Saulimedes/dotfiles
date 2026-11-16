@@ -28,6 +28,10 @@ fi
 log "Enabling overlays..."
 sudo eselect repository enable guru 2>/dev/null || true
 sudo eselect repository enable another-brave-overlay 2>/dev/null || true
+# Testing repo of the same overlay: it carries www-client/brave-origin
+# (https://github.com/falbrechtskirchinger/another-brave-overlay/issues/18)
+sudo sed -i '/^\[another-brave-overlay\]/,/^$/ s|^sync-uri = .*|sync-uri = https://github.com/falbrechtskirchinger/another-brave-overlay-testing.git|' \
+    /etc/portage/repos.conf/eselect-repo.conf
 sudo eselect repository enable pentoo 2>/dev/null || true
 
 # Sync repositories

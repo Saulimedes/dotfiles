@@ -77,11 +77,7 @@
 
 (use-package consult
   :demand t
-  :bind (;; C-c bindings
-         ("C-c h" . consult-history)
-         ("C-c m" . consult-mode-command)
-         ("C-c k" . consult-kmacro)
-         ;; C-x bindings
+  :bind (;; C-x bindings
          ("C-x b" . consult-buffer)
          ("C-x 4 b" . consult-buffer-other-window)
          ("C-x 5 b" . consult-buffer-other-frame)

@@ -6,6 +6,7 @@ app-shells/zsh
 app-shells/zsh-completions
 app-shells/bash-completion
 app-shells/gentoo-zsh-completions
+app-shells/fish
 
 # Modern CLI
 app-shells/zoxide
@@ -137,6 +138,10 @@ media-fonts/noto-cjk
 media-video/mpv
 media-video/ffmpeg
 media-video/libva-utils
+# dirvish previews: video thumbnails, audio metadata, images
+media-video/ffmpegthumbnailer
+media-video/mediainfo
+media-libs/vips
 
 # Browser
 www-client/brave-browser::another-brave-overlay

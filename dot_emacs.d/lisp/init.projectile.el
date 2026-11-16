@@ -66,11 +66,4 @@
          ("s" . projectile-ripgrep)
          ("a" . projectile-find-other-file)))
 
-;; Project-based directory tree with Treemacs
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :config
-  (setq treemacs-position 'left
-        treemacs-width 35))
-
 (provide 'init.projectile)

@@ -637,7 +637,7 @@ never bleed into the global ones."
 (global-set-key (kbd "C-c k") 'kubectl-menu)
 (global-set-key (kbd "C-c a") 'aws-menu)
 (global-set-key (kbd "C-c G") 'gcp-menu)
-(global-set-key (kbd "C-c v") 'vault-menu)
+(global-set-key (kbd "C-c V") 'vault-menu)
 (global-set-key (kbd "C-c K") 'devops-menu)
 
 ;; ============================================================

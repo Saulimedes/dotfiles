@@ -1,6 +1,9 @@
 #!/bin/bash
 # PATH
 export PATH="$HOME/.local/bin:$HOME/.bin:$HOME/.krew/bin:$HOME/bin:$HOME/Applications:/var/lib/flatpak/exports/bin:$HOME/.cargo/bin:/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin"
+# Drop entries that do not exist (kubectl warns about each one in `plugin list`)
+PATH=$(printf %s "$PATH" | tr : '\n' | while read -r d; do [ -d "$d" ] && printf %s: "$d"; done)
+PATH=${PATH%:}
 
 # History
 export HISTSIZE=10000
@@ -9,9 +12,12 @@ export HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
 
 # Editor and Pager
-export EDITOR=nvim
-export VISUAL="emacsclient -c -a emacs"
-export MANPAGER='nvim +Man!'
+export EDITOR="emacsclient -t -a ''"
+export VISUAL="emacsclient -c -a ''"
+export SUDO_EDITOR="emacsclient -t"
+man() {
+  emacsclient -t --eval "(man \"$*\")" || command man "$@"
+}
 export RIPGREP_CONFIG_PATH="$HOME/.config/ripgrep/ripgreprc"
 
 # mise (formerly asdf-compatible toolchains)
@@ -89,5 +95,5 @@ alias back="cd $OLDPWD"
 # Kubernetes KUBECONFIG setup
 if command -v kubectl >/dev/null 2>&1 && [[ -d "$HOME/.kube" ]]; then
   export KUBECONFIG=$(find "$HOME/.kube" -maxdepth 1 -type f \
-    -exec grep -IlE 'apiVersion:|kind:|clusters:|contexts:|users:' {} + | paste -sd: -)
+    -exec grep -IlE 'apiVersion:|kind:|clusters:|contexts:|users:' {} + | tr '\n' ':' | sed 's/:$//')
 fi

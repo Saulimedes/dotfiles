@@ -112,6 +112,9 @@
 ;; Misc better defaults
 (setopt use-short-answers t)
 (setq confirm-kill-processes nil)
+;; Killing a buffer with a live process (vterm, shell) asks separately; that
+;; query is not covered by `confirm-kill-processes' (which is for exiting Emacs).
+(remove-hook 'kill-buffer-query-functions #'process-kill-buffer-query-function)
 ;; Daemon mode + multiple emacsclient frames/terminals: without this, a
 ;; minibuffer/recursive-edit active on one terminal puts Emacs into
 ;; "single keyboard" mode, and a *new* emacsclient connecting from another
@@ -146,12 +149,25 @@
 (add-hook 'text-mode-hook 'visual-line-mode)
 
 ;; Loading additional Emacs Lisp files with error handling
-(let ((lisp-dir (expand-file-name "lisp" "~/.emacs.d/")))
+;; Not `user-emacs-directory': early-init.el points that at the cache dir.
+(let ((lisp-dir (expand-file-name "lisp" (file-name-directory
+                                          (or load-file-name user-init-file))))
+      (failed nil))
   (when (file-directory-p lisp-dir)
     (add-to-list 'load-path lisp-dir)
     (dolist (file (directory-files lisp-dir t "\\.el$"))
       (condition-case err
           (load-file file)
-        (error (message "Error loading %s: %s" file (error-message-string err)))))))
+        (error (push (format "%s: %s" (file-name-nondirectory file)
+                             (error-message-string err))
+                     failed)))))
+  ;; One broken file must not stop the others, but it aborts the rest of that
+  ;; file silently, so surface it in *Warnings* instead of burying it in
+  ;; *Messages*.
+  (when failed
+    (display-warning 'init
+                     (concat "Failed to load (rest of each file was skipped):\n  "
+                             (mapconcat #'identity (nreverse failed) "\n  "))
+                     :error)))
 
 (provide 'init)

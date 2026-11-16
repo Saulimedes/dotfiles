@@ -58,6 +58,10 @@
 
 ;; Advanced window numbering
 (use-package winum
+  :init
+  ;; The modeline (init.appearance.el) draws the window number itself;
+  ;; winum's own auto-install would wrap it in a second :eval and break it.
+  (setq winum-auto-setup-mode-line nil)
   :config
   (winum-mode))
 
@@ -67,6 +71,17 @@
 (global-set-key (kbd "M-3") 'winum-select-window-3)
 (global-set-key (kbd "M-4") 'winum-select-window-4)
 (global-set-key (kbd "M-5") 'winum-select-window-5)
+
+;; Used by the `ec' shell helper (dot_local/bin/executable_ec): raise a
+;; graphical frame and select window N (winum number) in it, so that the
+;; `emacsclient FILE' which follows opens the file there.
+(defun my/focus-window (n)
+  "Select winum window N in a graphical frame; nil if there is none."
+  (when-let* ((frame (seq-find (lambda (f) (and (display-graphic-p f) (not (frame-parent f))))
+                               (frame-list))))
+    (select-frame-set-input-focus frame)
+    (winum-select-window-by-number n)
+    t))
 (global-set-key (kbd "C-c w u") 'winner-undo)
 (global-set-key (kbd "C-c w R") 'winner-redo)
 (global-set-key (kbd "C-c w v") 'split-window-right)

@@ -8,13 +8,29 @@
 (use-package restart-emacs)
 
 (defun my/kill-buffer-quick ()
-  "Kill current buffer without prompt if unmodified, then switch to previous buffer."
+  "Kill the current buffer without asking; a modified file is saved first."
   (interactive)
-  (if (and (buffer-modified-p) (buffer-file-name))
-      (when (y-or-n-p (format "Buffer %s modified. Kill anyway? " (buffer-name)))
-        (set-buffer-modified-p nil)
-        (kill-buffer (current-buffer)))
-    (kill-buffer (current-buffer))))
+  (when (and (buffer-file-name) (buffer-modified-p))
+    (save-buffer))
+  (kill-buffer (current-buffer)))
+
+;; Save file buffers when you leave them (buffer/window switch, focus loss)
+;; and after 5 s idle, so there is rarely anything left to ask about on close.
+(use-package super-save
+  :custom
+  (super-save-all-buffers t)
+  (super-save-auto-save-when-idle t)
+  (super-save-idle-duration 5)
+  (super-save-remote-files nil)
+  (super-save-silent t)
+  (super-save-exclude '("\\.gpg\\'"))
+  :config
+  (super-save-mode 1)
+  ;; format-all runs from `before-save-hook': an idle save would reformat code
+  ;; under the cursor, so automatic saves skip it (C-x C-s still formats).
+  (with-eval-after-load 'format-all
+    (define-advice format-all--buffer-from-hook (:around (fn &rest args) skip-on-super-save)
+      (unless super-save-in-progress (apply fn args)))))
 
 ;; clipmon: syncs system clipboard into kill-ring, browse with M-y
 (use-package clipmon
@@ -85,7 +101,6 @@
     (pop-to-buffer wcopy-buffer-name)
     (message "wcopy: on")))
 
-(global-set-key (kbd "C-c w") #'wcopy-toggle)
 
 ;; tldr - simplified man pages with examples
 (use-package tldr)

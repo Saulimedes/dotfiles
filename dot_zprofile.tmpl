@@ -10,6 +10,7 @@ export ALTERNATE_EDITOR=""
 # PATH
 typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)
+path=($^path(N-/))  # drop entries that do not exist (kubectl warns about each one)
 
 # Flatpak XDG integration
 if type flatpak &>/dev/null; then

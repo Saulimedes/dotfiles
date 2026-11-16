@@ -463,16 +463,9 @@
   :custom
   (emojify-display-style 'unicode)
   (emojify-emoji-styles '(unicode github))
-  :bind
-  (("C-c e e" . emojify-insert-emoji)
-   ("C-c e d" . emojify-describe-emoji-at-point)
-   ("C-c e l" . emojify-list-emojis)))
+  :commands (emojify-insert-emoji emojify-describe-emoji-at-point emojify-list-emojis))
 
-;; Built-in Emacs 29+ emoji search (Unicode only, no package needed)
-(when (fboundp 'emoji-search)
-  (global-set-key (kbd "C-c e s") #'emoji-search))
-
-;; Quick Unicode character insert (built-in)
-(global-set-key (kbd "C-c e u") #'insert-char)
+;; Insert keys (emojify, built-in emoji-search, insert-char) are in the leader
+;; map under SPC i (init.keybindings.el).
 
 (provide 'init.code-tools)

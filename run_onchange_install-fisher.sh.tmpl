@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Install fisher (fish plugin manager) and the plugins listed in
+# ~/.config/fish/fish_plugins (the fish counterpart of antidote + zsh_plugins.txt).
+# Re-runs automatically when the plugin list changes:
+# fish_plugins hash: {{ include "dot_config/fish/fish_plugins" | sha256sum }}
+
+set -euo pipefail
+
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m'
+
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+if ! command -v fish >/dev/null 2>&1; then
+    log_warn "fish is not installed, skipping fisher setup"
+    exit 0
+fi
+
+log_info "Installing fisher and fish plugins"
+# stdin detached: a plugin's install hook must never wait on the terminal
+fish -c '
+    if not functions -q fisher
+        curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+        and fisher install jorgebucaran/fisher
+    end
+    fisher update
+' < /dev/null
+log_info "Fish plugins installed"

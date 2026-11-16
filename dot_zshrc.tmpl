@@ -1,3 +1,8 @@
+# Emacs-style line editing, always. zsh silently switches to the vi keymap when
+# $EDITOR/$VISUAL contains "vi" (nvim does), and this must come before the
+# plugins below so their bindings land in this keymap.
+bindkey -e
+
 # Pin SSH_AUTH_SOCK to the default ~/.gnupg gpg-agent (SSH key lives there, not in GNUPGHOME)
 export _GPG_AGENT_SSH_SOCK="$(GNUPGHOME=~/.gnupg gpgconf --list-dirs agent-ssh-socket)"
 
@@ -46,6 +51,7 @@ fi
 export PATH="/usr/local/bin:/usr/bin:/usr/sbin:/usr/local/sbin:$PATH"
 typeset -U path
 path=($HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications /var/lib/flatpak/exports/bin $HOME/.cargo/bin $path)
+path=($^path(N-/))  # drop entries that do not exist (kubectl warns about each one)
 
 ## Mise activation
 eval "$(mise activate zsh)"
@@ -76,9 +82,11 @@ if type chezmoi &>/dev/null; then
   source <(chezmoi completion zsh)
 fi
 
-## opencode
+## opencode (v2 prints completions via --completions; only source real output)
 if type opencode &>/dev/null; then
-  source <(opencode completion zsh)
+  _opencode_comp=$(opencode --completions zsh 2>/dev/null)
+  [[ $_opencode_comp == '#compdef'* ]] && source <(print -r -- "$_opencode_comp")
+  unset _opencode_comp
 fi
 
 # Key bindings
