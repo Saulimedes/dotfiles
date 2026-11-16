@@ -8,6 +8,6 @@ grep -q '^sshd:' /etc/group || echo 'sshd:x:59001:' >> /etc/group
 d=$(mktemp -d)
 nix --extra-experimental-features "nix-command flakes" shell nixpkgs#openssh --command sh -c "
   ssh-keygen -q -t ed25519 -f '$d/hostkey' -N ''
-  \$(command -v sshd) -f /dev/null -p ${PORT:-22} -h '$d/hostkey' -o PermitRootLogin=no -o PasswordAuthentication=yes -o UsePAM=no
+  \$(command -v sshd) -f /dev/null -p ${PORT:-22} -h '$d/hostkey' -o PermitRootLogin=no -o PasswordAuthentication=yes -o KbdInteractiveAuthentication=no -o UsePAM=yes
 "
 echo "sshd started on port ${PORT:-22}"
