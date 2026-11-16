@@ -124,6 +124,7 @@
     pavucontrol
     wiremix
     networkmanagerapplet
+    pa_applet
 
     thunar
     thunar-archive-plugin
