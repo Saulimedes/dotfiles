@@ -1,5 +1,14 @@
 ;; -*- lexical-binding: t; -*-
 
+;; Nix-provided packages sit on load-path but, unlike straight.el, nothing
+;; loads their *-autoloads.el, so :init-time calls to autoloaded functions
+;; (e.g. vertico-mode) fail with "void function" until something else
+;; requires the package first. Load every autoloads file on load-path.
+(when (file-exists-p "/etc/NIXOS")
+  (dolist (dir load-path)
+    (dolist (autoloads (file-expand-wildcards (expand-file-name "*-autoloads.el" dir) t))
+      (load autoloads nil 'nomessage))))
+
 (when (and (file-exists-p "/etc/NIXOS")
            (boundp 'straight-built-in-pseudo-packages))
   (dolist (package '(agent-shell aggressive-indent ansible ansible-doc apache-mode
