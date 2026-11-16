@@ -4,18 +4,24 @@ set -gx _GPG_AGENT_SSH_SOCK (GNUPGHOME=~/.gnupg gpgconf --list-dirs agent-ssh-so
 # PATH (fish_add_path deduplicates automatically)
 fish_add_path $HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications
 fish_add_path /var/lib/flatpak/exports/bin $HOME/.cargo/bin /usr/local/bin
+# Drop entries that do not exist (kubectl warns about each one in `plugin list`)
+set -gx PATH (for p in $PATH; test -d $p; and echo $p; end)
 
 # Flatpak XDG integration
 if type -q flatpak
+    set -q XDG_DATA_DIRS; or set -l XDG_DATA_DIRS /usr/local/share:/usr/share
     set -gx XDG_DATA_DIRS "/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
 end
+
+# GPG agent: route SSH through gpg-agent (same as .zprofile, which fish never reads)
+set -q XDG_RUNTIME_DIR; or set -l XDG_RUNTIME_DIR /run/user/(id -u)
+set -gx SSH_AUTH_SOCK "$XDG_RUNTIME_DIR/gnupg/S.gpg-agent.ssh"
 
 # Exports
 set -gx EDITOR {{ .editor | quote }}
 set -gx VISUAL {{ .visual | quote }}
 set -gx ALTERNATE_EDITOR ""
 set -gx SUDO_EDITOR "emacsclient -t"
-set -gx GPG_TTY (tty)
 set -gx INSIDE_EMACS 1
 set -gx RIPGREP_CONFIG_PATH "$HOME/.config/ripgrep/ripgreprc"
 
@@ -36,25 +42,20 @@ set -gx _AI_SYSTEM_PROMPT "You are a fish shell command generator on Gentoo Linu
 ## Tool integrations
 mise activate fish | source
 zoxide init --cmd cd fish | source
-atuin init fish --disable-up-arrow | source
 direnv hook fish | source
 starship init fish | source
 
-# FZF shell integration (fish 3.7+ built-in, falls back silently)
+# FZF shell integration (Ctrl-T, Alt-C). Before atuin on purpose: fzf also
+# binds Ctrl-R, and zsh has atuin there.
 if type -q fzf
     fzf --fish 2>/dev/null | source
 end
 
-# Completions from external tools
-if type -q kubectl
-    kubectl completion fish | source
-end
-if type -q chezmoi
-    chezmoi completion fish | source
-end
-if type -q opencode
-    opencode completion fish | source
-end
+atuin init fish --disable-up-arrow | source
+
+# Completions for kubectl and chezmoi live in completions/*.fish: fish loads
+# them on the first Tab instead of spawning both tools on every shell start
+# (that was ~70 ms). opencode's `completion` only emits bash/zsh scripts.
 
 # Re-apply keyboard patch if Cinnamon reset it after .xprofile
 if test -n "$DISPLAY"
@@ -63,9 +64,14 @@ if test -n "$DISPLAY"
     end
 end
 
-# GPG TTY update before each command (keeps default ~/.gnupg agent's TTY current)
-function _gpg_update_default_agent_tty --on-event fish_preexec
-    gpg-connect-agent --homedir ~/.gnupg UPDATESTARTUPTTY /bye &>/dev/null
+# GPG TTY (required for pinentry-tty), kept current before each command.
+# Skipped inside Claude Code sessions, like zsh, so gpg-agent's pinentry TTY
+# isn't redirected away from the user's real terminal.
+if test -z "$CLAUDECODE"
+    set -gx GPG_TTY (tty)
+    function _gpg_update_default_agent_tty --on-event fish_preexec
+        gpg-connect-agent --homedir ~/.gnupg UPDATESTARTUPTTY /bye &>/dev/null
+    end
 end
 
 # Aliases
@@ -95,5 +101,8 @@ alias ff fastfetch
 alias ".." "cd .."
 alias "..." "cd ../.."
 alias ".3" "cd ../../.."
+alias "...." ".3"
 alias ".4" "cd ../../../.."
+alias "....." ".4"
 alias ".5" "cd ../../../../.."
+alias "......" ".5"

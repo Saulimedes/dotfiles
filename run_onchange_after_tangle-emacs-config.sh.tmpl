@@ -1,0 +1,19 @@
+#!/bin/bash
+# Emacs config org files hash: {{ range (glob (printf "%s/dot_emacs.d/org/*.org" .chezmoi.sourceDir)) }}{{ include . | sha256sum }}{{ end }}
+# Tangle ~/.emacs.d/org/*.org into ~/.emacs.d/lisp/ (the org files are the source,
+# the generated init.*.el are not tracked). `-Q`: no user init, only built-in Org.
+set -euo pipefail
+
+if ! command -v emacs >/dev/null 2>&1; then
+  echo "emacs not found, skipping Emacs config tangle"
+  exit 0
+fi
+
+if [ ! -d "$HOME/.emacs.d/org" ]; then
+  echo "no ~/.emacs.d/org, nothing to tangle"
+  exit 0
+fi
+
+emacs -Q --batch \
+  --eval '(require (quote ob-tangle))' \
+  --eval '(dolist (f (directory-files (expand-file-name "~/.emacs.d/org") t "\\.org\\'"'"'")) (org-babel-tangle-file f))'

@@ -67,6 +67,7 @@ This will:
 | `run_onchange_setup-samba-mounts.sh` | Configure autofs mounts to the Unraid NAS |
 | `run_onchange_sync-genkernel.sh.tmpl` | Sync `genkernel.conf` to `/etc/genkernel.conf` |
 | `run_onchange_sync-useflags.sh.tmpl` | Sync `useflags.txt` to `/etc/portage/package.use/` |
+| `run_onchange_after_tangle-emacs-config.sh.tmpl` | Tangle the Emacs org files into `~/.emacs.d/lisp/` when they change |
 
 ### Shell Configuration
 
@@ -88,8 +89,12 @@ This will:
 ### Editor
 
 - **Emacs** with custom config (`dot_emacs.d/`)
-- `emacsclient` as default editor
+- `emacsclient` as default editor (set in `.chezmoidata.toml`), `man` opens in Emacs
+- **Neovim** config in `dot_config/nvim/` (not the default editor)
+- Emacs config is moving to literate Org: `dot_emacs.d/org/*.org` (so far `dired.org`) are tangled into `~/.emacs.d/lisp/init.*.el` by `run_onchange_after_tangle-emacs-config.sh.tmpl`; the generated `.el` files are not tracked, the other modules are still plain `dot_emacs.d/lisp/init.*.el`
 - Dired alias: `d` opens current directory
+- `e` opens files in Emacs in the terminal, `ec` in a graphical frame without blocking the shell; `ec FILE @2` opens FILE in window 2 (modeline number) of the existing graphical frame
+- File manager: dirvish in Emacs (yazi-style parent, files and preview panes, `SPC o d`) and as the sidebar tree (`SPC e`), set up in `dot_emacs.d/org/dired.org` to follow the old yazi config
 
 ## Mise Tasks
 
@@ -119,12 +124,13 @@ chezmoi apply
 # Re-run a specific script manually
 chezmoi execute-template < run_onchange_install-packages.sh.tmpl | bash
 chezmoi execute-template < run_onchange_sync-useflags.sh.tmpl | bash
+chezmoi execute-template < run_onchange_after_tangle-emacs-config.sh.tmpl | bash   # after editing an Emacs org file
 ```
 
 ## Requirements
 
 - Gentoo Linux with `~amd64` in ACCEPT_KEYWORDS
-- Overlays: guru, another-brave-overlay, pentoo (auto-configured)
+- Overlays: guru, another-brave-overlay (testing repo, has brave-origin), pentoo (auto-configured)
 
 ## License
 

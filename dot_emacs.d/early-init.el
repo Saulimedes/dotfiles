@@ -59,14 +59,11 @@
       frame-inhibit-implied-resize t
       frame-resize-pixelwise t)
 
-;; No hardcoded background-color/foreground-color here anymore - this was
-;; white-on-black to avoid a flash while the old dark theme loaded, but
-;; early-init.el runs before any theme, so it can't know if the active
-;; theme is even dark. With a light theme (doom-earl-grey) these stale
-;; values instead caused a white-on-black flash AND made faces that
-;; plainly inherit `default' (before the theme corrects it) briefly
-;; wrong. init.appearance.el's my/setup-frame corrects both per-frame
-;; from the theme's real colors once it's known, which works either way.
+;; No hardcoded background-color/foreground-color here: early-init.el runs
+;; before any theme, so it can't know whether the active one is light or dark
+;; (modus-themes-toggle flips it at will). Stale values caused a flash and
+;; made faces that inherit `default' briefly wrong. init.appearance.el's
+;; my/setup-frame corrects both per frame from the theme's real colors.
 
 ;; ============================================================
 ;; Misc suppressions

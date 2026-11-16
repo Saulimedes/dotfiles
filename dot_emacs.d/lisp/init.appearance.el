@@ -29,10 +29,36 @@
 
 (setq-default line-spacing 0.2)
 
-(use-package doom-themes
+;; Switching between a light and a dark theme (`modus-themes-toggle') changes
+;; `frame-background-mode', and Emacs then re-checks every frame's faces. The
+;; daemon's invisible initial frame never realizes faces defined after it
+;; was created, so that check dies with "Invalid face: appt-notification",
+;; aborts the switch and leaves the old theme enabled.
+(define-advice frame-set-background-mode (:around (orig frame &rest args) my/skip-daemon-initial-frame)
+  (unless (equal (terminal-name (frame-terminal frame)) "initial_terminal")
+    (apply orig frame args)))
+
+;; modus-operandi (modus-themes), not spacemacs-light: spacemacs-light
+;; leans lavender/purple. modus-themes' palette is neutral and
+;; high-contrast with no purple tint, and it's a well-maintained,
+;; accessibility-focused theme bundled with Emacs itself. SPC t t toggles
+;; to its dark twin modus-vivendi (`modus-themes-toggle'); terminal frames
+;; always use the dark one (see "Terminal" below).
+(use-package modus-themes
   :demand t
+  :init
+  ;; Flat modeline (the default mid-grey bar is heavy against the
+  ;; flat bar-and-text segments in the modeline section below). Border =
+  ;; bar color on purpose: Emacs outlines a hovered run in the face's :box,
+  ;; so any visible border color shows up as a box around the hovered segment.
+  (setq modus-themes-common-palette-overrides
+        '((bg-mode-line-active bg-dim)
+          (border-mode-line-active bg-dim)
+          (bg-mode-line-inactive bg-main)
+          (border-mode-line-inactive bg-main)))
   :config
-  (load-theme 'doom-xcode t))
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'modus-operandi t))
 
 (defun my/fix-menu-face (&rest _)
   "Lucid toolkit menus don't follow the theme unless `menu' is styled."
@@ -41,16 +67,6 @@
                        :foreground (face-foreground 'default nil t)))
 (my/fix-menu-face)
 (add-hook 'after-make-frame-functions #'my/fix-menu-face)
-
-(defun my/fix-doom-modeline-time-face (&rest _)
-  "doom-modeline-time has no explicit fg/bg of its own - the analogue
-clock icon's SVG needs concrete colors, not 'unspecified."
-  (when (facep 'doom-modeline-time)
-    (set-face-attribute 'doom-modeline-time nil
-                         :foreground (face-foreground 'default nil t)
-                         :background (face-background 'mode-line-active nil t))))
-(add-hook 'after-make-frame-functions #'my/fix-doom-modeline-time-face)
-
 
 ;; Man-mode colors
 (use-package man
@@ -86,31 +102,9 @@ clock icon's SVG needs concrete colors, not 'unspecified."
   :config
   (pulsar-global-mode 1))
 
-;; beacon - cursor trail effect (like shell cursor trail)
-(use-package beacon
-  :diminish beacon-mode
-  :init
-  (setq beacon-size 60               ; Size of the beacon
-        beacon-blink-duration 0.5    ; How long the trail lasts
-        beacon-blink-delay 0         ; Delay before blinking
-        beacon-blink-when-window-scrolls t
-        beacon-blink-when-window-changes t
-        beacon-blink-when-point-moves-vertically 1   ; Any vertical move
-        beacon-blink-when-point-moves-horizontally 1) ; Any horizontal move
-  :config
-  ;; beacon-color as a number is supposed to auto-derive from the theme but
-  ;; beacon's own light/dark detection is broken; derive it ourselves.
-  (defun my/beacon-sync-color (&rest _)
-    (let ((fg (face-foreground 'default nil t)))
-      (when (and (stringp fg) (not (string-prefix-p "unspecified" fg)))
-        (setq beacon-color fg))))
-  (my/beacon-sync-color)
-  (add-hook 'after-make-frame-functions #'my/beacon-sync-color)
-  (beacon-mode 1)
-  ;; Don't beacon in these modes
-  (add-to-list 'beacon-dont-blink-major-modes 'vterm-mode)
-  (add-to-list 'beacon-dont-blink-major-modes 'eshell-mode)
-  (add-to-list 'beacon-dont-blink-major-modes 'term-mode))
+;; No beacon (cursor trail): it flashed on every point move, which made mouse
+;; selection look awful, and its timers spun the CPU in a daemon with tty + GUI
+;; frames. pulsar above is the only flash effect.
 
 ;; line numbers with better performance
 (use-package display-line-numbers
@@ -129,70 +123,215 @@ clock icon's SVG needs concrete colors, not 'unspecified."
   (highlight-indent-guides-delay 0.1))
 
 ;; ============================================================
-;; Mode line: doom-modeline
+;; Mode line: custom windline-style (flat, thin accent bars)
 ;; ============================================================
-;; Single maintained package instead of moody+cyphejor+minions+which-func+mlscroll.
-;; Handles GUI/terminal/daemon frames itself — no per-frame face overrides needed.
-;; which-func is intentionally not shown here: breadcrumb-mode's header-line
+;; Hand-built because every packaged modeline either shares one separator
+;; glyph between neighbors (powerline/spaceline: hover can't cover a single
+;; segment's edges) or has no separators at all (doom-modeline). Here each
+;; segment is its own "thin bar + text" run carrying one `mouse-face', so
+;; hovering recolors the bar and the text together - nothing is shared.
+;; Foreground-only coloring (no filled backgrounds) is what lets one hover
+;; face fit every segment. Colors come from standard faces, so any theme works.
+;; which-func is intentionally not shown: breadcrumb-mode's header-line
 ;; already gives an imenu-based "what scope am I in" trail.
-(use-package doom-modeline
-  :init
-  (doom-modeline-mode 1)
-  :custom
-  (doom-modeline-height 28)
-  (doom-modeline-icon t)
-  (doom-modeline-minor-modes nil)
-  (doom-modeline-buffer-encoding nil)
-  (doom-modeline-vcs-max-length 24)
-  ;; window-number (winum) defaults to a circled-digit unicode glyph
-  ;; (e.g. "➌") that's illegible at modeline size - plain ASCII digit reads
-  ;; far better.
-  (doom-modeline-unicode-number nil))
+;; winum itself is set up in init.workspace.el (keybindings live there too).
 
 (defun my/number-to-roman (n)
   "Convert N to an uppercase Roman numeral string."
-  (let ((table '((1000 . "M") (900 . "CM") (500 . "D") (400 . "CD")
-                 (100 . "C") (90 . "XC") (50 . "L") (40 . "XL")
-                 (10 . "X") (9 . "IX") (5 . "V") (4 . "IV") (1 . "I")))
-        (result ""))
-    (dolist (pair table result)
-      (while (>= n (car pair))
-        (setq result (concat result (cdr pair))
-              n (- n (car pair)))))))
+  (if (zerop n)
+      "0"
+    (let ((table '((1000 . "M") (900 . "CM") (500 . "D") (400 . "CD")
+                   (100 . "C") (90 . "XC") (50 . "L") (40 . "XL")
+                   (10 . "X") (9 . "IX") (5 . "V") (4 . "IV") (1 . "I")))
+          (result ""))
+      (dolist (pair table result)
+        (while (>= n (car pair))
+          (setq result (concat result (cdr pair))
+                n (- n (car pair))))))))
 
-(defun my/doom-modeline-window-number-roman (result)
-  "Replace the plain digit in doom-modeline's window-number segment RESULT
-with a Roman numeral, keeping the original face."
-  (when (and (stringp result) (string-match "[0-9]+" result))
-    (let* ((face (get-text-property (match-beginning 0) 'face result))
-           (roman (my/number-to-roman (string-to-number (match-string 0 result)))))
-      (setq result (concat (substring result 0 (match-beginning 0))
-                            (propertize roman 'face face)
-                            (substring result (match-end 0))))))
-  result)
-(advice-add 'doom-modeline-segment--window-number
-            :filter-return #'my/doom-modeline-window-number-roman)
+(defface my/ml-hover
+  '((t :inherit (bold font-lock-keyword-face)))
+  "Recolor for a whole modeline segment (bar and text) under the mouse.")
+(defface my/ml-state-normal '((t :inherit link :underline nil :weight bold)) "Meow normal.")
+(defface my/ml-state-insert '((t :inherit success :weight bold)) "Meow insert.")
+(defface my/ml-state-motion '((t :inherit warning :weight bold)) "Meow motion.")
+(defface my/ml-state-keypad '((t :inherit error :weight bold)) "Meow keypad.")
+(defface my/ml-state-beacon '((t :inherit font-lock-keyword-face :weight bold)) "Meow beacon.")
 
-;; Tried doom-modeline-hud (scrollbar-style position thumb) as a "fancier"
-;; alternative to the plain bar - at this modeline height the position
-;; marker only moves a couple pixels even across a full scroll, so it reads
-;; as static. Not worth the extra height it'd take to make it legible.
+(defun my/ml-state-face ()
+  (if (bound-and-true-p meow-mode)
+      (pcase meow--current-state
+        ('insert 'my/ml-state-insert)
+        ('motion 'my/ml-state-motion)
+        ('keypad 'my/ml-state-keypad)
+        ('beacon 'my/ml-state-beacon)
+        (_ 'my/ml-state-normal))
+    'shadow))
 
-;; mode-line-highlight defaults to a stark white box + raw theme blue -
-;; jarring. Derive a subtle hover shade from the theme instead of a fixed hex.
-(require 'color)
-(defun my/fix-mode-line-highlight (&rest _)
-  (when-let* ((bg (face-background 'mode-line-active nil t))
-              (_ (stringp bg)))
-    (let ((dark-p (< (color-distance bg "black") (color-distance bg "white"))))
-      (set-face-attribute 'mode-line-highlight nil
-                           :box nil
-                           :background (if dark-p (color-lighten-name bg 15) (color-darken-name bg 10))
-                           :foreground 'unspecified
-                           :inherit nil))))
-(with-eval-after-load 'doom-modeline
-  (my/fix-mode-line-highlight))
-(add-hook 'after-make-frame-functions #'my/fix-mode-line-highlight)
+(defun my/ml-bg (active)
+  "Modeline background color, for hiding text on it."
+  (let ((bg (face-background (if active 'mode-line-active 'mode-line-inactive) nil t)))
+    (if (and (stringp bg) (not (string-prefix-p "unspecified" bg)))
+        bg
+      (if (eq (frame-parameter nil 'background-mode) 'dark) "#000000" "#ffffff"))))
+
+(defun my/ml-seg (text bar-face &optional text-face props)
+  "One segment: a thin BAR-FACE bar plus TEXT, hovered as a single unit.
+Like the brackets on becker.kiwi links, [ and ] sit in the segment's edge
+cells in the background color (invisible, nothing shifts) and the hover face
+recolors them into view. TEXT may carry its own faces; TEXT-FACE only fills
+in where it has none."
+  (let* ((active (mode-line-window-selected-p))
+         (hide (list :foreground (my/ml-bg active)))
+         (body (copy-sequence text)))
+    (cond ((not active) (put-text-property 0 (length body) 'face 'shadow body))
+          (text-face (add-face-text-property 0 (length body) text-face t body)))
+    (let ((s (concat (propertize "▎" 'face (if active bar-face 'shadow))
+                     (propertize "[" 'face hide)
+                     body
+                     (propertize "]" 'face hide))))
+      (add-text-properties 0 (length s) (append '(mouse-face my/ml-hover) props) s)
+      ;; Plain gap outside the hover run: neighbors sharing one mouse-face
+      ;; symbol would otherwise highlight together as a single region.
+      (concat s " "))))
+
+(defvar my/ml-buffer-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m [mode-line mouse-1] #'mode-line-previous-buffer)
+    (define-key m [mode-line mouse-3] #'mode-line-next-buffer)
+    m))
+
+(defvar my/ml-mode-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m [mode-line down-mouse-1]
+                `(menu-item "Menu Bar" ignore
+                            :filter ,(lambda (_) (mouse-menu-major-mode-map))))
+    (define-key m [mode-line mouse-2] #'describe-mode)
+    m))
+
+(defun my/ml-vcs-click (event)
+  (interactive "e")
+  (with-selected-window (posn-window (event-start event))
+    (magit-status)))
+
+(defvar my/ml-vcs-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m [mode-line mouse-1] #'my/ml-vcs-click)
+    m))
+
+(defun my/ml-window-number ()
+  (if (bound-and-true-p winum-mode)
+      (my/number-to-roman (winum-get-number))
+    ""))
+
+(defun my/ml-state-label ()
+  (if (bound-and-true-p meow-mode)
+      (pcase meow--current-state
+        ('insert "INS") ('motion "MOT") ('keypad "KEY") ('beacon "BCN") (_ "NOR"))
+    ""))
+
+(defun my/ml-diagnostics ()
+  "Flymake error/warning counts, nil when there are none."
+  (when (bound-and-true-p flymake-mode)
+    (ignore-errors
+      (let ((err 0) (warn 0))
+        (dolist (d (flymake-diagnostics))
+          (let ((sev (flymake--severity (flymake-diagnostic-type d))))
+            (cond ((>= sev (flymake--severity :error)) (cl-incf err))
+                  ((>= sev (flymake--severity :warning)) (cl-incf warn)))))
+        (when (> (+ err warn) 0)
+          (concat (when (> err 0) (propertize (format "✖%d" err) 'face 'error))
+                  (when (and (> err 0) (> warn 0)) " ")
+                  (when (> warn 0) (propertize (format "▲%d" warn) 'face 'warning))))))))
+
+(defun my/ml-minor-modes ()
+  "Names of the active minor modes in the current buffer."
+  (let (names)
+    (dolist (m minor-mode-alist)
+      (let ((sym (car m)))
+        (when (and (boundp sym) (symbol-value sym)
+                   (not (memq sym '(semantic-minor-modes-format override-global-mode))))
+          (push (replace-regexp-in-string "-mode\\'" "" (symbol-name sym)) names))))
+    (nreverse names)))
+
+(defvar my/ml-minor-map
+  (let ((m (make-sparse-keymap)))
+    (define-key m [mode-line down-mouse-1] mode-line-mode-menu)
+    m))
+
+(defun my/ml-project ()
+  (when (and (bound-and-true-p projectile-mode)
+             (not (file-remote-p default-directory))
+             (projectile-project-p))
+    (projectile-project-name)))
+
+(defun my/ml-encoding ()
+  "Coding system name, only when it is not plain UTF-8."
+  (let ((cs (symbol-name (or buffer-file-coding-system 'utf-8))))
+    (unless (string-match-p "\\`\\(utf-8\\|undecided\\|prefer-utf-8\\)" cs)
+      cs)))
+
+(defun my/ml-left ()
+  (let ((state (my/ml-state-label)))
+    (concat
+     (my/ml-seg (string-trim (concat (my/ml-window-number) " " state))
+                (my/ml-state-face) 'bold)
+     (my/ml-seg (concat (cond (buffer-read-only "\ue0a2 ")
+                              ((and buffer-file-name (buffer-modified-p)) "● "))
+                        (buffer-name))
+                'my/ml-state-normal 'bold
+                (list 'help-echo "Buffer name\nmouse-1: Previous buffer\nmouse-3: Next buffer"
+                      'local-map my/ml-buffer-map))
+     (my/ml-seg (format-mode-line "%l:%c %p") 'shadow)
+     (when-let* ((proj (my/ml-project)))
+       (my/ml-seg proj 'shadow))
+     (when-let* ((diag (my/ml-diagnostics)))
+       (my/ml-seg diag 'error)))))
+
+(defun my/ml-right ()
+  (concat
+   (when defining-kbd-macro (my/ml-seg "REC" 'error 'error))
+   (when (use-region-p)
+     (my/ml-seg (format "%d sel" (abs (- (region-end) (region-beginning)))) 'warning))
+   (when (buffer-narrowed-p) (my/ml-seg "narrow" 'warning))
+   (when-let* ((host (file-remote-p default-directory 'host)))
+     (my/ml-seg (concat "@" host) 'warning 'warning))
+   (when-let* ((proc (and mode-line-process
+                          (string-trim (format-mode-line mode-line-process))))
+               (_ (not (string-empty-p proc))))
+     (my/ml-seg proc 'shadow))
+   (when-let* ((enc (my/ml-encoding)))
+     (my/ml-seg enc 'warning))
+   (when-let* ((clock (bound-and-true-p org-mode-line-string))
+               (_ (not (string-empty-p (string-trim (substring-no-properties clock))))))
+     (my/ml-seg (string-trim (substring-no-properties clock)) 'warning))
+   (when (bound-and-true-p eglot--managed-mode)
+     (my/ml-seg "LSP" 'success))
+   (when-let* ((minors (my/ml-minor-modes)))
+     (my/ml-seg (format "⚙ %d" (length minors)) 'shadow nil
+                (list 'help-echo (concat "Minor modes:\n" (string-join minors ", ")
+                                         "\nmouse-1: toggle menu")
+                      'local-map my/ml-minor-map)))
+   (when (and vc-mode buffer-file-name)
+     (my/ml-seg (concat "\ue0a0 " (replace-regexp-in-string
+                                   "^ *[A-Za-z]+[-:]" "" (substring-no-properties vc-mode)))
+                'success nil
+                (list 'help-echo "mouse-1: Magit status" 'local-map my/ml-vcs-map)))
+   (my/ml-seg (substring-no-properties (format-mode-line mode-name))
+              'font-lock-keyword-face nil
+              (list 'help-echo "Major mode\nmouse-1: Mode menu\nmouse-2: Describe mode"
+                    'local-map my/ml-mode-map))
+   (my/ml-seg (format-time-string "%H:%M") 'shadow)))
+
+(defun my/ml-render ()
+  (let ((right (my/ml-right)))
+    (concat (my/ml-left)
+            (propertize " " 'display
+                        `((space :align-to (- (+ right right-fringe right-margin)
+                                              ,(string-width right)))))
+            right)))
+
+(setq-default mode-line-format '(:eval (my/ml-render)))
 
 ;; `highlight' face (hover on buttons/dired/completion): theme's dark
 ;; foreground is illegible on its own blue background.
@@ -201,8 +340,7 @@ with a Roman numeral, keeping the original face."
 (my/fix-highlight-face)
 (add-hook 'after-make-frame-functions #'my/fix-highlight-face)
 
-;; time segment is part of doom-modeline's default layout but stays blank
-;; until display-time-mode is actually on.
+;; Keeps the modeline clock ticking (`my/ml-right' formats the time itself).
 (use-package time
   :ensure nil
   :init
@@ -295,6 +433,20 @@ with a Roman numeral, keeping the original face."
 ;; ============================================================
 ;; Tab Line - built-in buffer tabs
 ;; ============================================================
+;; spacious-padding pads each tab with a :box in the tab's own background
+;; color, but `tab-line-highlight' has no box - hover then filled only the
+;; text area and left the padding ring in the old color. Give it a box in
+;; its own background so the whole tab fills.
+(defun my/fix-tab-line-highlight (&rest _)
+  (when (and (facep 'tab-line-highlight) (fboundp 'modus-themes-get-color-value))
+    (let ((bg (modus-themes-get-color-value 'bg-hover))
+          (w (or (plist-get (bound-and-true-p spacious-padding-widths) :tab-width) 4)))
+      (set-face-attribute 'tab-line-highlight nil
+                           :box `(:line-width ,w :color ,bg :style nil)))))
+(with-eval-after-load 'tab-line (my/fix-tab-line-highlight))
+(dolist (hook '(enable-theme-functions after-make-frame-functions))
+  (add-hook hook #'my/fix-tab-line-highlight))
+
 (use-package tab-line
   :ensure nil
   :init
@@ -365,22 +517,46 @@ with a Roman numeral, keeping the original face."
   (save-place-mode 1))
 
 ;; ============================================================
-;; Terminal: use terminal's own background colors
+;; Terminal: always the dark theme, on the terminal's own background
 ;; ============================================================
+(defun my/terminal-dark-faces (frame)
+  "Paint tty FRAME with `modus-vivendi', whatever theme GUI frames use.
+Themes are global, faces are not: the dark theme is loaded without enabling
+it and its face specs are applied to FRAME only. The kitty window is dark,
+so the light theme there means black text on black and a light-gray mode
+line. Enabling or disabling a theme recalculates every frame's faces, so this
+also runs from the theme hooks below. \"unspecified-bg\" is the Emacs sentinel for
+\"use the terminal's own background\"; the symbol `unspecified' would only
+inherit."
+  (unless (get 'modus-vivendi 'theme-settings)
+    (load-theme 'modus-vivendi t t))
+  (dolist (entry (get 'modus-vivendi 'theme-settings))
+    (when (eq (car entry) 'theme-face)
+      (let ((face (nth 1 entry)))
+        (face-spec-reset-face face frame)
+        (face-spec-set-2 face frame (face-spec-choose (nth 3 entry) frame)))))
+  (set-face-attribute 'default frame :background "unspecified-bg")
+  (set-frame-parameter frame 'background-mode 'dark)
+  ;; Modus fakes the mode line border on displays without :box support with
+  ;; an underline; a tty draws that under the text instead.
+  (dolist (face '(mode-line mode-line-active mode-line-inactive))
+    (set-face-attribute face frame :underline nil :box nil)))
+
+(defun my/terminal-refresh-faces (&rest _)
+  (dolist (frame (frame-list))
+    (when (and (eq (framep frame) t) (frame-parameter frame 'my/tty-dark))
+      (my/terminal-dark-faces frame))))
+;; Disabling the old theme recalculates every frame's faces too, after the
+;; new one was enabled, so both ends (and modus' own final hook) re-apply.
+(dolist (hook '(enable-theme-functions disable-theme-functions
+                modus-themes-after-load-theme-hook))
+  (add-hook hook #'my/terminal-refresh-faces))
+
 (defun my/terminal-setup ()
-  "Configure Emacs for terminal frames.
-Keeps doom-homage-black foreground/syntax colors but lets the
-terminal supply its own background (transparent)."
+  "Configure Emacs for terminal frames: dark faces on the terminal's background."
   (unless (display-graphic-p)
-    (let ((frame (selected-frame)))
-      ;; Only clear the default face background so the terminal's own
-      ;; background (transparency) shows through. Leave all other faces
-      ;; (including mode-line) using their theme colors — kitty supports
-      ;; 24-bit color so they render correctly.
-      ;; "unspecified-bg" is the Emacs sentinel for "use terminal's own background".
-      ;; The symbol 'unspecified only means "inherit from parent face/theme" and
-      ;; would fall back to whatever the active theme set (e.g. #000000 from pitch-black).
-      (set-face-attribute 'default frame :background "unspecified-bg"))
+    (set-frame-parameter nil 'my/tty-dark t)
+    (my/terminal-dark-faces (selected-frame))
     ;; Disable hl-line — it still tints even with unspecified-bg on some terminals
     (global-hl-line-mode -1)
     ;; Disable GUI-only modes
@@ -418,11 +594,8 @@ set foreground-color explicitly, not just background-color."
         (set-frame-parameter frame 'foreground-color
                               (face-foreground 'default frame t))
         (force-mode-line-update t))
-    ;; Terminal frame: transparent mode-line, matching the buffer background.
-    ;; nil frame = all frames, above-theme priority but below graphical frame-local.
-    (set-face-attribute 'mode-line nil :background "unspecified-bg" :box nil)
-    (set-face-attribute 'mode-line-active nil :background "unspecified-bg" :box nil)
-    (set-face-attribute 'mode-line-inactive nil :background "unspecified-bg" :box nil)
+    ;; Terminal frame: dark faces for this frame only (FRAME, never nil: a nil
+    ;; frame would change every existing frame, GUI included).
     (with-selected-frame frame
       (my/terminal-setup)
       (force-mode-line-update t))))
@@ -430,6 +603,12 @@ set foreground-color explicitly, not just background-color."
 ;; Fires for every new frame: daemon emacsclient connections and
 ;; additional frames in a running session.
 (add-hook 'after-make-frame-functions #'my/setup-frame)
+
+;; No daemon theme-reload hook here (there was one): it existed only
+;; because spacemacs-theme/humanoid-themes baked truecolor-vs-fallback
+;; detection into their faces at load time, which breaks with zero frames
+;; at daemon startup. modus-themes does no such detection - its colors are
+;; correct immediately, daemon or not - so the reload was dead weight.
 
 ;; Fires after init for the initial frame in non-daemon graphical mode.
 (unless (daemonp)

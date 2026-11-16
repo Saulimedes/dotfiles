@@ -9,7 +9,7 @@
 
 (use-package wallabag
   :commands (wallabag wallabag-find wallabag-add-entry)
-  :bind (("C-c R w" . wallabag))
+  :bind (("C-c W" . wallabag))
   :custom
   (wallabag-db-file (expand-file-name "wallabag/wallabag.sqlite" emacs-cache-directory))
   (wallabag-search-print-items '("title" "domain" "tag" "reading-time" "date"))

@@ -479,12 +479,7 @@ INPUT is the command that was run."
     (eshell "new")
     (rename-buffer (format "*eshell: %s*" (file-name-nondirectory (directory-file-name default-directory))))))
 
-;; Global key bindings for Eshell
-(global-set-key (kbd "C-c e e") 'eshell)
-(global-set-key (kbd "C-c e h") 'eshell-here)
-(global-set-key (kbd "C-c e s") 'split-and-eshell-here)
-(global-set-key (kbd "C-c e t") 'eshell-toggle)
-(global-set-key (kbd "C-c e p") 'eshell-project-root)
+;; Eshell keys live in the leader map (SPC o e/E/T/S/P, init.keybindings.el).
 
 ;; Global zoxide command for finding directories anywhere in Emacs
 (defun find-file-zoxide ()
@@ -501,11 +496,6 @@ INPUT is the command that was run."
 
 ;; Global keybinding for zoxide directory jump
 (global-set-key (kbd "C-c j") 'find-file-zoxide)
-
-;; Update which-key descriptions
-(with-eval-after-load 'which-key
-  (which-key-add-key-based-replacements "SPC e" "eshell")
-  (which-key-add-key-based-replacements "SPC ez" "zoxide"))
 
 ;; ============================================================
 ;; Additional fish-like functions

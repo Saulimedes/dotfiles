@@ -1,0 +1,30 @@
+#!/bin/sh
+# ec [FILE...] [@N]: open FILEs in the graphical Emacs (new frame, no waiting).
+# A last argument @N (a window number as shown in the modeline) opens them in
+# that window of the existing graphical frame instead. Shared by zsh, bash, fish.
+win=
+n=$#
+if [ "$n" -gt 0 ]; then
+  for last; do :; done
+  case $last in
+    @[0-9]|@[0-9][0-9])
+      win=${last#@}
+      i=0
+      for a in "$@"; do
+        i=$((i + 1))
+        [ "$i" -lt "$n" ] && set -- "$@" "$a"
+      done
+      shift "$n"
+      ;;
+  esac
+fi
+
+if [ -n "$win" ]; then
+  out=$(emacsclient -a '' -e "(my/focus-window $win)") || exit $?
+  # nil: no graphical frame yet, fall through and make one
+  if [ "$out" != nil ]; then
+    [ $# -gt 0 ] && exec emacsclient -n "$@"
+    exit 0
+  fi
+fi
+exec emacsclient -c -n -a '' "$@"

@@ -84,7 +84,7 @@
     (insert text)))
 
 (defconst my/dashboard--footer-text
-  "[f] find  [p] project  [r] recent  [a] agenda  [m] magit  [t] term  [v] vterm  [c] capture  [s] config  [g] refresh  [q] quit"
+  "[f] find  [d] files  [p] project  [r] recent  [a] agenda  [m] magit  [t] term  [v] vterm  [c] capture  [s] config  [g] refresh  [q] quit"
   "Plain-text mirror of the footer quick-actions line, for measuring width.")
 
 (defun my/dashboard--insert-separator ()
@@ -547,10 +547,12 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
                         'face 'my/dashboard-dim))
     (insert "\n\n")
 
-    ;; Quick actions, all on one line
+    ;; Quick actions in two lines
     (insert "    ")
     (insert (propertize "[f]" 'face 'my/dashboard-shortcut))
     (insert (propertize " find  " 'face 'my/dashboard-dim))
+    (insert (propertize "[d]" 'face 'my/dashboard-shortcut))
+    (insert (propertize " files  " 'face 'my/dashboard-dim))
     (insert (propertize "[p]" 'face 'my/dashboard-shortcut))
     (insert (propertize " project  " 'face 'my/dashboard-dim))
     (insert (propertize "[r]" 'face 'my/dashboard-shortcut))
@@ -559,6 +561,11 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     (insert (propertize " agenda  " 'face 'my/dashboard-dim))
     (insert (propertize "[m]" 'face 'my/dashboard-shortcut))
     (insert (propertize " magit  " 'face 'my/dashboard-dim))
+    (insert (propertize "[e]" 'face 'my/dashboard-shortcut))
+    (insert (propertize " tree" 'face 'my/dashboard-dim))
+    (insert "\n")
+
+    (insert "    ")
     (insert (propertize "[t]" 'face 'my/dashboard-shortcut))
     (insert (propertize " term  " 'face 'my/dashboard-dim))
     (insert (propertize "[v]" 'face 'my/dashboard-shortcut))
@@ -580,6 +587,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
 (defun my/dashboard--setup-keys ()
   "Set up dashboard keybindings."
   (local-set-key (kbd "f") #'find-file)
+  (local-set-key (kbd "d") #'dirvish-dwim)
   (local-set-key (kbd "r") #'consult-recent-file)
 
   (local-set-key (kbd "p") (lambda () (interactive)
@@ -596,6 +604,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
   (local-set-key (kbd "t") #'eshell)
   (local-set-key (kbd "v") #'vterm-project-root)
   (local-set-key (kbd "m") #'magit-status)
+  (local-set-key (kbd "e") #'dirvish-side)
 
   (local-set-key (kbd "s") (lambda () (interactive)
                              (find-file (expand-file-name "~/.emacs.d/init.el"))))

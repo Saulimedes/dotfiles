@@ -16,6 +16,7 @@
   (vterm-buffer-name-string "vterm: %s")
   (vterm-shell "/usr/bin/zsh")  ; fish isn't installed on this system
   (vterm-always-compile-module t) ; auto-build the native module, no prompt
+  :hook (vterm-mode . (lambda () (setq-local display-line-numbers nil)))
   :config
   ;; Make vterm files directory tracking work with zsh/bash/fish
   (setq vterm-tramp-shells '(("ssh" "/bin/bash")
