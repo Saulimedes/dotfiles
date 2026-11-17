@@ -1,7 +1,8 @@
-local mainMod  = "SUPER"
-local terminal = "kitty"
-local browser  = "brave-origin"
-local popup    = "emacs-popup"
+local mainMod   = "SUPER"
+local terminal  = "kitty"
+local browser   = "brave-origin"
+local popup     = "/home/becker/.local/bin/emacs-popup"
+local hyprTheme = "/home/becker/.local/bin/hypr-theme"
 
 hl.monitor({
     output   = "",
@@ -11,7 +12,7 @@ hl.monitor({
 })
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("hypr-theme apply-current")
+    hl.exec_cmd(hyprTheme .. " apply-current")
     hl.exec_cmd("waybar")
     hl.exec_cmd("mako")
     hl.exec_cmd("hypridle")
@@ -22,13 +23,6 @@ end)
 hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
-
--- Hyprland's own exec environment doesn't include ~/.local/bin, so exec_cmd
--- calls to scripts there (hypr-theme, emacs-popup) silently fail to find them.
-hl.env(
-    "PATH",
-    "/home/becker/.local/bin:/home/becker/bin:/run/wrappers/bin:/home/becker/.local/share/flatpak/exports/bin:/var/lib/flatpak/exports/bin:/home/becker/.nix-profile/bin:/nix/profile/bin:/home/becker/.local/state/nix/profile/bin:/etc/profiles/per-user/becker/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin"
-)
 
 hl.config({
     general = {
@@ -125,7 +119,7 @@ hl.bind(mainMod .. " + bracketleft",  hl.dsp.layout("mfact -0.05"))
 hl.bind(mainMod .. " + bracketright", hl.dsp.layout("mfact +0.05"))
 
 -- theming: cycle border/waybar/mako palette
-hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("hypr-theme next"))
+hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd(hyprTheme .. " next"))
 
 local dirs = {
     { key = "left",  vim = "H", dir = "left"  },
