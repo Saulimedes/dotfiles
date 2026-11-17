@@ -161,6 +161,11 @@
   (declare (indent 0))
   (let ((frame (make-symbol "frame")))
     `(let ((,frame (selected-frame)))
+       ;; pgtk minibuffer-only frames: the width from --frame-parameters
+       ;; takes, but the initial pixel height doesn't, falling back to
+       ;; default-frame-alist's height. An explicit resize right after
+       ;; creation forces GTK to actually apply the requested char height.
+       (set-frame-size ,frame (frame-width ,frame) (frame-height ,frame))
        (unwind-protect
            (condition-case err
                (progn ,@body)
