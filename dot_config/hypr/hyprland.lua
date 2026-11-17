@@ -164,7 +164,15 @@ hl.bind("XF86AudioPrev",         hl.dsp.exec_cmd("playerctl previous"),   { lock
 
 hl.window_rule({
     name  = "emacs-popups",
-    match = { initial_title = "^emacs-(launcher|windows|capture|power)$" },
+    match = { initial_title = "^emacs-(launcher|windows|power)$" },
+    float  = true,
+    center = true,
+    size   = "640 300",
+})
+
+hl.window_rule({
+    name  = "emacs-capture",
+    match = { initial_title = "^emacs-capture$" },
     float  = true,
     center = true,
 })
