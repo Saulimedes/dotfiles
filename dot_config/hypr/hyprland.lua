@@ -23,6 +23,13 @@ hl.env("XCURSOR_THEME", "Bibata-Modern-Classic")
 hl.env("XCURSOR_SIZE", "24")
 hl.env("HYPRCURSOR_SIZE", "24")
 
+-- Hyprland's own exec environment doesn't include ~/.local/bin, so exec_cmd
+-- calls to scripts there (hypr-theme, emacs-popup) silently fail to find them.
+hl.env(
+    "PATH",
+    "/home/becker/.local/bin:/home/becker/bin:/run/wrappers/bin:/home/becker/.local/share/flatpak/exports/bin:/var/lib/flatpak/exports/bin:/home/becker/.nix-profile/bin:/nix/profile/bin:/home/becker/.local/state/nix/profile/bin:/etc/profiles/per-user/becker/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin"
+)
+
 hl.config({
     general = {
         gaps_in     = 3,
@@ -110,7 +117,6 @@ hl.bind(mainMod .. " + Q",         hl.dsp.window.close())
 hl.bind(mainMod .. " + F",         hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 hl.bind(mainMod .. " + SHIFT + F", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P",         hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + T",         hl.dsp.layout("togglesplit"))
 
 -- master layout (dwm-style master/stack)
 hl.bind(mainMod .. " + M",            hl.dsp.layout("cyclenext"))
