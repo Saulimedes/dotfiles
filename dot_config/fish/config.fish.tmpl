@@ -75,9 +75,12 @@ end
 # them on the first Tab instead of spawning both tools on every shell start
 # (that was ~70 ms). opencode's `completion` only emits bash/zsh scripts.
 
-# Re-apply keyboard patch if Cinnamon reset it after .xprofile
-if test -n "$DISPLAY"
-    if xkbcomp :0 - 2>/dev/null | grep -q '\bsemicolon\b'
+# Re-apply keyboard patch if Cinnamon reset it after .xprofile. X11-only:
+# xkbcomp targets a real X server, not XWayland, and $DISPLAY can end up
+# set under Hyprland too once any X11 app starts XWayland, which made this
+# run (and fail) on every fish startup there.
+if test -n "$DISPLAY"; and test -z "$WAYLAND_DISPLAY"; and type -q xkbcomp
+    if xkbcomp "$DISPLAY" - 2>/dev/null | grep -q '\bsemicolon\b'
         source ~/.xprofile
     end
 end

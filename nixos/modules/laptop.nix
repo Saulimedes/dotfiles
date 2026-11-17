@@ -1,6 +1,12 @@
 { pkgs, ... }:
 {
-  services.tlp.enable = true;
+  services.tlp = {
+    enable = true;
+    settings = {
+      WIFI_PWR_ON_BAT = "off";
+      WIFI_PWR_ON_AC = "off";
+    };
+  };
   services.power-profiles-daemon.enable = false;
   services.upower.enable = true;
 
