@@ -68,7 +68,8 @@
 (defvar my/dashboard-items
   '((projects . 6)
     (recents . 6)
-    (agenda . 4))
+    (agenda . 4)
+    (roam . 5))
   "Items to show on dashboard with counts.")
 
 ;; ============================================================
@@ -149,6 +150,7 @@ right-aligned on the line below instead of inline."
         ('recents (nerd-icons-mdicon "nf-md-file_document_multiple"))
         ('projects (nerd-icons-mdicon "nf-md-folder_multiple"))
         ('agenda (nerd-icons-mdicon "nf-md-calendar_check"))
+        ('roam (nerd-icons-mdicon "nf-md-notebook_multiple"))
         ('bookmarks (nerd-icons-mdicon "nf-md-bookmark_multiple"))
         (_ ""))
     ""))
@@ -260,6 +262,58 @@ right-aligned on the line below instead of inline."
         (insert "      ")
         (insert (propertize "No agenda items for today" 'face 'shadow))
         (insert "\n")))))
+
+(defun my/dashboard--roam-directory ()
+  "Return the org-roam notes directory without loading org-roam.
+`org-roam-directory' is only set once org-roam loads, which the dashboard
+should not trigger, so fall back to the same path as init.org.el."
+  (or (bound-and-true-p org-roam-directory)
+      (expand-file-name "roam" (or (bound-and-true-p org-directory)
+                                   "~/Documents/org"))))
+
+(defun my/dashboard--roam-title (file)
+  "Return the #+title of the org-roam note FILE, or its base name."
+  (or (ignore-errors
+        (with-temp-buffer
+          (insert-file-contents file nil 0 2048)
+          (when (re-search-forward "^#\\+title:[ \t]*\\(.+\\)$" nil t)
+            (string-trim (match-string 1)))))
+      (file-name-base file)))
+
+(defun my/dashboard--roam-recent-notes (count)
+  "Return the COUNT most recently modified org-roam notes as (FILE . MTIME).
+Reads the files directly instead of the org-roam database, so the dashboard
+does not have to load org-roam or open sqlite at startup."
+  (let ((dir (my/dashboard--roam-directory)))
+    (when (file-directory-p dir)
+      (seq-take
+       (sort (mapcar (lambda (f)
+                       (cons f (file-attribute-modification-time (file-attributes f))))
+                     (directory-files-recursively dir "\\`[^.].*\\.org\\'"))
+             (lambda (a b) (time-less-p (cdr b) (cdr a))))
+       count))))
+
+(defun my/dashboard--insert-roam (count)
+  "Insert the COUNT most recently modified org-roam notes."
+  (let ((notes (my/dashboard--roam-recent-notes count)))
+    (if (not notes)
+        (progn
+          (insert "      ")
+          (insert (propertize "No notes yet. Press 'o' to create one." 'face 'shadow))
+          (insert "\n"))
+      (dolist (note notes)
+        (let ((file (car note)))
+          (insert "      ")
+          (insert (my/dashboard--file-icon file))
+          (insert-text-button (my/dashboard--roam-title file)
+                              'action (lambda (_) (find-file file))
+                              'follow-link t
+                              'face 'my/dashboard-item
+                              'help-echo file)
+          (insert "  ")
+          (insert (propertize (format-time-string "%Y-%m-%d" (cdr note))
+                              'face 'my/dashboard-path))
+          (insert "\n"))))))
 
 ;; ============================================================
 ;; Celestial / planetary section
@@ -529,6 +583,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
           ('recents (my/dashboard--insert-recents count))
           ('projects (my/dashboard--insert-projects count))
           ('agenda (my/dashboard--insert-agenda count))
+          ('roam (my/dashboard--insert-roam count))
           ('bookmarks (my/dashboard--insert-bookmarks count)))
         (insert "\n")))
 
@@ -559,6 +614,8 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
     (insert (propertize " recent  " 'face 'my/dashboard-dim))
     (insert (propertize "[a]" 'face 'my/dashboard-shortcut))
     (insert (propertize " agenda  " 'face 'my/dashboard-dim))
+    (insert (propertize "[o]" 'face 'my/dashboard-shortcut))
+    (insert (propertize " roam  " 'face 'my/dashboard-dim))
     (insert (propertize "[m]" 'face 'my/dashboard-shortcut))
     (insert (propertize " magit  " 'face 'my/dashboard-dim))
     (insert (propertize "[e]" 'face 'my/dashboard-shortcut))
@@ -600,6 +657,7 @@ Uses the Placidus-like approximation: house 1 starts at sunrise."
                                (message "projectile-create-project not available"))))
 
   (local-set-key (kbd "a") #'org-agenda)
+  (local-set-key (kbd "o") #'org-roam-node-find)
   (local-set-key (kbd "c") #'org-capture)
   (local-set-key (kbd "t") #'eshell)
   (local-set-key (kbd "v") #'vterm-project-root)
