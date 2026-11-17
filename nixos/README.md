@@ -13,7 +13,7 @@ modules/{podman,vpn,syncthing,pentest}.nix
 install.sh                disko + nixos-install from the live ISO
 ```
 
-## Install the notebook
+## Install notipa1 (the notebook)
 
 On the live ISO (connect Wi-Fi first, e.g. `nmcli device wifi connect SSID --ask`):
 
@@ -22,12 +22,12 @@ rsync -a ~/.local/share/chezmoi/nixos/ nixos@LIVE_IP:nixos/      # from the old 
 printf '%s' 'LUKS_PASSPHRASE' > /tmp/luks-password               # on the ISO, RAM only
 printf '%s' 'USER_PASSWORD'   > /tmp/user-password
 cp ~/.config/chezmoi/chezmoi.toml /tmp/chezmoi.toml              # name/email for the first chezmoi init
-cd nixos && sudo ./install.sh notebook /dev/nvme0n1
+cd nixos && sudo ./install.sh notipa1 /dev/nvme0n1
 ```
 
 Without the password files the script prompts. All three files are shredded when it exits.
 
-Afterwards copy `hosts/notebook/hardware-configuration.nix` back into the repo. `disk-device.nix` stays local (git-ignored).
+Afterwards copy `hosts/notipa1/hardware-configuration.nix` back into the repo. `disk-device.nix` stays local (git-ignored).
 The installed system has the flake in `/etc/nixos`, so `sudo nixos-rebuild switch` works as is.
 
 ## Dotfiles hook

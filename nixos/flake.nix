@@ -1,5 +1,5 @@
 {
-  description = "NixOS machines: notebook, genmifo1";
+  description = "NixOS machines: notipa1, genmifo1";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
@@ -60,7 +60,7 @@
     in
     {
       nixosConfigurations = {
-        notebook = mkHost "notebook" { };
+        notipa1 = mkHost "notipa1" { };
         genmifo1 = mkHost "genmifo1" { };
       };
 

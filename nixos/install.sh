@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# usage (live ISO, as root): ./install.sh HOST DISK    e.g. ./install.sh notebook /dev/nvme0n1
+# usage (live ISO, as root): ./install.sh HOST DISK    e.g. ./install.sh notipa1 /dev/nvme0n1
 set -euo pipefail
 
 host=${1:?usage: ./install.sh HOST DISK}
