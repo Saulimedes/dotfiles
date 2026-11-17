@@ -35,6 +35,20 @@ in
           };
         };
 
+        programs.brave = {
+          enable  = true;
+          package = null; # brave-origin is installed system-wide already; just write the extensions
+          extensions = [
+            { id = "nngceckbapebfimnlniiiahkandclblb"; } # Bitwarden Password Manager
+            { id = "ponfpcnoihfmfllpaingbgckeeldkhle"; } # Enhancer for YouTube
+            { id = "cclelndahbckbenkjhflpdbgdldlbecc"; } # Get cookies.txt LOCALLY
+            { id = "gebbhagfogifgggkldgodflihgfeippi"; } # Return YouTube Dislike
+            { id = "mnjggcdmjocbbbhaepdhchncahnbgone"; } # SponsorBlock for YouTube
+            { id = "dhdgffkkebhmkfjojejmpbldmpobfkfo"; } # Tampermonkey
+            { id = "gbmgphmejlcoihgedabhgjdkcahacjlj"; } # Wallabagger
+          ];
+        };
+
         home.activation.chezmoi = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
           export PATH=/run/current-system/sw/bin:/etc/profiles/per-user/becker/bin:${
             lib.makeBinPath (
