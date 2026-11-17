@@ -18,9 +18,21 @@ in
         home.pointerCursor = {
           package = pkgs.bibata-cursors;
           name = "Bibata-Modern-Classic";
-          size = 24;
+          size = 20;
           gtk.enable = true;
           x11.enable = true;
+        };
+
+        gtk = {
+          enable = true;
+          theme = {
+            name = "Tokyonight-Dark";
+            package = pkgs.tokyonight-gtk-theme;
+          };
+          iconTheme = {
+            name = "Papirus-Dark";
+            package = pkgs.papirus-icon-theme;
+          };
         };
 
         home.activation.chezmoi = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
