@@ -1,7 +1,11 @@
-# System compose rules first (dead_diaeresis + a → ä, etc.)
+{{- $nixos := false }}
+{{- if hasKey .chezmoi "osRelease" }}{{ $nixos = eq (trimAll "'\"" .chezmoi.osRelease.id) "nixos" }}{{ end -}}
+{{ if $nixos -}}
+include "%L"
+{{- else -}}
 include "/usr/share/X11/locale/en_US.UTF-8/Compose"
+{{- end }}
 
-# Custom overrides
 <dead_diaeresis> <dead_diaeresis>       : ";"
 <dead_diaeresis> <space>                : "; "
 <dead_diaeresis> <s>                    : "ß"

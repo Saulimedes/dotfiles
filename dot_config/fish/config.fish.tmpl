@@ -1,7 +1,15 @@
 # GPG: Pin SSH_AUTH_SOCK to default ~/.gnupg gpg-agent (SSH key lives there)
-set -gx _GPG_AGENT_SSH_SOCK (GNUPGHOME=~/.gnupg gpgconf --list-dirs agent-ssh-socket)
+if type -q gpgconf
+    set -gx _GPG_AGENT_SSH_SOCK (GNUPGHOME=~/.gnupg gpgconf --list-dirs agent-ssh-socket)
+end
 
-# PATH (fish_add_path deduplicates automatically)
+# PATH (fish_add_path deduplicates automatically, ignores non-existent dirs)
+# NixOS: these aren't always inherited outside a graphical login session
+# (e.g. a non-interactive SSH command), and fish_user_paths isn't reliably
+# picked up there either, so set them directly instead.
+if test -d /run/current-system/sw/bin
+    set -gx PATH /run/current-system/sw/bin /etc/profiles/per-user/$USER/bin $PATH
+end
 fish_add_path $HOME/.local/bin $HOME/.bin $HOME/.krew/bin $HOME/bin $HOME/Applications
 fish_add_path /var/lib/flatpak/exports/bin $HOME/.cargo/bin /usr/local/bin
 # Drop entries that do not exist (kubectl warns about each one in `plugin list`)
@@ -40,10 +48,18 @@ set -gx _AI_SYSTEM_PROMPT "You are a fish shell command generator on Gentoo Linu
 - Respond with nothing but the command."
 
 ## Tool integrations
-mise activate fish | source
-zoxide init --cmd cd fish | source
-direnv hook fish | source
-starship init fish | source
+if type -q mise
+    mise activate fish | source
+end
+if type -q zoxide
+    zoxide init --cmd cd fish | source
+end
+if type -q direnv
+    direnv hook fish | source
+end
+if type -q starship
+    starship init fish | source
+end
 
 # FZF shell integration (Ctrl-T, Alt-C). Before atuin on purpose: fzf also
 # binds Ctrl-R, and zsh has atuin there.
@@ -51,15 +67,20 @@ if type -q fzf
     fzf --fish 2>/dev/null | source
 end
 
-atuin init fish --disable-up-arrow | source
+if type -q atuin
+    atuin init fish --disable-up-arrow | source
+end
 
 # Completions for kubectl and chezmoi live in completions/*.fish: fish loads
 # them on the first Tab instead of spawning both tools on every shell start
 # (that was ~70 ms). opencode's `completion` only emits bash/zsh scripts.
 
-# Re-apply keyboard patch if Cinnamon reset it after .xprofile
-if test -n "$DISPLAY"
-    if xkbcomp :0 - 2>/dev/null | grep -q '\bsemicolon\b'
+# Re-apply keyboard patch if Cinnamon reset it after .xprofile. X11-only:
+# xkbcomp targets a real X server, not XWayland, and $DISPLAY can end up
+# set under Hyprland too once any X11 app starts XWayland, which made this
+# run (and fail) on every fish startup there.
+if test -n "$DISPLAY"; and test -z "$WAYLAND_DISPLAY"; and type -q xkbcomp
+    if xkbcomp "$DISPLAY" - 2>/dev/null | grep -q '\bsemicolon\b'
         source ~/.xprofile
     end
 end
@@ -67,7 +88,7 @@ end
 # GPG TTY (required for pinentry-tty), kept current before each command.
 # Skipped inside Claude Code sessions, like zsh, so gpg-agent's pinentry TTY
 # isn't redirected away from the user's real terminal.
-if test -z "$CLAUDECODE"
+if test -z "$CLAUDECODE"; and type -q tty
     set -gx GPG_TTY (tty)
     function _gpg_update_default_agent_tty --on-event fish_preexec
         gpg-connect-agent --homedir ~/.gnupg UPDATESTARTUPTTY /bye &>/dev/null

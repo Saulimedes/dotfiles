@@ -521,6 +521,11 @@
       ("m" "Current" mise-current)
       ("M" "List" mise-list)
       ("n" "New project" mise-new-project)]
+     ["Nix"
+      ("N" "New project" nix-flake-new-project)
+      ("e" "Develop shell" nix-develop)
+      ("s" "Flake show" nix-flake-show)
+      ("u" "Flake update" nix-flake-update)]
      ["Docker"
       ("d" "Docker" docker)
       ("D" "Docker ps" docker-ps)]]))
@@ -633,6 +638,70 @@ never bleed into the global ones."
     (shell-command (format "direnv allow %s" (shell-quote-argument dir)))
     (message "Scaffolded %s - drop kubeconfigs into .kube/, aws creds into .aws/" dir)))
 
+;; ============================================================
+;; Nix Flake Dev Shells
+;; ============================================================
+
+(defun nix-flake-new-project (dir)
+  "Scaffold a per-project flake.nix devShell + .envrc in DIR.
+Mirrors mise-new-project's isolated identity dirs, via nix-direnv."
+  (interactive "DProject directory: ")
+  (unless (file-exists-p dir) (make-directory dir t))
+  (let* ((default-directory dir)
+         (email (read-string "Git author email: " user-mail-address))
+         (gnupg-dir (expand-file-name ".gnupg" dir)))
+    (dolist (sub '(".gnupg" ".aws" ".kube" ".oci" "pass"))
+      (make-directory (expand-file-name sub dir) t))
+    (set-file-modes gnupg-dir #o700)
+    (with-temp-file (expand-file-name "flake.nix" dir)
+      (insert "{\n")
+      (insert "  inputs.nixpkgs.url = \"nixpkgs\";\n")
+      (insert "  outputs = { self, nixpkgs }:\n")
+      (insert "    let pkgs = nixpkgs.legacyPackages.x86_64-linux; in {\n")
+      (insert "      devShells.x86_64-linux.default = pkgs.mkShell {\n")
+      (insert "        packages = [ ];\n")
+      (insert "        shellHook = ''\n")
+      (insert (format "          export GIT_AUTHOR_EMAIL=\"%s\"\n" email))
+      (insert (format "          export GIT_COMMITTER_EMAIL=\"%s\"\n" email))
+      (insert "          export GNUPGHOME=\"$PWD/.gnupg\"\n")
+      (insert "          export AWS_SHARED_CREDENTIALS_FILE=\"$PWD/.aws/credentials\"\n")
+      (insert "          export AWS_CONFIG_FILE=\"$PWD/.aws/config\"\n")
+      (insert "          export KUBECONFIG=\"$PWD/.kube/config\"\n")
+      (insert "          export OCI_CONFIG_FILE=\"$PWD/.oci/config\"\n")
+      (insert "          export PASSWORD_STORE_DIR=\"$PWD/pass\"\n")
+      (insert "        '';\n")
+      (insert "      };\n")
+      (insert "    };\n")
+      (insert "}\n"))
+    (with-temp-file (expand-file-name ".envrc" dir)
+      (insert "use flake\n"))
+    (shell-command (format "direnv allow %s" (shell-quote-argument dir)))
+    (message "Scaffolded %s - edit flake.nix packages, drop kubeconfigs into .kube/, aws creds into .aws/" dir)))
+
+(defun nix-develop ()
+  "Open a vterm (or shell) running `nix develop' in the current project."
+  (interactive)
+  (if (featurep 'vterm)
+      (progn
+        (vterm-other-window "*nix-develop*")
+        (vterm-send-string "nix develop\n"))
+    (async-shell-command "nix develop" "*nix-develop*")))
+
+(defun nix-flake-show ()
+  "Show the current project's flake outputs."
+  (interactive)
+  (let ((buffer "*nix-flake-show*"))
+    (with-current-buffer (get-buffer-create buffer)
+      (erase-buffer)
+      (insert (shell-command-to-string "nix flake show 2>&1"))
+      (special-mode)
+      (switch-to-buffer buffer))))
+
+(defun nix-flake-update ()
+  "Update the current project's flake.lock."
+  (interactive)
+  (compile "nix flake update"))
+
 ;; Global bindings
 (global-set-key (kbd "C-c k") 'kubectl-menu)
 (global-set-key (kbd "C-c a") 'aws-menu)
@@ -709,6 +778,13 @@ never bleed into the global ones."
    '("Ml" . mise-list)
    '("Mi" . mise-install)
    '("Mu" . mise-use)
-   '("Mn" . mise-new-project)))
+   '("Mn" . mise-new-project)
+
+   ;; Nix
+   '("N" . (keymap))
+   '("Nn" . nix-flake-new-project)
+   '("Ne" . nix-develop)
+   '("Ns" . nix-flake-show)
+   '("Nu" . nix-flake-update)))
 
 (provide 'init.devops)

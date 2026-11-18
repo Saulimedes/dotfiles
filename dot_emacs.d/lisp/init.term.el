@@ -14,7 +14,7 @@
   :custom
   (vterm-max-scrollback 10000)
   (vterm-buffer-name-string "vterm: %s")
-  (vterm-shell "/usr/bin/zsh")  ; fish isn't installed on this system
+  (vterm-shell (or (getenv "SHELL") "/bin/sh"))
   (vterm-always-compile-module t) ; auto-build the native module, no prompt
   :hook (vterm-mode . (lambda () (setq-local display-line-numbers nil)))
   :config
@@ -33,9 +33,8 @@
    ("C-c t n" . multi-vterm-next)
    ("C-c t p" . multi-vterm-prev)))
 
-;; Fish shell syntax highlighting removed - prioritizing zsh/bash
-;; (use-package fish-mode
-;;   :mode "\\.fish\\'")
+(use-package fish-mode
+  :mode "\\.fish\\'")
 
 ;; Functions to run vterm in splits
 (defun split-horizontal-and-run-vterm ()

@@ -23,7 +23,7 @@ log "Setting up Flatpak..."
 
 # Add user to flatpak group if it exists
 if getent group flatpak &>/dev/null; then
-    sudo usermod -aG flatpak "$USER"
+    sudo -A usermod -aG flatpak "$USER"
     log "Added $USER to flatpak group"
 fi
 

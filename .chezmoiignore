@@ -24,3 +24,24 @@ tmp/
 *.swp
 *~
 
+
+nixos/
+
+{{- $nixos := false }}
+{{- if hasKey .chezmoi "osRelease" }}{{ $nixos = eq (trimAll "'\"" .chezmoi.osRelease.id) "nixos" }}{{ end }}
+{{- if $nixos }}
+
+.xprofile
+.local/bin/xkb-patch
+.local/bin/xkb-patch-udev
+.config/autostart/xkb-patch.desktop
+.config/kernel
+install-packages.sh
+setup-openrc-services.sh
+setup-portage.sh
+setup-samba-mounts.sh
+setup-podman.sh
+setup-xkb-udev-rule.sh
+sync-genkernel.sh
+sync-useflags.sh
+{{- end }}

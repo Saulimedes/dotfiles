@@ -1,0 +1,64 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 26,
+    "spacing": 10,
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["hyprland/language", "wireplumber", "backlight", "network", "battery", "tray"],
+
+    "hyprland/workspaces": {
+        "format": "{id}",
+        "all-outputs": true
+    },
+    "hyprland/window": {
+        "max-length": 60,
+        "separate-outputs": true
+    },
+    "hyprland/language": {
+        "format": "{long}"
+    },
+    "clock": {
+        "format": "{:%a %d %b  %H:%M}",
+        "tooltip-format": "{calendar}",
+        "calendar": {
+            "mode": "month",
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "format": {
+                "months": "<span color='#7aa2f7'><b>{}</b></span>",
+                "days": "<span color='#c0caf5'>{}</span>",
+                "weeks": "<span color='#565f89'><b>W{}</b></span>",
+                "weekdays": "<span color='#e0af68'><b>{}</b></span>",
+                "today": "<span color='#f7768e'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
+    },
+    "wireplumber": {
+        "format": "vol {volume}%",
+        "format-muted": "muted",
+        "on-click": "pavucontrol"
+    },
+    "backlight": {
+        "format": "bri {percent}%"
+    },
+    "network": {
+        "format-wifi": "{essid} {signalStrength}%",
+        "format-ethernet": "eth",
+        "format-disconnected": "offline",
+        "on-click": "nm-connection-editor"
+    },
+    "battery": {
+        "states": { "warning": 25, "critical": 10 },
+        "format": "bat {capacity}%",
+        "format-charging": "bat {capacity}% +"
+    },
+    "tray": {
+        "spacing": 8
+    }
+}

@@ -1,0 +1,11 @@
+// US + altgr-weur with direct ä ö ü ß on the German key positions; the
+// punctuation they replace moves to AltGr (AltGr+[ = [, AltGr+- = -)
+default partial alphanumeric_keys
+xkb_symbols "basic" {
+    include "us(altgr-weur)"
+    name[Group1]= "DE";
+    key <AD11> { [ udiaeresis, Udiaeresis, bracketleft, braceleft ] };
+    key <AC10> { [ odiaeresis, Odiaeresis, semicolon,   colon     ] };
+    key <AC11> { [ adiaeresis, Adiaeresis, apostrophe,  quotedbl  ] };
+    key <AE11> { [ ssharp,     U1E9E,      minus,       underscore ] };
+};

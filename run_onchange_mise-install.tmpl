@@ -1,4 +1,9 @@
 #!/bin/bash
+{{- $nixos := false }}
+{{- if hasKey .chezmoi "osRelease" }}{{ $nixos = eq (trimAll "'\"" .chezmoi.osRelease.id) "nixos" }}{{ end }}
+{{- if $nixos }}
+exit 0
+{{- end }}
 # mise config hash: {{ include "dot_config/mise/config.toml" | sha256sum }}
 MISE="$HOME/.local/bin/mise"
 

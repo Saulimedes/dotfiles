@@ -1,0 +1,7 @@
+// US + altgr-weur with ";" as dead_diaeresis (;a -> ä, ;; -> ;)
+default partial alphanumeric_keys
+xkb_symbols "basic" {
+    include "us(altgr-weur)"
+    name[Group1]= "US";
+    key <AC10> { [ dead_diaeresis, colon, ocircumflex, Ocircumflex ] };
+};
