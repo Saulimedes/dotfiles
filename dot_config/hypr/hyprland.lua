@@ -13,7 +13,7 @@ hl.monitor({
 
 hl.on("hyprland.start", function()
     hl.exec_cmd(hyprTheme .. " apply-current")
-    hl.exec_cmd("waybar")
+    hl.exec_cmd([[sh -c 'while ! waybar >>/tmp/waybar.log 2>&1; do sleep 1; done']])
     hl.exec_cmd("mako")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("wl-clip-persist --clipboard regular")
