@@ -13,6 +13,7 @@ hl.monitor({
 
 hl.on("hyprland.start", function()
     hl.exec_cmd(hyprTheme .. " apply-current")
+    hl.exec_cmd("systemctl --user restart emacs")
     hl.exec_cmd([[sh -c 'while ! waybar >>/tmp/waybar.log 2>&1; do sleep 1; done']])
     hl.exec_cmd("mako")
     hl.exec_cmd("hypridle")
